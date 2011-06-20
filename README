@@ -1,8 +1,6 @@
 
 ## Commands to install the proyect
 
-hg clone https://dev.devsar.com/hg/auctions poc
-
 virtualenv --no-site-packages --python=python2.6 auctions-env
 
 pip -E auctions-env install --requirement=auctions/deploy/requirements.txt
