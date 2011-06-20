@@ -1,0 +1,25 @@
+{% load i18n %}
+{% load sell_tags %}
+
+<p>
+{% if lot.is_active %}
+	{% ifequal lot.count_bids 0 %}
+		Starting bid
+	{% else %}
+		Current bid			
+	{% endifequal %}
+{% else %}
+	Final bid
+{% endif %}
+: {{ lot.current_bid|money_format:shop }}
+</p>
+
+{% if lot.is_active %}
+<form method="get" action="{% url bidding_view_history_lot lot.id %}" name="form">
+	{% if form.amount.errors %}<div class="error">{{ form.amount.errors|join:", " }}</div>{% endif %}
+	<p>Your bid: {{ form.amount }}</p>
+	<br/>
+	<button type="submit" class="small awesome">Place Bid</button> 
+	<p>(Enter {{ lot.next_bid_from|money_format:shop }} or more)</p>
+</form>
+{% endif %}

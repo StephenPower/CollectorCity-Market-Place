@@ -1,0 +1,64 @@
+{% load i18n %}
+
+<form name="form_session" method="post" action="." id="form_session">
+
+	{% if form_session.title.errors %}<div class="error">{{ form_session.title.errors|join:", " }}</div>{% endif %}
+	<h4 style="padding-bottom: 0px; margin-bottom:0px;">{% trans "Title" %}:</h4>
+	<span style="display: block; color:#AAAAAA;">{% trans "Example: Friday Night Auction; Coins and Currency; Cars and Trucks" %}</span>
+	{{ form_session.title }}
+	<br/>
+	
+	
+	{% if form_session.description.errors %}<div class="error">{{ form_session.description.errors|join:", " }}</div>{% endif %}
+	<h4>{% trans "Describe the Session" %}:</h4>
+	{{ form_session.description }}	
+	<br/>
+
+
+	<h3>{% trans "Session Properties" %}</h3>
+	
+		
+	{% if form_session.date_from.errors %}<div class="error">{{ form_session.date_from.errors|join:", " }}</div>{% endif %}
+	<p>{% trans "Date Start" %}</p>
+	{{ form_session.date_from }}
+	
+	
+	{% if form_session.time_from.errors %}<div class="error">{{ form_session.time_from.errors|join:", " }}</div>{% endif %}
+	<p>{% trans "Start Time" %}</p>
+	{{ form_session.time_from }}
+
+	{% if form_session.date_to.errors %}<div class="error">{{ form_session.date_to.errors|join:", " }}</div>{% endif %}
+	<p>{% trans "Date End" %}</p>
+	{{ form_session.date_to }}
+	
+	{% if form_session.time_to.errors %}<div class="error">{{ form_session.time_to.errors|join:", " }}</div>{% endif %}
+	<p>{% trans "Time End" %}</p>
+	{{ form_session.time_to }}
+	
+	<div class="clear"></div>
+	
+	<br/><br/>	
+	
+	<a href="#" onclick="javascript:submit_session(); return false;" class="large awesome">{% trans "Add" %}</a>
+	<a href="javascript:close_session();">{% trans "or Cancel" %}</a>
+	
+</form>
+
+<script type="text/javascript">
+	function load_s() {
+		$("#id_session-date_from").datepicker();
+		$("#id_session-date_to").datepicker();
+		$("#id_session-time_from").AnyTime_picker(
+			{ format: "%H:%i", labelTitle: "Time" } 
+		);
+  		$("#id_session-time_to").AnyTime_picker(
+			{ format: "%H:%i", labelTitle: "Time" } 
+		);
+		$(".AnyTime-win").css("border","1px solid #FCEFA1");
+		$(".AnyTime-win").css("background","#FFF");
+		$(".AnyTime-win").css("z-index","9999999");
+		$(".AnyTime-win").css("color","#363636");
+		$(".ui-datepicker").css("z-index","9999999");
+	}
+	load_s();
+</script>

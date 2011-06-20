@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import logging
+import datetime
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+
+from django.core.management import setup_environ
+from django.core.mail import send_mail
+#from django.db import transaction
+
+import settings
+setup_environ(settings)
+
+"""
+Daily Activity (Sign Up / Cancel)
+Total Customers    
+Total Sign Ups This Month    
+Total Sign Ups This Today    
+Total Cancelations This Month    
+Total Cancelations This Today
+"""
+
+def report_daily_activity():
+    from django.core.mail import EmailMultiAlternatives
+    from django.template import Context, loader
+    from reports.views import get_daily_activity_data
+    
+    day = datetime.datetime.now()
+    
+    try:
+        #t_txt = loader.get_template("admin/mail/daily_activity_report.txt")
+        t_html = loader.get_template("admin/mail/daily_activity_report.html")
+        
+        c = get_daily_activity_data(day)
+         
+        subject, from_email, to = 'Daily Activity Report', "no-reply@greatcoins.com", "martinriva@gmail.com" #admin@greatcoins.com"
+        text_content = ""#t_txt.render(Context(c))
+        html_content = t_html.render(Context(c))
+        logging.info(html_content)
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+                
+    except Exception, e:
+        logging.info(e)
+        send_mail('Error when trying to generate Daily Activity Report', e , 'admin@greatcoins.com', [b for (a,b) in settings.ADMINS], fail_silently=True)
+        
+        
+if __name__ == "__main__":
+    report_daily_activity()

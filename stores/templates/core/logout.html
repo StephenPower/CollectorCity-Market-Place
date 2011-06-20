@@ -1,0 +1,16 @@
+{% extends 'base_shop.html' %}
+{% load i18n uni_form_tags %}
+
+{% block logout %}current{% endblock %}
+
+{% block body %}
+	<div class="container_20">
+		<div class="grid_8 prefix_1">
+	    	<h3>{% trans "Logout Ok." %} <a href="/">home</a> <a href="{% url login %}">login</a></h3>
+		</div>
+	</div>
+	
+{% endblock %}
+
+{% load i18n %}
+

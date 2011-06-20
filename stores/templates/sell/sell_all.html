@@ -1,0 +1,67 @@
+{% extends 'store_admin/customers/base_customers.html' %}
+{% load i18n %}
+{% load sell_tags%}
+
+{% block m_sold_items %}current_sub_menu{% endblock %}
+
+{% block menu_options %}
+{% endblock %}
+	
+{% block main %}
+	<div class="grid_15 margin_v padding_v">
+		<div class="grid_2 alpha omega"><span>{% trans "Sale #" %}</span></div>
+		<div class="grid_3 alpha omega"><span>{% trans "Time" %}</span></div>
+		<div class="grid_4 alpha omega"><span>{% trans "Payment" %}</span></div>
+		<div class="grid_4 alpha omega"><span>{% trans "Shipping" %}</span></div>
+		<div class="grid_2 alpha omega"><span>{% trans "Total" %}</span></div>
+	</div>
+	<div class="clear"></div>
+	
+	{% for sell in sells.object_list %}
+		<div class="grid_15 list padding_v {% cycle 'detail1' 'detail2' %}">
+			<div class="grid_2 alpha omega"><a href="{% url sell_details sell.id %}"># {{ sell.id }}</a></div>
+			<div class="grid_3 alpha omega"><span>{{ sell.date_time|date:"d F Y H:i" }}</span></div>
+
+			<div class="grid_4 alpha omega"><span>{{ sell.payment.state_actual.get_state_display }}</span></div>
+
+			<div class="grid_4 alpha omega">{{ sell.shipping.state_actual.get_state_display }}</div>
+			
+{% comment %}
+			{% ifequal sell.payment.state_actual.state 'PE' %}
+				<div class="grid_4 alpha omega"><span>{{ sell.payment.state_actual.get_state_display }}</span></div>
+			{% else %}
+				{% ifequal sell.payment.state_actual.state 'PA' %}
+					<div class="grid_4 alpha omega"><a href="" class="small awesome">{% trans "Authorize" %}</a></div>
+				{% else %}
+					<div class="grid_4 alpha omega">{% trans "Authorized" %}</div>
+				{% endifequal %}
+			{% endifequal %}
+			
+			{% if sell.shipping %}
+				{% ifequal sell.shipping.state_actual.state 'PE' %}
+					<div class="grid_4 alpha omega"><a href="{% url sell_dispatched sell.id %}" class="small awesome">{% trans "Dispatched" %}</a></div>
+				{% else %}
+					{% ifequal sell.shipping.state_actual.state 'DI' %}
+						<div class="grid_4 alpha omega"><a href="{% url sell_fulfilled sell.id %}" class="small awesome">{% trans "Fulfilled" %}</a></div>
+					{% else %}
+						<div class="grid_4 alpha omega">{% trans "Fulfilled" %}</div>
+					{% endifequal %}
+				{% endifequal %}
+			{% else %}
+				<div class="grid_4 alpha omega"><span>{% trans "Payment waiting" %}</span></div>
+			{% endif %}
+{% endcomment %}
+
+			<div class="grid_2 alpha omega"><span>{{ sell.total|money_format:shop }}</span></div>
+		</div>
+		<div class="clear"></div>
+	{% endfor %}
+	
+	
+	<div class="pagination">
+		{% with sells as objects %}
+			{% include 'paginator.html'%}
+		{% endwith %}
+	</div>	
+	
+{% endblock %}

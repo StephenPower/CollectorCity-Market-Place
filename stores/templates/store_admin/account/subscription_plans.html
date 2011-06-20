@@ -1,0 +1,57 @@
+{% extends 'store_admin/account/base_subscription.html' %}
+{% load i18n %}
+
+{% block t_change_plan %}current_tab{% endblock %}
+
+{% block main %}
+<h2>{% trans "Change Your Subscrition Plan" %}</h2>
+
+<div class="table">
+	<div class="t-column">
+		<div class="th"><h2>{% trans "Plan" %}</h2></div>
+		<div class="th">{% trans "Set Up Fee" %}</div>
+		<div class="th">{% trans "Transaction Fee" %}</div>
+		<div class="th">{% trans "Custom Domains" %}</div>
+		<div class="th">{% trans "Bandwidth" %}</div>
+		<div class="th">{% trans "SSL" %}</div>
+		<div class="th">{% trans "Custom Migrations" %}</div>
+		<div class="th">{% trans "Trial Period" %}</div>			
+		<div class="th">{% trans "Billing Period" %}</div>
+		<div class="th">{% trans "Google Analytics" %}</div>
+		<div class="th">{% trans "Tax Integration" %}</div>
+		<div class="th">{% trans "Storage" %}</div>
+		<div class="th">{% trans "Admin Accounts" %}</div>
+		<div class="th">{% trans "Picture Per Item" %}</div>
+		<div class="th">{% trans "Picture Per Lot" %}</div>
+		<div class="th">{% trans "Auction Items" %}</div>
+		<div class="th">{% trans "Store Items" %}</div>
+		<div class="th">{% trans "Store Revenue" %}</div>
+		<div class="th">{% trans "Price" %}</div>
+	</div>
+{% for plan in plans %}
+	<div class="t-column">
+		<div class="tr"><h2>{{ plan.name }}</h2></div>
+		<div class="tr">{% trans "Waived" %}</div>
+		<div class="tr">{% trans "None" %}</div>
+		<div class="tr">{% trans "Yes" %}</div>
+		<div class="tr">{% trans "Unlimited" %}</div>
+		<div class="tr">{% trans "Yes" %}</div>
+		<div class="tr">{% if plan.custom_migration %} {% trans "Yes" %} {% else %} {% trans "False" %} {% endif %}</div>
+		<div class="tr">{% if plan.has_trial_period %} {{ plan.trial_period }} Month {% else %} No Trial {% endif %}</div>
+		<div class="tr">{{ plan.billing_period }}</div>
+		<div class="tr">{% if plan.google_analytics_support %} Yes {% else %} No {% endif %}</div>
+		<div class="tr">{% if plan.auto_tax_integration %} Yes {% else %} No {% endif %}</div>
+		<div class="tr">{{ plan.total_mbs_storage }} MB</div>
+		<div class="tr">{{ plan.admin_accounts }}</div>
+		<div class="tr">up to {{ plan.pictures_per_item }}</div>
+		<div class="tr">up to {{ plan.pictures_per_lot }}</div>
+		<div class="tr">up to {{ plan.concurrent_auction_items }}</div>
+		<div class="tr">up to {{ plan.concurrent_store_items }}</div>
+		<div class="tr">up to {{ plan.total_store_revenue }}</div>
+		<div class="tr"><div class="price">US$ {{ plan.price }}</div></div>
+		<div class="tr margin_v"><a href="{% url change_subscription_plan plan.id %}"><div class="awesome green">{% trans "CHANGE" %}</div></a></div>
+	</div>
+{% endfor %}
+</div>
+<div class="clear"></div>
+{% endblock %}

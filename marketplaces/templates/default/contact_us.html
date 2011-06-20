@@ -1,0 +1,32 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+{% load sell_tags %}
+
+{% block content %}
+<div id="breadcrumbs" class="grid_18">
+	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; {% trans "Contact Us" %}
+</div>
+
+{% block main_content %}
+<div class=" grid_7 margin_h">
+<p>{% trans "If you want to contact us, please fill the form and a member of our team will response as soon as posible." %}</p>
+<form action="{% url market_contact_us %}" method="POST" class="contact_form">
+	
+	<label>{% trans "Your Name" %}</label><input type="text" name="name"/><br/>
+	<label>{% trans "Phone" %}</label><input type="text" name="phone"/><br/>
+	<label>{% trans "Email" %}</label><input type="text" name="email"/><br/>
+	<label>{% trans "Message" %}</label><br></br>
+	<textarea rows="10" cols="40" name="message"></textarea>
+	
+	<button class="awesome small gray" type="submit">{% trans "Send" %}</button>
+</form>
+
+</div>
+<div class="prefix_1 grid_7 margin_h">
+{% block contact_details %}
+	Some content here
+{% endblock %}
+</div>
+{% endblock %}
+
+{% endblock %}

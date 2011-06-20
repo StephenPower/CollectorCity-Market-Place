@@ -1,0 +1,17 @@
+{% extends 'store_admin/account/base_account.html' %}
+{% load i18n %}
+
+{% block m_profile %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}Update Profile{% endblock %}
+
+{% block tab %}
+<ul>
+	<li class="tab inner {% block t_picture %}{% endblock %}">
+		<a href="{% url account_profile %}">{% trans "Picture" %}</a>
+	</li>
+	<li class="tab inner {% block t_password %}{% endblock %}">
+		<a href="{% url account_password %}">{% trans "Password" %}</a>
+	</li>
+</ul>
+{% endblock %}

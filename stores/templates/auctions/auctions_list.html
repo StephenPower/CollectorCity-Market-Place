@@ -1,0 +1,87 @@
+{% extends 'store_admin/inventory/base_auctions.html' %}
+{% load i18n %}
+{% load store_admin_tags %}
+
+{% block title_sub_menu %}{% trans "Auction Overview" %}{% endblock %}
+
+{% block toolbar %}
+	{{ block.super }}
+	<form method="get" action="." class="form_search">
+		<input type="text" name="q_title" value="{{ q_title }}"/>
+		<input type="hidden" name="filter_by" value="title"/>
+	</form>
+{% endblock %}
+
+{% block menu_options %}
+	<ul id="tree">
+		<li>{% trans "State" %}
+			<ul>
+			    <li><a href="{% url inventory_auctions %}?filter_by=actual">Actual</a></li>
+			    <li><a href="{% url inventory_auctions %}?filter_by=finished">Finished</a></li>
+			    <li><a href="{% url inventory_auctions %}?filter_by=future">Future</a></li>
+			</ul>
+		</li>
+	</ul>
+{% endblock %}
+
+{% block super_main %}
+	<div class="bar_title">
+		<div class="grid_2 alpha omega bar_column"><span>{% trans "#" %}</span>
+			<a href="./?{{ filter_params|update_filters:'order_by=id' }}"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+			<a href="./?{{ filter_params|update_filters:'order_by=-id' }}"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+		</div>
+		<div class="grid_3 alpha omega bar_column"><span>{% trans "Session Name" %}</span>
+			<a href="./?{{ filter_params|update_filters:'order_by=id' }}"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+			<a href="./?{{ filter_params|update_filters:'order_by=-id' }}"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+		</div>
+		<div class="grid_3 alpha omega bar_column"><span>{% trans "Start Date" %}</span>
+			<a href="./?{{ filter_params|update_filters:'order_by=id' }}"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+			<a href="./?{{ filter_params|update_filters:'order_by=-id' }}"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+		</div>
+		<div class="grid_3 alpha omega bar_column"><span>{% trans "End Date" %}</span>
+			<a href="./?{{ filter_params|update_filters:'order_by=id' }}"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+			<a href="./?{{ filter_params|update_filters:'order_by=-id' }}"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+		</div>
+		<div class="grid_2 alpha omega bar_column"><span>{% trans "Status" %}</span></div>
+		<div class="grid_2 alpha omega bar_column"><span>{% trans "Total lots" %}</span>
+			<a href="./?{{ filter_params|update_filters:'order_by=id' }}"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+			<a href="./?{{ filter_params|update_filters:'order_by=-id' }}"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+	{% for auction in auctions.object_list %}
+		<div class="{% cycle 'row_1' 'row_2' %} row_center">
+			<div class="grid_2 alpha omega column"><a href="{% url auction_details auction.id %}"># {{ auction.id }}</a></div>
+			<div class="grid_3 alpha omega column"><span>{{ auction.title }}</span></div>
+			<div class="grid_3 alpha omega column"><span>{{ auction.start|date:"d b Y H:i" }}</span></div>
+			<div class="grid_3 alpha omega column"><span>{{ auction.end|date:"d b Y H:i" }}</span></div>
+			<div class="grid_2 alpha omega column"><span>{{ auction.status }}</span></div>
+			<div class="grid_2 alpha omega column"><span>{{ auction.count_lots }}</span></div>
+		</div>
+		<div class="clear"></div>
+	{% endfor %}
+	
+	<div class="clear"></div>
+	{% if total > 10 %}
+	<div>
+		<br></br>
+		{% trans "Show Results By" %} 
+		{% if filter_params.items_per_page != 10 %}<a href="./?{{ filter_params|update_filters:'items_per_page=10' }}">10</a>{% else %}<b>10</b>{% endif %} |
+		{% if filter_params.items_per_page != 20 %}<a href="./?{{ filter_params|update_filters:'items_per_page=20' }}">20</a>{% else %}<b>20</b>{% endif %} | 
+		{% if filter_params.items_per_page != 50 %}<a href="./?{{ filter_params|update_filters:'items_per_page=50' }}">50</a>{% else %}<b>50</b>{% endif %} | 
+		{% if filter_params.items_per_page != 100 %}<a href="./?{{ filter_params|update_filters:'items_per_page=100' }}">100</a>{% else %}<b>100</b>{% endif %}
+	</div>
+	{% endif %}
+		
+	<div class="pagination">
+		{% with auctions as objects %}
+			{% include 'paginator.html'%}
+		{% endwith %}
+	</div>
+	
+{% endblock %}
+
+{% block menu %}
+	{% include 'auctions/auctions_menu.html' %}
+{% endblock %}

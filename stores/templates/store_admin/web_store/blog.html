@@ -1,0 +1,37 @@
+{% extends 'store_admin/web_store/base_web_store.html' %}
+{% load i18n %}
+
+{% block title_sub_menu %}Write post{% endblock %}
+
+{% block m_blog %}current_sub_menu{% endblock %}
+
+{% block menu_options %}
+	{% regroup posts by month as post_list %}
+	<ul id="tree">
+	{% for post in post_list %}
+	    <li>{{ post.grouper }}
+	    <ul>
+	        {% for item in post.list %}
+	        	<li><a href="{% url post_edit item.id %}">{{ item.title }}</a></li>
+	        {% endfor %}
+	    </ul>
+	    </li>
+	{% endfor %}
+	</ul>		
+		
+{% endblock %}
+
+{% block toolbar %}
+	<a href="{% url post_add %}"><img src="{{ MEDIA_URL }}img/add.png" class="icon">{% trans "Write post" %}</a>
+{% endblock %}
+
+{% block main %}
+
+	<div class="grid_16 box">
+	{% block main_blog %}
+
+	{% endblock %}
+	</div>
+	
+	<div class="clear"></div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'store_admin/web_store/theme.html' %}
+{% load i18n %}
+
+{% block title_sub_menu %}Add Asset{% endblock %}
+
+{% block main_theme %}
+	<div class="grid_11 box">
+		<br/>
+		<form name="form" method="post" action="." enctype="multipart/form-data">
+			{% if form.file.errors %}<div class="error">{{ form.file.errors|join:", " }}</div>{% endif %}
+			<label>{% trans "File" %}: {{ form.file }}</label>
+			<br/><br/>	
+			<button type="submit" class="large awesome">{% trans "Upload" %}</button>
+			<a href="{% url themes %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+		</form>
+	</div>
+{% endblock %}

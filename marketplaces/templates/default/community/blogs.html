@@ -1,0 +1,53 @@
+{% extends "default/community.html" %}
+{% load i18n %}
+
+{% block blogs_selection %}current_selection{% endblock %}
+
+{% block community_content %}
+
+<div class="grid_14 alpha omega margin_v">
+<h1>{% trans "Latest Posts" %}</h1>
+<br/><br/>
+{% for post in last_posts %}
+
+{% include "default/community/post_render.html" %}
+<div class="clear"></div>
+
+{% empty %}
+<div class="notice">{% trans "There are no posts to show at this moment" %}</div>
+{% endfor %}
+
+
+<div class="clear"></div>
+<br/><br/>
+
+<h1>{% trans "Recommended Posts" %}</h1>
+<br/><br/>
+{% for pick in posts_picks %}
+
+{% with pick.post as post %}
+	{% include "default/community/post_render.html" %}
+{% endwith %}
+<div class="clear"></div>
+
+{% empty %}
+<div class="notice">{% trans "There are no posts to show at this moment" %}</div>
+{% endfor %}
+
+
+<div class="clear"></div>
+<br/><br/>
+
+<h1>{% trans "Most Visited Posted This Week" %}</h1>
+<br/><br/>
+
+{% for post in most_visited %}
+
+{% include "default/community/post_render.html" %}
+
+{% empty %}
+<div class="notice">{% trans "There are no posts to show at this moment" %}</div>
+{% endfor %}
+
+</div>
+{% endblock %}

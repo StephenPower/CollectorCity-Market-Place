@@ -1,0 +1,24 @@
+{% extends 'base_login.html' %}
+{% load i18n %}
+
+{% block title %}
+	<h2>{% trans "Edit" %} {{ asset.name|title }}</h2>
+{% endblock %}
+
+{% block main %}
+	<h3>{{ asset.name|title }}</h3>
+	<br/>
+	<form name="form" method="post" action=".">
+		{% if form.text.errors %}<div class="error">{{ form.text.errors|join:", " }}</div>{% endif %}
+		<div class="editor">
+			{{ form.text }}
+		</div>
+		<br/><br/>
+		<button type="submit" class="large awesome">{% trans "Save" %}</button>
+		<a href="{% url themes %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+	</form>
+{% endblock %}
+
+{% block menu %}
+	{% include 'themes/themes_menu.html' %}
+{% endblock %}

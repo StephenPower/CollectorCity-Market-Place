@@ -1,0 +1,46 @@
+{% load i18n %}
+
+<div class="market_post">
+	<div><h1>{{ post.title }}</h1></div>
+	<div class="post_info">Posted By <b>{{ post.posted_by }}</b> on <b>{{ post.date }}</b> | {{ post.comments.count }} comments </div>
+	<br></br>
+	<div>{{ post.body }}</div>
+	<br></br>
+	{% if post.allow_comments %}
+	
+	{% with post.comments as comments %}
+	<h4>{% if comments.count %}{{ comments.count }}{% else %}No{% endif %} comment{{ comments.count|pluralize }}</h4>
+	{% for comment in comments %}
+		<div class="grid_7 comment">
+			<span class="date">{{ comment.date }}</span> | <b>{{ comment.user }}</b> says:<br></br>
+			<p>{{ comment.comment }}</p>
+		</div>
+		<div class="clear"></div>
+	{% empty %}
+	<p>Be the first and post your comment!</p>
+	{% endfor %}
+	{% endwith %}
+	
+	<a onclick="javascript:open_shops_dialog({{ post.id }})">{% trans "Leave a Comment" %}</a><img src="{{ MEDIA_URL }}img/little_comment.png"></img>
+	<div id="comment_box_{{ post.id }}">
+		<form action="{% url add_post_comment %}" method="POST">
+			{% if form.comment.errors %}<div class="error">{{ form.comment.errors|join:", " }}</div>{% endif %}
+			{{ form.comment }}
+			<input type="hidden" name="post" value="{{ post.id }}">
+			<div class="buttonHolder">
+				<button type="submit" class="awesome small blue">{% trans "Submit" %}</button>
+			</div>
+		</form>
+	</div>
+	{% else %}
+	<p>{% trans "Comments are closed" %}</p>
+	{% endif %}
+	
+	<div class="post_tags"><b>Tags</b>:
+	{% for tag in post.tags %}
+	{{ tag.tag }}
+	{% empty %}
+	...
+	{% endfor %}
+	</div>
+</div>

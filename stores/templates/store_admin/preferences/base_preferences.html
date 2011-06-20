@@ -1,0 +1,26 @@
+{% extends 'base_login.html' %}
+{% load i18n %}
+
+{% block m_preferences %}current_menu{% endblock %}
+
+{% block title_menu_left %}{% trans "Preferences" %}{% endblock %}
+
+{% block title_sub_menu %}{% endblock %}
+
+{% block sub_menu %}
+	<ul>
+	<li class="links_sub_menu {% block m_overview %}{% endblock %}"><a href="{% url preferences %}">{% trans "Overview" %}</a></li>
+	<li class="links_sub_menu {% block m_general_settings %}{% endblock %}"><a href="{% url preferences_general %}">{% trans "General Settings" %}</a></li> 
+	<li class="links_sub_menu {% block m_taxes %}{% endblock %}"><a href="{% url preferences_taxes %}">{% trans "Taxes" %}</a></li>
+	<li class="links_sub_menu {% block m_payments %}{% endblock %}"><a href="{% url preferences_payment_paypal %}">{% trans "Payments" %}</a></li>
+	<li class="links_sub_menu {% block m_shipping %}{% endblock %}"><a href="{% url preferences_shipping %}">{% trans "Shipping" %}</a></li>
+	<li class="links_sub_menu {% block m_auctions %}{% endblock %}"><a href="{% url preferences_auctions %}">{% trans "Auctions" %}</a></li>
+	<li class="links_sub_menu {% block m_policies %}{% endblock %}"><a href="{% url preferences_policies %}">{% trans "Policies" %}</a></li>
+	<li class="links_sub_menu {% block m_email %}{% endblock %}"><a href="{% url preferences_email %}">{% trans "Email" %}</a></li>
+	<li class="links_sub_menu {% block m_domains %}{% endblock %}"><a href="{% url preferences_dns %}">{% trans "Domains" %}</a></li>
+	</ul>
+{% endblock %}
+
+
+{% block main %}
+{% endblock %}

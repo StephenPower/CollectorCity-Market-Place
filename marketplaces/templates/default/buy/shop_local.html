@@ -1,0 +1,79 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div id="breadcrumbs" class="grid_18">
+	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_buy %}">{% trans "Buy" %}</a> &raquo; {% trans "Shop Local" %}
+</div>
+
+<div class="grid_18 block_main_content">
+
+<h3>{% trans "Shop Local" %}</h3>
+<p>Search for shops and dealers near you!</p>
+
+<div class="notice grid_9">
+<form action="{% url buy_shop_local %}" method="POST" name="form">
+	<div class="grid_4">
+		<label>{% trans "City" %}</label><input type="text" name="city"/>
+		<label>{% trans "State" %}</label>
+		<select name="state">
+		{% for state in states %}
+    		<option>{{ state.1 }}</option>
+		{% endfor %}
+		</select>
+		<div class="margin_v">
+			<input type="submit" class="small awesome" style="border: none"alt="" value="{% trans 'Search' %}"/>
+		</div>
+	</div>
+	<div class="grid_4">
+		<label>Max Distance</label><br/>
+		<select name="max_distance">
+			<option>20</option>
+			<option>75</option>
+			<option>100</option>
+			<option>150</option>
+			<option>300</option>
+			<option>600</option>
+		</select>
+		{% comment %}
+		<label>Street</label><input type="text" name="street" value="1600 Pensylvannia"/>
+		<label>Country</label><input type="text" name="country" value="US"/>
+		<label>Metric</label><br/>
+		<select name="metric">
+			<option>Miles</option>
+			<option>Kilometers</option>
+		</select>
+		{% endcomment %}
+	</div>
+</form>
+</div>
+
+<hr></hr>
+{% if shops %}
+<h4>{{ shops|length }} shop{{ shops|length|pluralize }} found near you.</h4>
+{% for shop in shops %}
+<div class="grid_6">
+	<a href="http://{{ shop.1.default_dns }}" target="_blank">
+	<div class="dealer_box">
+		{% if shop.1.owner.get_profile.photo %}
+		<img class="item" alt="{{ shop.1.name }}" src="{{ shop.1.owner.get_profile.photo.url_128x135 }}" height="128" width="135"/>
+		{% else %}
+		<img class="item" alt="{{ shop.1.name }}" src="{{ MEDIA_URL }}img/no-photo-big.jpg" height="128" width="135"/>
+		{% endif %}
+		<div>{{ shop.1.admin.get_full_name }}</div>
+		<div>{{ shop.1.default_dns }}</div>
+		<div>{{ shop.1.description|striptags }}</div>
+		<div>{% trans "Distance" %} : {{ shop.0 }} {{ metric }}</div>
+	</div>
+	</a>
+</div>
+{% endfor %}
+{% else %}
+{% trans "There is no shops near you" %}
+{% endif %}
+
+<div class="clear"></div>
+
+</div>
+
+{% endblock %}

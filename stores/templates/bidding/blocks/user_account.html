@@ -1,0 +1,56 @@
+{% load i18n sell_tags %}
+
+<!--
+=============================== 
+	Purchase History
+===============================
+-->
+	  
+{% if sell_not_completed %}
+	
+	<h1 class="border">{% trans "Purchase History" %}</h1>
+	<div class="grid_1">{% trans "ID" %}</div>
+	<div class="grid_5">{% trans "Time" %}</div>
+	<div class="grid_2">{% trans "Total" %}</div>
+	<div class="clear"></div>
+	
+	{% for sell in sell_not_completed %}
+		<div class="grid_1">{{ sell.id }}</div>
+		<div class="grid_5">{{ sell.date_time|date:'r' }}</div>
+		<div class="grid_2">{{ sell.total }}</div>
+		<div class="clear"></div>
+		<div class="grid_8 prefix_1">
+			<h4>{% trans "Details:" %}</h4>		
+			{% for item_sell in sell.sellitem_set.all %}
+				<div class="grid_2 alpha omega">
+					<a href=""><img src="{{ item_sell.product.image.image.url_100x100 }}" width=50px /></a>
+				</div>
+				<div class="grid_3 alpha omega">
+					<h3><a href="">{{ item_sell.product.title|title }}</a></h3>
+				</div>
+				<div class="grid_3 alpha omega">
+					<p>{% trans "Price" %}: {{ item_sell.product.price }}</p>
+				</div>
+				<div class="clear"></div>
+			{% endfor %}
+		</div>
+		<div class="grid_8_resume_shopping">
+			<h4>{% trans "Payment Status" %}</h4>			
+			{% for payment in sell.payment.paymenthistory_set.all %}
+				{% ifnotequal payment.state 'PE' %}
+					<p>{{ payment.date_time|date:'r' }} - {{ payment.get_state_display }}</p>
+				{% endifnotequal %}
+			{% endfor %}
+			{% if sell.shipping.shippinghistory_set.all %}
+				<h4>{% trans "Shipping Status" %}</h4>			
+				{% for shipping in sell.shipping.shippinghistory_set.all %}
+					<p>{{ shipping.date_time|date:'r' }} - {{ shipping.get_state_display }}</p>
+				{% endfor %}
+			{% endif %}
+		</div>
+		<div class="clear"></div>
+		<br/><br/>
+	{% endfor %}
+	
+	<br/><br/><br/>
+{% endif %}

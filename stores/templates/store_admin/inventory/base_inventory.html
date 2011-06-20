@@ -1,0 +1,25 @@
+{% extends 'base_login.html' %}
+{% load i18n %}
+
+{% block m_inventory %}current_menu{% endblock %}
+
+{% block title_menu_left %}{% trans "Inventory" %}{% endblock %}
+
+{% block arrow_left %}{% url customers %}{% endblock %}
+{% block arrow_right %}{% url web_store %}{% endblock %}
+
+
+
+{% block sub_menu %}
+	<ul>
+	<li class="links_sub_menu {% block m_overview %}{% endblock %}"><a href="{% url inventory_overview %}">{% trans "Overview" %}</a></li>
+	<li class="links_sub_menu {% block m_items %}{% endblock %}"><a href="{% url inventory_items %}">{% trans "Items For Sale" %}</a></li>
+	<li class="links_sub_menu {% block m_lots %}{% endblock %}"><a href="{% url inventory_lots %}">{% trans "Items For Auctions" %}</a></li>
+	<li class="links_sub_menu {% block m_auctions %}{% endblock %}"><a href="{% url inventory_auctions %}">{% trans "Auctions" %}</a></li>
+	{#<li class="links_sub_menu {% block m_category %}{% endblock %}"><a href="{% url inventory_categorize %}">{% trans "Categorize" %}</a></li>#}
+	</ul> 
+{% endblock %}
+
+
+{% block main %}
+{% endblock %}

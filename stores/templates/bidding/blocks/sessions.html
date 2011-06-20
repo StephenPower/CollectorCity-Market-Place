@@ -1,0 +1,8 @@
+<ul>
+	<li><a href="{% url bidding_auctions %}">Highlights</a></li>
+	{% for session in sessions %}
+		<li>
+			<a href="{% url bidding_auctions_id session.id %}">{{ session.title|title }} - {{ session.end|date:"F j, Y" }}</a>
+		</li>
+	{% endfor %}
+</ul>

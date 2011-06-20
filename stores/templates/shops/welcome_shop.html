@@ -1,0 +1,20 @@
+{% extends 'base_shop.html' %}
+{% load i18n %}
+
+{% block title_header %}
+	<h1>{% trans "Welcome" %}</h1>
+	<div class="subtitle">Sub - Text. bla bla bla bla. <span class="white">Other bla</span></div>
+{% endblock %}
+
+
+{% block body %}
+	<div class="container_20" id="container">
+	<div class="grid_10 prefix_1">
+		<h2>{% trans "Welcome" %} {{ shop.admin.username }}</h2>
+		<br/> 
+		<br/> 
+		<h3>{% trans "Go to my shop now" %} <a href="http://{{ shop.name }}.{{ DEFAULT_DNS }}/admin_login/{{ shop.admin.id }}" class="blue">http://{{ shop.name }}.{{ DEFAULT_DNS }}</a></h3>
+	</div>
+	<div class="clear"></div>
+	</div>
+{% endblock %}

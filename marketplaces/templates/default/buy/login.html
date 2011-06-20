@@ -1,0 +1,22 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+
+
+{% block content %}
+<div>
+<form action="." method="POST" class="big_form">
+	<fieldset class="register">
+		<p>Username:</p>
+		<input type="text" name="username"/>
+		<p>Password:</p>
+		<input type="password" name="password"/>
+		<div class="buttonHolder">
+			<br/>
+			<button type="submit" class="button_primary">{% trans "Login" %}</button>
+	       	{% if next %}<input type="hidden" name="next" value="{{ next|escape }}" />{% endif %}
+	    </div>
+	</fieldset>
+	<br/><br/>
+</form>
+</div>
+{% endblock %}

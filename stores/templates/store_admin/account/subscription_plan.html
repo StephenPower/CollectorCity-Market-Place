@@ -1,0 +1,81 @@
+{% extends 'store_admin/account/base_account.html' %}
+{% load i18n %}
+
+{% block m_subscription %}current_sub_menu{% endblock %}
+
+{% block main %}
+
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$("#dialog-confirm").dialog(
+			{
+			autoOpen: false, 
+			modal: true,
+			resizable: false,
+			draggable: false,
+			width: 350,
+			heigth: 300,
+			buttons: { 
+					"Cancel": function() { $(this).dialog("close"); },
+					"Confirm": function() { window.location = "{% url shop_cancel_subscription shop.id %}" ; },
+				} 
+			}
+		);
+		
+		({  })
+		$("#cancel_subscription").click(function(event){
+			event.preventDefault();
+			$("#dialog-confirm").dialog("open");
+			}
+		});
+			
+	});
+	</script>
+	
+	<div id="dialog-confirm" title="Confirm your action please...">
+		<h6>Your subscription will be cancelled and all your account info will be removed. Are you sure you want to unsubscribe?</h6>
+	</div>
+
+
+	<h2>{% trans "Shop Subscription" %}</h2>
+	<br></br>	
+	<div class="grid_16 margin_v padding_v">
+	{% if subscription %}
+		<h2><u>{% trans "Subscription" %}</u></h2>
+		<div class="grid_4 alpha omega">Created on:</div><div>{{ subscription.date_time }}</div>
+		<div class="grid_4 alpha omega">Subscription ID:</div><div>{{ subscription.subscription_id }}</div>
+		<div class="grid_4 alpha omega">Status:</div><div>{{ subscription.get_status }}</div>
+		<div class="grid_4 alpha omega">Plan ID:</div><div>{{ subscription.plan.plan_id }}</div>
+		<div class="grid_4 alpha omega">Plan Name</div><div>{{ subscription.plan.name }}</div>
+		<div class="grid_4 alpha omega">Plan Description</div><div>{{ subscription.plan.description }}</div>
+		<div class="grid_4 alpha omega">Billing Period Start Date</div><div>{{ subscription.extra_data.0 }}</div>
+		<div class="grid_4 alpha omega">Billing Period End Date</div><div>{{ subscription.extra_data.1 }}</div>
+		<div class="grid_4 alpha omega">Next Billing Date</div><div>{{ subscription.extra_data.2 }}</div>
+		<div class="grid_4 alpha omega">Price</div><div>US$ {{ subscription.extra_data.3 }}</div>
+		<br></br>
+		<br></br>
+		<h2><u>{% trans "Related Transactions" %}</u></h2>
+		
+		{% comment %}
+		{% for transaction in subscription.extra_data.4 %}
+			{{ transaction.id }} - {{ transaction.status }} - {{ transaction.amount }}
+		{% endfor %}
+		{% endcomment %}
+		<div class="clear"></div>
+		<br></br>
+		<br></br>
+		{% if subscription.is_active %}
+			<a id="cancel_subscription" class="awesome small blue" href="">{% trans "Cancel Subscription" %}</a>
+		{% endif %}
+		
+	{% else %}
+		<div><h3>{% trans "No subscription found." %}</h3></div>
+	{% endif %}
+	</div>
+	
+	
+{% endblock %}
+
+{% block menu %}
+	{% include 'shops/shop_menu.html' %}
+{% endblock %}

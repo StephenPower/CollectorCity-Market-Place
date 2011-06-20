@@ -1,0 +1,95 @@
+{% extends "default/base.html" %}
+{% load i18n sell_tags %}
+
+{% block content %}
+    <div id="breadcrumbs" class="grid_18">
+        <a href="{% url market_home %}">{% trans "Home" %}</a> 
+        &raquo; <a href="{% url market_buy %}">{% trans "Buy" %}</a> 
+        &raquo; <a href="{% url buy_advanced_search %}?{{ form.get_qs }}">
+            {% trans "Advanced Search Results" %}
+        </a>
+    </div>
+
+	
+    <div id="view-mode-container" class="grid_17 block_main_content margin_h {{ view_mode }}">
+    	{% with result_list.object_list|length as result_count %}
+            <h3>{% blocktrans %}Listing {{ result_count }} results from {{ total }} items found {% endblocktrans %}</h3>
+        {% endwith %}
+        <p>
+            <a href="{% url buy_advanced_search %}?{{ form.get_qs }}">
+                {% trans "Go back and refine your search again" %}
+            </a>
+        </p>
+
+        <div id="view-buttons" class="grid_17">
+            <span class="view_mode">{% trans "View as" %}:</span> 
+            <div class="gallery-buttons">
+                <a href="#mode-list" onclick="$('#view-mode-container').toggleClass('gallery').toggleClass('list'); return false;">
+                    <img src="{{ MEDIA_URL }}img/list-view.jpg" width="20" height="20" title="{% trans 'Switch to List View' %}" />
+                </a>
+                <img src="{{ MEDIA_URL }}img/gallery-view-sel.jpg" width="20" height="20" title="{% trans 'Gallery View' %}" />
+            </div>
+            <div class="list-buttons" onclick="$('#view-mode-container').toggleClass('gallery').toggleClass('list'); return false;">
+                <img src="{{ MEDIA_URL }}img/list-view-sel.jpg" width="20" height="20" title="{% trans 'List View' %}" />
+                <a href="#mode-gallery onclick="$('#view-mode-container').toggleClass('gallery').toggleClass('list'); return false;"">
+                    <img src="{{ MEDIA_URL }}img/gallery-view.jpg" width="20" height="20" title="{% trans 'Switch to Gallery View' %}" />
+                </a>
+            </div>
+        </div>
+        
+        <div id="gallery-results" name="mode-gallery">
+            {% for product in result_list.object_list %}
+            <div class="grid_3">
+                <div class="item_box">
+                    <a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
+                    {% with product.object.child.image.image.url_100x100 as image_url %}
+                    {% if image_url %}
+                    <img class="item" src="{{ image_url }}" title="{{ product.description|striptags }}"/>
+                    {% else %}
+                    <img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ product.description|striptags }}"/>
+                    {% endif %}
+                    {% endwith %}
+                    <div>{{ product.title|truncatewords:5 }}</div>
+                    <div>{{ product.category.name }}</div>
+                    <div>{{ product.price|format_price:product.shop_currency }}</div>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div id="list-results" name="mode-list">
+            {% for product in result_list.object_list %}
+            <div class="grid_13">
+                <hr></hr>
+                <div class="grid_2">
+                    <a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
+                    {% with product.object.child.image.image.url_100x100 as image_url %}
+                    {% if image_url %}
+                    <img class="item" src="{{ image_url }}" height="55" width="55" title="{{ product.description|striptags }}"/>
+                    {% else %}
+                    <img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" height="51" width="56" title="{{ product.description|striptags }}"/>
+                    {% endif %}
+                    {% endwith %}
+                    </a>
+                </div>
+                <div class="grid_7">
+                    {{ product.title }}<br></br>
+                    <a href="http://{{ product.shop_default_dns }}" target="_blank">{{ product.shop_name }}</a>
+                </div>
+                <div class="grid_3">
+                    {{ product.price|format_price:product.shop_currency }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="clear"></div>
+        <div class="pagination">
+            {% with result_list as objects %}
+                {% include 'advanced_paginator.html'%}
+            {% endwith %}
+        </div>
+        <div class="clear"></div>
+    </div>
+{% endblock %}

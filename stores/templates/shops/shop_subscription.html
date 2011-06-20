@@ -1,0 +1,50 @@
+{% extends 'base_login.html' %}
+{% load i18n %}
+
+{% block title %}
+	<h2>{% trans "Shop Subscription" %}</h2>
+{% endblock %}
+
+{% block main %}
+	<div class="grid_16 margin_v padding_v">
+	{% if subscription %}
+		<h2><u>{% trans "Subscription" %}</u></h2>
+		<div class="grid_4 alpha omega">Created on:</div><div>{{ subscription.date_time }}</div>
+		<div class="grid_4 alpha omega">Subscription ID:</div><div>{{ subscription.subscription_id }}</div>
+
+		<div class="grid_4 alpha omega">Status:</div><div>{{ subscription.get_status }}</div>
+		<div class="grid_4 alpha omega">Plan ID:</div><div>{{ subscription.plan.plan_id }}</div>
+		<div class="grid_4 alpha omega">Plan Name</div><div>{{ subscription.plan.name }}</div>
+		<div class="grid_4 alpha omega">Plan Description</div><div>{{ subscription.plan.description }}</div>
+		<div class="grid_4 alpha omega">Billing Period Start Date</div><div>{{ subscription.extra_data.0 }}</div>
+
+		<div class="grid_4 alpha omega">Billing Period End Date</div><div>{{ subscription.extra_data.1 }}</div>
+		<div class="grid_4 alpha omega">Next Billing Date</div><div>{{ subscription.extra_data.2 }}</div>
+		<div class="grid_4 alpha omega">Price</div><div>US$ {{ subscription.extra_data.3 }}</div>
+		<br></br>
+		<br></br>
+		<h2><u>{% trans "Related Transactions" %}</u></h2>
+
+		{% for transaction in subscription.extra_data.4 %}
+			{{ transaction.created_at|date:"Y-m-d P" }} | {{ transaction.id }} | {{ transaction.status }} | u$s {{ transaction.amount }}<br/>
+		{% endfor %}
+		<div class="clear"></div>
+		<br></br>
+		<br></br>
+		{% comment %}
+		{% if subscription.is_active %}
+			<a href="{% url shop_cancel_subscription shop.id %}">{% trans "Cancel Subscription" %}</a>
+		{% endif %}
+		{% endcomment %}
+	{% else %}
+		<div><h3>{% trans "No subscription found." %}</h3></div>
+	{% endif %}
+	</div>
+
+	
+	
+{% endblock %}
+
+{% block menu %}
+	{% include 'shops/shop_menu.html' %}
+{% endblock %}

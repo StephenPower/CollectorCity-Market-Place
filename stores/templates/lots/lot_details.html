@@ -1,0 +1,94 @@
+{% extends 'store_admin/inventory/base_lots.html' %}
+{% load i18n %}
+{% load sell_tags %}
+
+{% block title_sub_menu %}
+	{% trans "Auction Lot Details" %}: {{ lot.title|title }}
+{% endblock %}
+
+{% block toolbar %}
+	<a href="{% url lot_edit lot.id  %}"><img src="{{ MEDIA_URL }}img/edit.png" class="icon">{% trans "Edit Lot" %}</a>  
+{% endblock %}
+
+
+{% block main %}
+	<div class="grid_8 text_justify">
+		<h3>{% trans "Lot Description" %}</h3>
+		<p>{{ lot.description|safe|linebreaks }}</p>
+	</div>
+	
+	<div class="grid_6 margin_h padding_h">
+		<h3>{% trans "Lot Images" %}</h3>
+		
+		<div id="images">
+		{% for img in lot.imagelot_set.all %}		
+			<div class="grid_3 alpha omega">
+				<img src="{{ img.image.url_100x100 }}" height="100"/>
+				<a href="{% url del_image lot.id img.id %}">{% trans "Delete" %}</a><br/>
+				{% if img.primary_picture %}
+				Primary Picture
+				{% else %}
+				<a href="{% url set_lot_primary_picture lot.id img.id %}">{% trans "Set as Primary" %}</a>
+				{% endif %}
+			</div>
+		{% endfor %}
+		</div>
+		<div class="clear"></div>
+		<br/><br/>
+		
+		<div class="grid_5">
+			<form action="{% url add_image lot.id %}" method="POST" name="form_image" enctype="multipart/form-data">
+				{{ image_form.as_p }}
+				<a href="javascript:document.form_image.submit();" class="small awesome">{% trans "Add Image" %}</a>
+			</form>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="clear"></div>
+
+	<div class="grid_14 margin_v">
+		<h3>{% trans "Lot Properties" %}</h3>
+
+		<p>{% trans "State" %}: {{ lot.get_state_display }} </p>
+		<p>{% trans "Type" %}: {{ lot.get_lot_type_display }} </p>
+
+		{% if lot.is_standard %}
+			<p>{% trans "Bidders" %}: {{ lot.count_bids }}</p>
+		{% endif %}
+		<p>{% trans "Session" %}: {{ lot.session.title }}</p>
+		<p>{% trans "Auction Category" %}: {{ lot.category.name }} </p>
+		<p>{% trans "Auction SubCategory" %}: {{ lot.subcategory.name }} </p>
+		<p>{% trans "Starting Bid" %}: {{ lot.starting_bid|money_format:shop  }}</p>
+		<p>{% trans "Current Bid" %}: {{ lot.current_bid|money_format:shop  }}</p>
+		<p>{% trans "Reserve" %}: {{ lot.reserve|money_format:shop }} </p>
+		
+	</div>
+	<div class="clear"></div>
+	
+	{% if lot.history %}
+
+		<h3>{% trans "Bidding History" %}</h3>
+		<div class="bar_title">
+			<div class="grid_5 alpha omega bar_column"><span>{% trans "Bidder" %}</span></div>	
+			<div class="grid_4 alpha omega bar_column"><span>{% trans "Bid amount" %}</span></div>	
+			<div class="grid_5 alpha omega bar_column"><span>{% trans "Bid time" %}</span></div>	
+			<div class="clear"></div>
+		</div>
+		{% for bid in lot.history %}
+			<div class="{% cycle 'row_1' 'row_2' %} row_small">
+				<div class="grid_5 alpha omega column">{{ bid.bidder.username }}</div>
+				<div class="grid_4 alpha omega column">{{ bid.bid_amount|money_format:shop }}</div>
+				<div class="grid_5 alpha omega column">{{ bid.bid_time|date:"r" }}</div>
+				<div class="clear"></div>
+			</div>
+		{% endfor %}
+		
+	{% endif %}
+
+				
+
+{% endblock %}
+
+{% block menu %}
+	{% include 'lots/lots_menu_details.html' %}
+{% endblock %}

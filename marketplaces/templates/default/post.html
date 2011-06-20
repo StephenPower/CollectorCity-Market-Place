@@ -1,0 +1,33 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div id="breadcrumbs" class="grid_18">
+	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_blog %}">{% trans "Blog" %}</a> &raquo; {{ post.title }}
+</div>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	$("div[id^='comment_box']").hide();
+});
+
+function open_shops_dialog(box_id){
+	var box = "comment_box_" + box_id;
+	$("#" + box).slideToggle();
+};
+
+function close_shops_dialog(box_id){
+	var box = "comment_box_" + box_id;
+	$("#" + box).slideUp();
+};
+
+</script>
+
+<div class="grid_13 alpha omega block_main_content margin_h">
+
+{% include "default/post_render.html" %}
+
+</div>
+
+{% endblock %}

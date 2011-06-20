@@ -1,0 +1,41 @@
+{% extends 'store_admin/customers/base_customers.html' %}
+{% load i18n %}
+
+{% block m_profiles %}current_sub_menu{% endblock %}
+
+{% block menu_options %}
+	<h3>{% trans "Filter By Name" %}</h3>
+	<form action="." method="post">
+		<input type="text" name="filter"/>
+	</form>
+	<br/>
+	<h3><a href="">{% trans "Filter By Purchase" %}</a></h3>
+	<h3><a href="">{% trans "Highest Dollar" %}</a></h3>
+	<h3><a href="">{% trans "Highest QTY" %}</a></h3>
+	<br/>
+	<h3><a href="">{% trans "Most Bids" %}</a></h3>
+	<h3><a href="">{% trans "Most Wins" %}</a></h3>
+{% endblock %}
+
+{% block main %}
+	<div class="grid_13 box">
+		<h3>{% trans "Sold Items" %}</h3>
+		<div class="grid_2 alpha omega"><h4>{% trans "User" %}</h4></div>
+		<div class="grid_1 alpha omega"><h4>{% trans "Item #" %}</h4></div>
+		<div class="grid_2 alpha omega"><h4>{% trans "Type" %}</h4></div>
+		<div class="grid_2 alpha omega"><h4>{% trans "Date" %}</h4></div>
+		<div class="grid_2 alpha omega"><h4>{% trans "Payment" %}</h4></div>
+		<div class="grid_2 alpha omega"><h4>{% trans "Ship" %}</h4></div>
+		<div class="grid_2 alpha omega"><h4>{% trans "Total" %}</h4></div>
+		<div class="clear"></div>
+		{% for user in users %}
+		{% endfor %}
+	</div>
+	<div class="grid_3 box">
+		<h3>{% trans "Revenue" %}</h3>
+		<p>{% trans "Today" %}:</p>
+		<p>{% trans "This week" %}:</p>
+		<p>{% trans "This Month" %}:</p>
+	</div>
+	<div class="clear"></div>
+{% endblock %}

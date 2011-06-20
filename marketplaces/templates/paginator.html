@@ -1,0 +1,24 @@
+{% load i18n %}
+{% if paged %}
+	{% if objects.has_previous %}
+	    <a href="?page={{ objects.previous_page_number }}{% if getvars %}&{{ getvars }}{% endif %}" class="prev">&lsaquo; {% trans "Previous" %} </a>
+	{% else %}
+	    <span class="disabled prev">&lsaquo; {% trans "Previous" %} </span>
+	{% endif %}
+	{% for page in pager.page_range %}
+	    {% if page %}
+	        {% ifequal page objects.number %}
+	            <span class="current page"> {{ page }} </span>
+	        {% else %}
+	            <a href="?page={{ page }}{% if getvars %}&{{ getvars }}{% endif %}" class="page"> {{ page }} </a>
+	        {% endifequal %}
+	    {% else %}
+	        ...
+	    {% endif %}
+	{% endfor %}
+	{% if objects.has_next %}
+	    <a href="?page={{ objects.next_page_number }}{% if getvars %}&{{ getvars }}{% endif %}" class="next"> {% trans "Next" %} &rsaquo;</a>
+	{% else %}
+	    <span class="disabled next"> {% trans "Next" %} &rsaquo;</span>
+	{% endif %}
+{% endif %}

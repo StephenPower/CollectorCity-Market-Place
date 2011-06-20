@@ -1,0 +1,28 @@
+{% extends 'base_login.html' %}
+{% load i18n %}
+
+{% block m_customers %}current_menu{% endblock %}
+
+{% block title_menu_left %}{% trans "Customers" %}{% endblock %}
+
+{% block arrow_left %}{% url home_admin %}{% endblock %}
+{% block arrow_right %}{% url inventory %}{% endblock %}
+
+{% block title_sub_menu %}{% endblock %}
+
+{% block sub_menu %}
+	<ul>
+		<li class="links_sub_menu {% block m_overview %}{% endblock %}"><a href="{% url customers_overview %}">{% trans "Overview" %}</a></li>
+		{#<li class="links_sub_menu {% block m_profiles %}{% endblock %}"><a href="{% url customers_profiles %}">{% trans "Profiles" %}</a></li> #} 
+		<li class="links_sub_menu {% block m_sold_items %}{% endblock %}"><a href="{% url customers_sold_items %}">{% trans "Sold Items" %}</a></li> 
+		{#<li class="links_sub_menu {% block m_payments %}{% endblock %}"><a href="{% url customers_payments %}">{% trans "Payments" %}</a></li> #}
+		{#<li class="links_sub_menu {% block m_shipments %}{% endblock %}"><a href="{% url customers_shipments %}">{% trans "Shipments" %}</a></li> #} 
+		<li class="links_sub_menu {% block m_wish_lists %}{% endblock %}"><a href="{% url customers_wish_lists %}">{% trans "Wish Lists" %}</a></li>
+		<li class="links_sub_menu {% block m_mailing_list %}{% endblock %}"><a href="{% url customers_mailing_list %}">{% trans "Mailing List" %}</a></li>
+	</ul>
+{% endblock %}
+
+
+{% block main %}
+{% endblock %}
+

@@ -1,0 +1,34 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div id="breadcrumbs" class="grid_18">
+	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_sell %}">{% trans "Privacy Policy" %}</a>
+</div>
+
+{% block filter_content %}
+<div class="grid_3 alpha omega block_filter">
+	<h4>{% trans "Dealer Resources" %}</h4>
+	<ul class="sell_dealer_resources">
+		<li><a class="sell_dealer_resources" href="/">{% trans "Create an account" %}</a></li>
+		<li><a class="sell_dealer_resources" href="/">{% trans "Naming my Store" %}</a></li>
+		<li><a class="sell_dealer_resources" href="/">{% trans "Do'es and Don't" %}</a></li>
+		<li><a class="sell_dealer_resources" href="/">{% trans "Fees/Pricing" %}</a></li>
+		<li><a class="sell_dealer_resources" href="/">{% trans "Selling FAQ" %}</a></li>
+		<li><a class="sell_dealer_resources" href="{% url market_privacy_policy %}">{% trans "Privacy Policy" %}</a></li>
+	</ul>
+</div>
+{% endblock %}
+
+<div class="grid_14 alpha omega block_main_content margin_h">
+	
+<h1>{% trans "PRIVACY POLICY" %}</h1>
+<br/>
+<p>
+{{ marketplace.privacy_policy|safe }}
+</p>
+
+</div>
+
+{% endblock %}
+

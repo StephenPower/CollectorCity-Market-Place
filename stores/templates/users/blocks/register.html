@@ -1,0 +1,51 @@
+{% comment %}
+	{% if form.first_name.errors %}<div class="error">{{ form.first_name.errors|join:", " }}</div>{% endif %}
+	<p>{{ form.first_name.label }}: {{ form.first_name }}</p>
+
+	{% if form.last_name.errors %}<div class="error">{{ form.last_name.errors|join:", " }}</div>{% endif %}
+	<p>{{ form.last_name.label }}: {{ form.last_name }}</p>
+
+
+	{% if form.street_address.errors %}<div class="error">{{ form.street_address.errors|join:", " }}</div>{% endif %}
+	<p>{{ form.street_address.label }}: {{ form.street_address }}</p>
+
+	{% if form.city.errors %}<div class="error">{{ form.city.errors|join:", " }}</div>{% endif %}
+	<p>{{ form.city.label }}: {{ form.city }}</p>
+
+	{% if form.state.errors %}<div class="error">{{ form.state.errors|join:", " }}</div>{% endif %}
+	<p>{{ form.state.label }}: {{ form.state }}</p>
+
+	{% if form.zip.errors %}<div class="error">{{ form.zip.errors|join:", " }}</div>{% endif %}
+	<p>{{ form.zip.label }}: {{ form.zip }}</p>
+
+	{% if form.country.errors %}<div class="error">{{ form.country.errors|join:", " }}</div>{% endif %}
+	<p>{{ form.country.label }}: {{ form.country }}</p>
+
+	{% if form.phone.errors %}<div class="error">{{ form.phone.errors|join:", " }}</div>{% endif %}
+	<p>{{ form.phone.label }}: {{ form.phone }}</p>
+	
+{% endcomment %}
+
+	{% if form.username.errors %}<div class="error">{{ form.username.errors|join:", " }}</div>{% endif %}
+	<p><label>Username</label>: {{ form.username }}</p>
+	
+	{% if form.password1.errors %}<div class="error">{{ form.password1.errors|join:", " }}</div>{% endif %}
+	<p><label>{{ form.password1.label }}</label>: {{ form.password1 }}</p>
+	
+	{% if form.password2.errors %}<div class="error">{{ form.password2.errors|join:", " }}</div>{% endif %}
+	<p><label>{{ form.password2.label }}</label>: {{ form.password2 }}</p>
+
+	{% if form.email.errors %}<div class="error">{{ form.email.errors|join:", " }}</div>{% endif %}
+	<p><label>{{ form.email.label }}</label>: {{ form.email }}</p>
+	
+{% comment %}	
+	{% if form.re_email.errors %}<div class="error">{{ form.re_email.errors|join:", " }}</div>{% endif %}
+	<p>{{ form.re_email.label }}: {{ form.re_email }}</p>
+	
+	{% if form.year.errors %}<div class="error">{{ form.year.errors|join:", " }}</div>{% endif %}
+	<p> 
+		{{ form.month.label }}: {{ form.month }}
+		{{ form.day.label }}: {{ form.day }}
+		{{ form.year.label }}: {{ form.year }}
+	</p>
+{% endcomment %}

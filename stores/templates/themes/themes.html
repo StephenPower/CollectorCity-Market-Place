@@ -1,0 +1,56 @@
+{% extends 'base_login.html' %}
+{% load i18n %}
+
+{% block title %}
+	<h2>{% trans "Template Editor" %}</h2>
+{% endblock %}
+
+{% block head %}
+		<link rel="stylesheet" href="{{ MEDIA_URL }}css/lightbox.css" type="text/css" media="screen" />
+
+		<script src="{{ MEDIA_URL }}js/lightbox/prototype.js" type="text/javascript"></script>
+		<script src="{{ MEDIA_URL }}js/lightbox/scriptaculous.js?load=effects,builder" type="text/javascript"></script>
+		<script src="{{ MEDIA_URL }}js/lightbox/lightbox.js" type="text/javascript"></script>
+{% endblock %}
+
+{% block main %}
+	<a href="{% url theme_export %}">{% trans "Export" %}</a>
+	<br/>
+	<a href="{% url theme_import %}">{% trans "Import" %}</a>
+	<br/>
+
+	<h3>{% trans "Templates" %}</h3>
+	<br/>
+		
+	{% for template in theme.template_set.all %}
+		<div class="template_icon">
+			<a href="{% url template_edit template.id %}"><img src="{{ MEDIA_URL }}img/template.png" width="60"/></a>
+			<a href="{% url template_edit template.id %}">{{ template.name }}</a>
+		</div>
+	{% endfor %}
+	<div class="clear"></div>
+	
+	<br/><br/>
+	<h3>{% trans "Assets" %}</h3>
+	<br/>
+	{% for asset in assets %}
+		<div class="grid_8 padding_v {% cycle 'detail1' 'detail2' %}">
+			{% if asset.is_editable %}
+				<div class="grid_5"><a href="{% url asset_edit asset.id %}">{{ asset.name }}</a></div>
+				<div class="grid_2"><a href="{% url asset_edit asset.id %}">{% trans "edit" %}</a></div>
+			{% else %}
+				<div class="grid_5"><a href="{{ asset.file.url }}" rel="lightbox">{{ asset.name }}</a></div>
+				<div class="grid_2">&nbsp;</div>
+			{% endif %}
+			<div class="grid_1 alpha omega"><a href="javascript:delete_object('{% url asset_delete asset.id %}', 'file')"><img src="{{ MEDIA_URL }}img/remove.png"></a></div>
+		</div>
+		<div class="clear"></div>
+	{% endfor %}
+	<br/><br/>
+	<a href="{% url asset_add %}">Add file</a>
+	
+{% endblock %}
+
+{% block menu %}
+	{% include 'themes/themes_menu.html' %}
+{% endblock %}

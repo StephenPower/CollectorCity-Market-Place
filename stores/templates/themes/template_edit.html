@@ -1,0 +1,48 @@
+{% extends 'base_login.html' %}
+{% load i18n %}
+
+{% block title %}
+	<h2>{% trans "Edit Template" %}</h2>
+{% endblock %}
+
+{% block main %}
+
+	<script type="text/javascript">
+		function load_text(url){
+			$.post(url, function(data){
+				$("#id_text").val(data);										
+		    });			
+		}
+	</script>
+
+	<h3>{{ template.name|title }}</h3>
+	<br/>
+	
+	<form name="form" method="post" action=".">
+		{% if form.text.errors %}<div class="error">{{ form.text.errors|join:", " }}</div>{% endif %}
+		<div class="editor">
+			{{ form.text }}
+		</div>
+		<br/>
+		
+		<br/><br/>	
+		<button type="submit" class="large awesome">{% trans "Save" %}</button>
+		<a href="{% url themes %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+		
+	</form>
+	
+	<h3>{% trans "Old versions" %}</h3>
+	{% for v in version_list %}
+		<p><a href="javascript:load_text('{% url template_get_version v.pk %}')">{{ v.revision.date_created|date:"d F Y H:i" }}
+		{% if forloop.first %}
+			({% trans "current"%})
+		{% endif %}
+		</a></p>
+	{% endfor %}
+	
+	
+{% endblock %}
+
+{% block menu %}
+	{% include 'themes/themes_menu.html' %}
+{% endblock %}

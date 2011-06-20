@@ -1,0 +1,157 @@
+{% extends "default/base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+<div class="grid_14 prefix_2">
+		<form name="form" method="post" action="." class="big_form">
+			<fieldset class="register">
+			{% if form.name_store.errors %}<div class="error">{{ form.name_store.errors|join:", " }}</div>{% endif %}
+			<h4>{{ form.name_store.label }}</h4>
+			{{ form.name_store }}
+			<br/><br/>
+			
+			{% if form.shop_name.errors %}<div class="error">{{ form.shop_name.errors|join:", " }}</div>{% endif %}
+			<h4>{{ form.shop_name.label }}</h4>
+			<label>http://{{ form.shop_name }}.{{ marketplace.base_domain }}</label>
+			<br/><br/><br/><br/>
+			
+			<h4>{% trans "Create your administration account" %}</h4>
+			<br/>
+
+			{% if form.first_name.errors %}<div class="error">{{ form.first_name.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form.first_name.label }}</h5>
+			{{ form.first_name }}
+
+			{% if form.last_name.errors %}<div class="error">{{ form.last_name.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form.last_name.label }}</h5>
+			{{ form.last_name }}
+
+			{% if form.username.errors %}<div class="error">{{ form.username.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form.username.label }}</h5>
+			{{ form.username }}
+			
+			{% if form.email.errors %}<div class="error">{{ form.email.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form.email.label }}</h5>
+			{{ form.email }}
+
+			{% if form.password1.errors %}<div class="error">{{ form.password1.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form.password1.label }}</h5>
+			{{ form.password1 }}
+
+			{% if form.password2.errors %}<div class="error">{{ form.password2.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form.password2.label }}</h5>
+			{{ form.password2 }}
+			
+			<br/><br/>
+			
+			<h4>{% trans "Choose your plan" %}</h4>
+			<br/>
+			{% if form.plan_id.errors %}<div class="error">{{ form.plan_id.errors|join:", " }}</div>{% endif %}
+			{{ form.plan_id }}
+
+			<br/><br/>
+			
+			<h4>{% trans "Your Billing Address" %}</h4>
+			<br/>
+			{% if form.street.errors %}<div class="error">{{ form.street.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form.street.label }}</h5>
+			{{ form.street }}
+			
+			{% if form.city.errors %}<div class="error">{{ form.city.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form.city.label }}</h5>
+			{{ form.city }}
+			
+			{% if form.zip.errors %}<div class="error">{{ form.zip.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form.zip.label }}</h5>
+			{{ form.zip }}
+			
+			{% if form.state.errors %}<div class="error">{{ form.state.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form.state.label }}</h5>
+			{{ form.state }}
+			
+			{% if form.country.errors %}<div class="error">{{ form.country.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form.country.label }}</h5>
+			{{ form.country }}
+			
+			<br/><br/>
+			
+			<h4>{% trans "Your billing information" %}</h4>
+			<br/>
+			{% if form.cc_number.errors %}<div class="error">{{ form.cc_number.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form.cc_number.label }}</h5>
+			{{ form.cc_number }}
+			
+			<h5>{% trans "Expiration Date" %}</h5>
+			{% if form.cc_expiration_month.errors %}<div class="error">{{ form.cc_expiration_month.errors|join:", " }}</div>{% endif %}
+			{{ form.cc_expiration_month }}
+			{{ form.cc_expiration_year }}
+			
+			<br/><br/>
+
+			{% if form.card_security_number.errors %}<div class="error">{{ form.card_security_number.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form.card_security_number.label }}</h5>
+			{{ form.card_security_number }}
+			
+			<a href="https://www.braintreegateway.com/merchants/{{ merchant_id }}/verified" target="_blank">
+				<img src="https://braintree-badges.s3.amazonaws.com/01.png" border="0"/>
+			</a>
+			
+			<br/><br/><br/>
+			<h4>{% trans "Your Address" %}</h4>
+			<label><input type="checkbox" id="id_same_as_billing" {% if address_as_billing %}checked="checked"{% endif %} name="address_same_as_billing" value="1"/> Same as billing address</label>
+			<div id="shop_address_form" {% if address_as_billing %}style="display: none;"{% endif %}>
+			<br/><br/>
+			{% if form_address.street.errors %}<div class="error">{{ form_address.street.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form_address.street.label }}</h5>
+			{{ form_address.street }}
+			
+			{% if form_address.city.errors %}<div class="error">{{ form_address.city.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form_address.city.label }}</h5>
+			{{ form_address.city }}
+			
+			{% if form_address.zip.errors %}<div class="error">{{ form_address.zip.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form_address.zip.label }}</h5>
+			{{ form_address.zip }}
+			
+			{% if form_address.state.errors %}<div class="error">{{ form_address.state.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form_address.state.label }}</h5>
+			{{ form_address.state }}
+			
+			{% if form_address.country.errors %}<div class="error">{{ form_address.country.errors|join:", " }}</div>{% endif %}
+			<h5>{{ form_address.country.label }}</h5>
+			{{ form_address.country }}
+			</div>
+			
+			<script>
+			$(function() {
+				$('#id_same_as_billing').click(function() { 
+					$("#shop_address_form").toggle(!this.checked); 
+				});
+			})
+			</script>
+			
+			<br/><br/>
+			
+			<h4>{% trans "Terms and conditions" %}</h4>
+
+			{% if form.terms.errors %}<div class="error">{{ form.terms.errors|join:", " }}</div>{% endif %}
+			<label>{{ form.terms }} {% trans "I have read and agree to the" %} <a href="" class="blue">{% trans "Terms & Conditions" %}</a></label>
+			<br/><br/><br/><br/>
+			<div class="buttonHolder">
+				<br/>
+				<button type="submit" class="button_primary">{% trans "Create Store" %}</button>
+		       	<input type="hidden" name="next" value="{{ next|escape }}" />
+		    </div>
+			</fieldset>
+		</form>
+		<script type="text/javascript"> 
+	$("#id_name_store").keyup(function(e){
+	    var name = $(this).val();
+	       $("#id_shop_name").val(name.toLowerCase().replace(/[^a-z0-9-]/ig, ''));
+	       $("#id_username").val(name.toLowerCase().replace(/[^a-z0-9-]/ig, ''));
+	}); 
+	</script> 
+</div>
+<div class="clear"></div>
+{% endblock %}

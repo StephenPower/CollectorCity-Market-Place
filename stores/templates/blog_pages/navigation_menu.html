@@ -1,0 +1,14 @@
+{% load i18n %}
+
+	<div class="grid_4 margin_h padding_h margin_v padding_v">
+		<div class="border-bottom padding_v margin_v">
+			<h3>{% trans "Menu" %}</h3>
+		</div>
+		<p><a href="{% url navigation %}">{% trans "List all links" %}</a></p>
+
+		{% for menu in shop.menu_set.all %}
+			<p><a href="{% url link_add menu.id %}">{% trans "Add link in" %} {{ menu.name }}</a></p>
+		{% endfor %}
+	</div>
+	<div class="clear"></div>
+

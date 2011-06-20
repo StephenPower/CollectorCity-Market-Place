@@ -1,0 +1,108 @@
+{% extends 'store_admin/customers/base_customers.html' %}
+{% load i18n sell_tags store_admin_tags %}
+
+{% block m_sold_items %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}{% trans "Sold Items" %}{% endblock %}
+
+{% block toolbar %}
+	<a href="./?{{ filter_params|update_filters:'show=open' }}"><img src="{{ MEDIA_URL}}img/lock-open.gif" class="icon"/>{% trans "Show open" %}</a>
+	<a href="./?{{ filter_params|update_filters:'show=close' }}"><img src="{{ MEDIA_URL}}img/lock.gif" class="icon"/>{% trans "Show closed" %}</a>
+	{% comment %}<a href="./?{{ filter_params|update_filters:'show=all' }}">{% trans "Show all" %}</a>{% endcomment %}
+
+	<form method="get" action="." class="form_search">
+		<input type="text" name="q_user" value="{{ q_user }}"/>
+		<input type="hidden" name="filter_by" value="user"/>
+	</form>
+{% endblock %}
+
+
+{% block menu_options %}
+	<ul id=tree>
+		<li>{% trans "Filter By Date" %}
+			<ul>
+				<li><a href="./?filter_by=for_date_today">{% trans "Today" %}</a></li>
+				<li><a href="./?filter_by=for_date_week">{% trans "This Week" %}</a></li>
+				<li><a href="./?filter_by=for_date_month">{% trans "This Month" %}</a></li>
+				<li><a href="./?filter_by=for_date_year">{% trans "This Calendar Year" %}</a></li>
+				<li><a href="./?filter_by=for_date_all">{% trans "All Time" %}</a></li>
+			</ul>
+		</li>
+		<li>{% trans "Payment Status" %}
+			<ul>
+				<li><a href="./?filter_by=payment_pending">{% trans "Pending" %}</a></li>
+				<li><a href="./?filter_by=payment_paid">{% trans "Paid" %}</a></li>
+				<li><a href="./?filter_by=payment_failed">{% trans "Failed" %}</a></li>
+			</ul>
+		</li>
+		<li>{% trans "Shipping Status" %}
+			<ul>
+				<li><a href="./?filter_by=shipping_pending">{% trans "Pending" %}</a></li>
+				<li><a href="./?filter_by=shipping_dispatched">{% trans "Dispatched" %}</a></li>
+				<li><a href="./?filter_by=shipping_fullfilled">{% trans "Fulfilled" %}</a></li>
+			</ul>
+		</li>
+	</ul>
+{% endblock %}
+
+{% block super_main %}
+	<div class="bar_title">
+		<div class="grid_2 alpha omega bar_column">
+			<a href="./?{{ filter_params|update_filters:'order_by=oldest' }}"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+			<a href="./?{{ filter_params|update_filters:'order_by=newest' }}"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+		</div>	
+		<div class="grid_3 alpha omega bar_column">
+			<h4>{% trans "User" %}
+				<a href="./?{{ filter_params|update_filters:'order_by=username' }}"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+				<a href="./?{{ filter_params|update_filters:'order_by=-username' }}"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+			</h4>
+		</div>
+		<div class="grid_3 alpha omega bar_column"><h4>{% trans "Time" %}</h4></div>
+		<div class="grid_2 alpha omega bar_column"><h4>{% trans "Payment" %}</h4></div>
+		<div class="grid_2 alpha omega bar_column"><h4>{% trans "Method" %}</h4></div>
+		<div class="grid_2 alpha omega bar_column"><h4>{% trans "Shipping" %}</h4></div>
+		<div class="grid_2 alpha omega bar_column">
+			<h4>{% trans "Total" %}
+				<a href="./?{{ filter_params|update_filters:'order_by=total' }}"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+				<a href="./?{{ filter_params|update_filters:'order_by=-total' }}"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+			</h4>
+		</div>
+		
+		<div class="clear"></div>
+	</div>
+
+	{% for sell in sells.object_list %}
+	<div class="{% cycle 'row_1' 'row_2' %}">
+	
+		<div class="grid_2 alpha omega column">
+			<a href="{% url sell_details sell.id %}">#{{ sell.id }}</a>
+			{% if sell.closed %}
+				<img src="{{ MEDIA_URL }}img/closed.gif" title="Closed">
+			{% endif %}
+			{% if sell.cancel %}
+				<img src="{{ MEDIA_URL }}img/canceled.png" title="Canceled">
+			{% endif %}
+		</div>
+		
+		<div class="grid_3 alpha omega column"><span>{{ sell.bidder.username }}</span></div>
+		<div class="grid_3 alpha omega column"><span>{{ sell.date_time|date:"d F Y H:i" }}</span></div>
+
+		<div class="grid_2 alpha omega column"><span>{{ sell.payment.state_actual.get_state_display }}</span></div>
+		<div class="grid_2 alpha omega column"><span>{{ sell.payment_method }}</span></div>
+		<div class="grid_2 alpha omega column"><span>{{ sell.shipping.state_actual.get_state_display }}</span></div>
+
+		<div class="grid_2 alpha omega column"><span>{{ sell.total|money_format:shop }}</span></div>
+		<div class="clear"></div>
+	</div>
+	
+	{% endfor %}
+	
+	<div class="pagination">
+		{% with sells as objects %}
+			{% include 'paginator.html'%}
+		{% endwith %}
+	</div>
+
+	<div class="clear"></div>
+	
+{% endblock %}

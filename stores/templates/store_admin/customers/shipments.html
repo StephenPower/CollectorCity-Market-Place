@@ -1,0 +1,31 @@
+{% extends 'store_admin/customers/base_customers.html' %}
+{% load i18n %}
+
+{% block m_shipments %}current_sub_menu{% endblock %}
+
+{% block menu_options %}
+{% endblock %}
+	
+
+{% block main %}
+	<div class="grid_13 box">
+		<h3>{% trans "Sold Items" %}</h3>
+		<div class="grid_2 alpha omega"><h4>{% trans "User" %}</h4></div>
+		<div class="grid_1 alpha omega"><h4>{% trans "Item #" %}</h4></div>
+		<div class="grid_2 alpha omega"><h4>{% trans "Title" %}</h4></div>
+		<div class="grid_2 alpha omega"><h4>{% trans "Payment" %}</h4></div>
+		<div class="grid_2 alpha omega"><h4>{% trans "Price" %}</h4></div>
+		<div class="grid_2 alpha omega"><h4>{% trans "Action" %}</h4></div>
+		<div class="clear"></div>
+		{% for user in users %}
+		{% endfor %}
+	</div>
+	<div class="grid_3 box">
+		<h3>{% trans "Revenue" %}</h3>
+		<p>{% trans "Today" %}:</p>
+		<p>{% trans "This week" %}:</p>
+		<p>{% trans "This Month" %}:</p>
+		<br/>
+	</div>
+	<div class="clear"></div>
+{% endblock %}

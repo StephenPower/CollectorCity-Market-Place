@@ -1,0 +1,36 @@
+{% extends 'store_admin/web_store/blog.html'%}
+{% load i18n %}
+
+{% block title_sub_menu %}{{ post.title|title }}{% endblock %}
+
+{% block toolbar %}
+	<a href="{% url post_add %}"><img src="{{ MEDIA_URL }}img/add.png" class="icon">{% trans "Write post" %}</a>
+	<a href="javascript:delete_object('{% url post_delete post.id %}', 'post')"><img src="{{ MEDIA_URL }}img/remove.png" class="icon">{% trans "Delete this post" %}</a>
+{% endblock %}
+
+
+{% block main_blog %}
+
+	<form name="form" method="post" action=".">
+		{% if form.title.errors %}<div class="error">{{ form.title.errors|join:", " }}</div>{% endif %}
+		<h4>{% trans "Title" %}:</h4>
+		{{ form.title }}
+		<br/>
+		
+		
+		{% if form.body.errors %}<div class="error">{{ form.body.errors|join:", " }}</div>{% endif %}
+		<h4>{% trans "Post" %}:</h4>
+		{{ form.body }}	
+		<br/>
+		
+		{% if form.meta_content.errors %}<div class="error">{{ form.meta_content.errors|join:", " }}</div>{% endif %}
+		<h4>{% trans "Meta Content" %}:</h4>
+		{{ form.meta_content }}	
+		<br/>
+	
+		<br/>	
+		<button type="submit" class="large awesome">{% trans "Save" %}</button>
+		<a href="{% url blog_pages %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+	</form>
+	
+{% endblock %}

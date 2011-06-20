@@ -1,0 +1,16 @@
+{% load i18n %}
+
+	<div class="grid_4 margin_h padding_h margin_v padding_v">
+		<div class="border-bottom padding_v margin_v">
+			<h3>{% trans "Preferences" %}</h3>
+		</div>
+		<p><a href="{% url preferences_general %}">{% trans "General" %}</a></p>
+		<p><a href="{% url preferences_taxes %}">{% trans "Taxes" %}</a></p>
+		<p><a href="{% url preferences_payment_paypal %}">{% trans "Check Out & Payment" %}</a></p>
+		<p><a href="{% url preferences_auctions %}">{% trans "Auctions" %}</a></p>
+		<p><a href="{% url preferences_shipping %}">{% trans "Shipping" %}</a></p>
+		<p><a href="{% url preferences_email %}">{% trans "Email Notification" %}</a></p>
+		<p><a href="{% url preferences_dns %}">{% trans "DNS & Domains" %}</a></p>
+		<p><a href="{% url preferences_policies %}">{% trans "Policies" %}</a></p>
+	</div>
+	<div class="clear"></div>

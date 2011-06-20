@@ -1,0 +1,47 @@
+{% extends 'preferences/preferences_payment.html' %}
+{% load uni_form_tags %}
+{% load i18n %}
+
+{% block main %}
+
+	<div class="grid_15" style="background: white">
+		<div class="grid_5">
+			<img src="{{ MEDIA_URL }}img/paypal-logo.gif"/>
+		</div>
+		<div class="grid_9 alpha omega">
+			<h4>{% trans "PayPal Settings" %}</h4>
+			<div>
+				To enable PayPal you must authorize PayPal to allow Collector City LLC to perform the activities below.<br/>
+
+				<ol>
+					<li>Click on the Setup Paypal button at the bottom of these directions. You will be redirected to a paypal login page.</li> 
+					<li>You must sign in with your paypal account or create one.</li>
+					<li>PayPal Will ask you to Complete your Service Setup.</li>
+					<li>You will allow Collector City LLC permission to:
+						<ul><br></br>
+							<li>Retrieve your name.</li>
+							<li>Retrieve your email address</li>
+							<li>Issue refunds from your PayPal account</li>
+							<li>Start Express Checkout payments.</li>
+							<li>Retrieve Express Checkout prepayment details.</li>
+							<li>Complete Express Checkout payments.</li>
+							<li>Authorize card payments on behalf of your customers.</li>
+							<li>Capture transactions that your buyers authorized.</li>
+							<li>Extend authorization of card payments on behalf of your customers.</li>
+						</ul><br></br>
+					</li>
+					<li>You must hit "Agree and Continue"</li>
+					<li>You should be redirected back to the Admin Console.</li>
+				</ol>
+			</div>
+			{% if paypal_settings %}
+			<a class="awesome small" onclick="javascript:return confirm('{% trans "Are you sure you want to disable PayPal payments gateway?" %}')" href="{% url preferences_payment_paypal_disable %}">Disable PayPal</a>
+			{% else %}
+			<a class="awesome small" href="{% url preferences_payment_paypal_setpermissions %}">Setup PayPal</a>
+			{% endif %}
+			<br></br>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+{% endblock %}

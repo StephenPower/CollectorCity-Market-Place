@@ -1,0 +1,127 @@
+{% extends 'store_admin/inventory/base_lots.html' %}
+{% load i18n %}
+{% load sell_tags %}
+{% load store_admin_tags %}
+
+{% block toolbar %}
+	{{ block.super }}
+	<form method="get" action="." class="form_search">
+		<input type="text" name="q_title" value="{{ q_title }}"/>
+		<input type="hidden" name="filter_by" value="title"/>
+	</form>
+{% endblock %}
+
+{% block menu_options %}
+	<script type="text/javascript">
+		$(function() {
+			$("#tree_cat").treeview({
+				collapsed: true,
+				animated: "fast",
+				unique: true,
+				persist: "location",
+			});
+		})
+ 	</script>
+	 	
+	<ul id="tree_cat">
+		<li class="open">{% trans "Category" %}
+			<ul>
+				{% for category in shop.marketplace.marketcategory_set.all %}
+					<li><a href="{% url inventory_lots %}?filter_by=category&id_category={{ category.id }}">{{ category.name }}</a>
+					<ul id="sub_tree">
+						{% for subcategory in category.subcategories.all %}
+							<li><a href="{% url inventory_lots %}?filter_by=subcategory&id_subcategory={{ subcategory.id }}">{{ subcategory.name }}</a></li>
+						{% endfor %}
+					</ul>
+					</li>
+				{% endfor %}
+			</ul>
+		</li>
+
+		<li>{% trans "Auctions" %}
+			<ul>
+				{% for session in shop.auctionsession_set.all %}
+					<li><a href="{% url inventory_lots %}?filter_by=session&id_session={{ session.id }}">{{ session.title }}</a></li>
+				{% endfor %}
+			</ul>
+		</li>
+		
+		<li>{% trans "State" %}
+			<ul>
+			    <li><a href="{% url inventory_lots %}?filter_by=active">Active Sale</a></li>
+			    <li><a href="{% url inventory_lots %}?filter_by=sold">Sold</a></li>
+			    <li><a href="{% url inventory_lots %}?filter_by=not_sell">Did't Sell</a></li>
+			</ul>
+		</li>
+
+{% endblock %}
+
+{% block super_main %}
+
+	<div class="bar_title">
+		<div class="grid_1 alpha omega bar_column">
+			<a href="./?{{ filter_params|update_filters:'order_by=oldest' }}"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+			<a href="./?{{ filter_params|update_filters:'order_by=newest' }}"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+		</div>
+		<div class="grid_2 alpha omega bar_column"><b>{% trans "Title" %}</b></div>
+		<div class="grid_3 alpha omega bar_column"><b>{% trans "Category" %}</b></div>
+		<div class="grid_2 alpha omega bar_column"><b>{% trans "State" %}</b>
+			<a href="./?{{ filter_params|update_filters:'order_by=state' }}"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+			<a href="./?{{ filter_params|update_filters:'order_by=-state' }}"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+		</div>
+
+		<div class="grid_1 alpha omega bar_column"><b>{% trans "Bids" %}</b></div>
+		<div class="grid_2 alpha omega bar_column"><b>{% trans "Auction" %}</b></div>
+		
+		<div class="grid_2 alpha omega bar_column"><b>{% trans "Starting" %}</b>
+			<a href="./?{{ filter_params|update_filters:'order_by=price' }}"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+			<a href="./?{{ filter_params|update_filters:'order_by=-price' }}"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+		</div>
+		
+		<div class="grid_2 alpha omega bar_column"><b>{% trans "Last Bid" %}</b>
+			<a href="./?{{ filter_params|update_filters:'order_by=actual_price' }}"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+			<a href="./?{{ filter_params|update_filters:'order_by=-actual_price' }}"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+		</div>
+		<div class="clear"></div>
+	</div>
+	{% for lot in products.object_list %}
+		<div class="{% cycle 'row_1' 'row_2' %}" title="{{ lot.description|striptags }}">
+			<div class="grid_1 alpha omega column"><a rel="{{ lot.image.image.url_100x100 }}" href="{% url lot_details lot.id %}" ># {{ lot.id }}</a></div>
+			<div class="grid_2 alpha omega column"><span>{{ lot.title }}</span></div>
+			<div class="grid_3 alpha omega column"><span>{{ lot.category.name }} | {{ lot.subcategory.name }}</span></div>
+			<div class="grid_2 alpha omega column"><span>{{ lot.get_state_display }}</span></div>
+
+			<div class="grid_1 alpha omega column"><span>{{ lot.bids.count }}</span></div>
+			<div class="grid_2 alpha omega column">
+				<span><a href="{% url auction_details lot.session.id %}">{{ lot.session.title }}</a></span>
+				<br/><span>left: {{ lot.time_left }}</span>
+			</div>
+			<div class="grid_2 alpha omega column"><span>{{ lot.starting_bid|money_format:shop }}</span></div>
+			<div class="grid_2 alpha omega column"><span>
+				{% ifnotequal lot.bids.count 0 %}{{ lot.bid_actual.bid_amount|money_format:shop }}{% else %}-{% endifnotequal%}
+			</span></div>
+			<div class="clear"></div>
+		</div>
+	{% endfor %}
+	
+	{% block main %}
+		<div class="clear"></div>
+		{% if total > 10 %}
+		<div>
+			<br></br>
+			{% trans "Show Results By" %}
+			<a href="./?{{ filter_params|update_filters:'items_per_page=10' }}">10</a> | 
+			<a href="./?{{ filter_params|update_filters:'items_per_page=20' }}">20</a> | 
+			<a href="./?{{ filter_params|update_filters:'items_per_page=50' }}">50</a> | 
+			<a href="./?{{ filter_params|update_filters:'items_per_page=100' }}">100</a>
+		</div>
+		{% endif %}
+		<div class="pagination">
+		{% with products as objects %}
+			{% include 'paginator.html'%}
+		{% endwith %}
+		</div>
+		<div class="clear"></div>
+	{% endblock %}
+	
+{% endblock %}

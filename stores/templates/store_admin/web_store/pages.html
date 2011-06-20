@@ -1,0 +1,38 @@
+{% extends 'store_admin/web_store/base_web_store.html' %}
+{% load i18n %}
+
+{% block m_pages %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}Add page{% endblock %}
+
+{% block menu_options %}
+	<ul id="tree">
+		<li>{% trans "Pages" %}
+		<ul>
+			<li><a href="{% url page_edit_home %}">{% trans "Home" %}</a></li>
+			<li><a href="{% url page_edit_about %}">{% trans "About Us" %}</a></li>
+			{% for page in static_pages %}
+			<li><a href="{% url page_edit_static page.id %}">{{ page.name }}</a></li>
+			{% endfor %}
+			{% for page in dynamic_pages %}
+			<li><a href="{% url page_edit_dynamic page.id %}">{{ page.page.title }}</a></li>
+			{% endfor %}
+		</ul>
+		</li>
+	</ul>
+{% endblock %}
+
+{% block toolbar %}
+	<a href="{% url web_store_pages %}"><img src="{{ MEDIA_URL}}img/add.png" class="icon"/>{% trans "Add Page" %}</a>
+{% endblock %}
+
+{% block main %}
+
+	<div class="grid_8 box">
+	{% block main_pages %}
+
+	{% endblock %}
+	</div>
+
+	<div class="clear"></div>
+{% endblock %}

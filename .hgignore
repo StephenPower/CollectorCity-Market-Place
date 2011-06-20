@@ -1,0 +1,25 @@
+syntax: glob
+
+media/images
+dev_poc.db
+*.pyc
+\.settings
+auctions-env
+local_settings.py
+s3.cfg
+stores/media/asset/
+
+syntax: regexp
+^dev_poc\.db\.org$
+syntax: regexp
+^local_settings\.py$
+syntax: regexp
+^models\.dot$
+syntax: regexp
+^models\.svg$
+syntax: regexp
+^modelviz\.py$
+syntax: regexp
+^\.pydevproject$
+syntax: regexp
+^\.project$

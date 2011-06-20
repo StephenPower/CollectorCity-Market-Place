@@ -1,0 +1,100 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+
+{% block header %}
+
+{% endblock %}
+
+{% block content %}
+
+<script type="text/javascript">
+	$(document).ready(function() {
+ 
+		$("#dialog_form").dialog({
+			autoOpen: false,
+			height: 520,
+			width: 460,
+			modal: true,
+			position: 'center',
+			resizable: false,
+			draggable: false,
+			overlay: {opacity: 0.9, background: "black"},
+		});	
+				
+		$('#create_item').click(function() {
+					$('#dialog_form').dialog('open');
+		});
+				
+		$("#id_category").change(function () {
+			categories= new Array()
+		    $("#id_category option:selected").each(function () {
+		    	categories.push($(this).val())
+		    });
+	    	$("#id_subcategory").empty();
+		    if (categories.length > 0){
+			      $.post("{% url ajax_get_subcategories %}", { 'categories': categories }, function(data){
+				      $("#id_subcategory").append(data);
+			      });
+      		}
+	    })
+	    .trigger('change');
+	});
+</script>
+
+<div id="breadcrumbs" class="grid_18">
+	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_buy %}">{% trans "Buy" %}</a> &raquo; {% trans "Wish List" %}
+</div>
+
+<div class="grid_18 block_main_content maring_h">
+<h3>{% trans "Wish List" %}</h3>
+<p>Find the Coin you've always looked for with our marketplace of dealers. Post Your Wish List For all the dealers to see.</p>
+
+{% if wish_list %}
+<div class="grid_17">
+	<div class="grid_5"><b>{% trans "Description" %}</b></div>
+	<div class="grid_2"><b>{% trans "Posted By" %}</b></div>
+	<div class="grid_2"><b>{% trans "Categoty" %}</b></div>
+	<div class="grid_2"><b>{% trans "Subcategory" %}</b></div>
+	<div class="grid_2"><b>{% trans "Ideal Price" %}</b></div>
+	<div class="grid_3"><b>{% trans "Posted On" %}</b></div>
+</div>
+{% for item in wish_list %}
+<div class="grid_17 {% cycle 'row1' 'row2' %} ">
+	<div class="grid_5">{{ item.description.capitalize|safe }}</div>
+	<div class="grid_2">
+	{% if item.public %}
+	{{ item.posted_by }}
+	{% else %}
+	*******
+	{% endif %}
+	</div>
+	<div class="grid_2">{{ item.category.name }}</div>
+	<div class="grid_2">{% if item.subcategory %}{{ item.subcategory.name }}{% else %} --- {% endif %}</div>
+	<div class="grid_2">$ {{ item.ideal_price }}</div>
+	<div class="grid_3">{{ item.posted_on|date:"d F Y H:i" }}</div>
+</div>
+<div class="clear"></div>
+{% endfor %}
+{% else %}
+<div class="notice">{% trans "There is no wish list items posted yet..." %}</div>
+{% endif %}
+
+<div class="clear"></div>
+
+<br/><br/><br/>
+{% if user.is_authenticated %}
+<div id="create_item" class="awesome small blue">{% trans "Post your item" %}</div>
+{% else %}
+<b>{% trans "You must be logged in to post in the wish list. " %} <a href="{% url market_buy_login %}?next={% url buy_wish_list %}">{% trans "Login Here" %}</a></>
+{% endif %}
+
+<div id="dialog_form">
+	<form action="{% url post_wish_list_item %}" method="POST" name="form">
+		{{ form.as_p }}
+		<button type="submit" class="small awesome">{% trans 'Save Item' %}</button> 
+	</form>
+</div>
+</div>
+<div class="clear"></div>
+
+{% endblock %}

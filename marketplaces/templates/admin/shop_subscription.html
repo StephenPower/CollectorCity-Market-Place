@@ -1,0 +1,67 @@
+{% extends 'admin/reports_base.html' %}
+{% load i18n adminmedia %}
+
+{% block breadcrumbs %}
+	<div class="breadcrumbs">
+		<a href="/admin/">{% trans "Home" %}</a> &gt; 
+		<a href="{% url admin_reports %}">Reports</a> &gt; 
+		<a href="{% url admin_shop_subscriptions %}">Subscriptions</a> &gt; 
+		{{ shop.default_dns }}
+	</div>
+{% endblock %}
+
+{% block report %}
+	<div class="grid_16 margin_v padding_v">
+	{% if subscription %}
+		<h1>{% trans "Subscription" %}</h1>
+		<div class="grid_4 alpha omega"><b>Created on</b>: </div><div> {{ subscription.date_time }}</div>
+		<div class="grid_4 alpha omega"><b>Subscription ID</b>: </div><div> {{ subscription.subscription_id }}</div>
+		<div class="grid_4 alpha omega"><b>Status</b>: </div><div> {{ subscription.get_status }}</div>
+		<div class="grid_4 alpha omega"><b>Braintree Status(*)</b>: </div><div> {{ subscription.extra_data.5 }}</div>
+		<div class="grid_4 alpha omega"><b>Plan ID</b>: </div><div> {{ subscription.plan.plan_id }}</div>
+		<div class="grid_4 alpha omega"><b>Plan Name</b>: </div><div> {{ subscription.plan.name }}</div>
+		<div class="grid_4 alpha omega"><b>Plan Description</b>: </div><div> {{ subscription.plan.description }}</div>
+		<div class="grid_4 alpha omega"><b>Billing Period Start Date(*)</b>: </div><div> {{ subscription.extra_data.0 }}</div>
+		<div class="grid_4 alpha omega"><b>Billing Period End Date(*)</b>: </div><div> {{ subscription.extra_data.1 }}</div>
+		<div class="grid_4 alpha omega"><b>Next Billing Date(*)</b>: </div><div> {{ subscription.extra_data.2 }}</div>
+		<div class="grid_4 alpha omega"><b>Price(*)</b>: </div><div> US$ {{ subscription.extra_data.3 }}</div>
+		<div class="grid_4 alpha omega"><b>Balance(*)</b>: </div><div> {{ subscription.extra_data.6 }}</div>
+		<br></br>
+		<span>(*) This data is taken from braintree api</span>
+		<br></br>
+		<h1>{% trans "Related Transactions" %}</h1>
+		
+		<div class="table small">
+			<div class="grid_20">
+				<div class="th">{% trans "Created At" %}</div>
+				<div class="th">{% trans "TransactionID" %}</div>
+				<div class="th">{% trans "Status" %}</div>
+				<div class="th">{% trans "Amount" %}</div>
+			</div>
+			<div class="clear"></div>
+			<div class="grid_20">
+			{% for transaction in subscription.extra_data.4 %}
+				<div class="td">{{ transaction.created_at|date:"Y-m-d P" }}</div>
+				<div class="td">{{ transaction.id }}</div>
+				<div class="td">{{ transaction.status }}</div>
+				<div class="td">u$s {{ transaction.amount }}</div>
+				<div class="clear"></div>
+			{% endfor %}
+			</div>
+		</div>
+		<div class="clear"></div>
+		<br></br>
+		<br></br>
+		{% comment %}
+		{% if subscription.is_active %}
+			<a href="{% url shop_cancel_subscription shop.id %}">{% trans "Cancel Subscription" %}</a>
+		{% endif %}
+		{% endcomment %}
+	{% else %}
+		<div><h3>{% trans "No subscription found." %}</h3></div>
+	{% endif %}
+	</div>
+
+	
+	
+{% endblock %}

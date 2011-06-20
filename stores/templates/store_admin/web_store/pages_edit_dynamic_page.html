@@ -1,0 +1,19 @@
+{% extends 'store_admin/web_store/pages.html' %}
+{% load i18n %}
+
+{% block title_sub_menu %}{{ page.title|title }} page{% endblock %}
+
+{% block main_pages %}
+	
+	<form name="form" method="post" action="." enctype="multipart/form-data">
+	
+		<h4>{% trans "Put the Meta-Content here (for SEO purposes)" %}:</h4>
+		{% if form.meta_content.errors %}<div class="error">{{ form.meta_content.errors|join:", " }}</div>{% endif %}
+		{{ form.meta_content }}	
+		<br/>
+		
+		<button type="submit" class="large awesome">{% trans "Save" %}</button>
+		<a href="{% url blog_pages %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+	</form>
+
+{% endblock %}

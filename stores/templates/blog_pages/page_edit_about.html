@@ -1,0 +1,38 @@
+{% extends 'base_login.html' %}
+{% load i18n %}
+
+{% block title %}
+	<h2>{% trans "Edit About" %}</h2>
+{% endblock %}
+
+{% block main %}
+	
+	<form name="form" method="post" action=".">
+		<h4>{% trans "Title" %}:</h4>
+		{% if form.title.errors %}<div class="error">{{ form.title.errors|join:", " }}</div>{% endif %}
+		{{ form.title }}
+		<br/>
+		
+		{% if form.body.errors %}<div class="error">{{ form.body.errors|join:", " }}</div>{% endif %}
+		{{ form.body }}	
+		<br/>
+		<br/>
+
+
+	
+		<h4>{% trans "Location" %}:</h4>
+		{% if form.location.errors %}<div class="error">{{ form.location.errors|join:", " }}</div>{% endif %}
+		{{ form.location }}
+		<br/>
+		<br/>
+		<br/>
+
+		<button type="submit" class="large awesome">{% trans "Save" %}</button>
+		<a href="{% url blog_pages %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+	</form>
+
+{% endblock %}
+
+{% block menu %}
+	{% include 'blog_pages/blog_menu.html' %}
+{% endblock %}

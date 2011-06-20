@@ -1,0 +1,56 @@
+{% extends 'store_admin/preferences/base_preferences.html' %}
+{% load i18n uni_form_tags %}
+
+{% block m_taxes %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}Taxes Settings{% endblock %}
+
+{% block toolbar %}
+	<a href="{% url preferences_add_state_tax %}"><img src="{{ MEDIA_URL }}img/add.png" class="icon">{% trans "Add State Tax" %}</a>
+{% endblock %}
+
+{% block super_main %}
+	{% comment %}
+	<form action="." method="post" name="form_preferences">
+		<input type="hidden" name="type" value="preferences">
+				
+		<label>{{ form.taxes_same_state_store }}{% trans "Apply Taxes to Shipments in the same state as your physical store" %}</label><br/>
+		<label>{{ form.taxes_to_shipping_fees }}{% trans "Apply Taxes to Shipping Fees" %}</label>
+
+		<br/><br/><br/>
+		<a href="javascript:document.form_preferences.submit();" class="small awesome">{% trans "Apply Settings" %}</a>
+		<a href="javascript:document.form_preferences.reset();" class="link_cancel">{% trans "Or Cancel" %}</a>
+	</form>
+	{% endcomment %}
+	
+	<div class="bar_title">
+		<div class="grid_4 bar_column"><b>{% trans "State To Collect Tax For" %}</b></div>	
+		<div class="grid_2 bar_column"><b>{% trans "Tax" %}</b></div>	
+		<div class="grid_4 bar_column"><b>{% trans "Apply Tax To Shipping" %}</b></div>
+		<div class="grid_1 bar_column"><b>{% trans "Action" %}</b></div>
+		<div class="clear"></div>
+	</div>
+		
+
+	{% for tax in taxs %}
+	<div class="{% cycle 'row_1' 'row_2' %}">		
+		<div class="grid_4 column">{{ tax.get_state_display }}</div>	
+		<div class="grid_2 column">{{ tax.tax }}%</div>
+		<div class="grid_4 column">{% if tax.apply_tax_to_shipping %} {% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</div>
+		<div class="grid_1 column">
+			<a href="{% url preferences_delete_tax tax.id %}"><img src="{{ MEDIA_URL }}img/remove.png"></a>
+			<a href="{% url preferences_edit_tax tax.id %}"><img src="{{ MEDIA_URL }}img/edit.png"></a>
+		</div>
+		<div class="clear"></div>
+	</div>
+	{% endfor %}
+	
+	<br></br><br></br>
+	<hr></hr>	
+
+		
+{% endblock %}
+
+{% block menu %}
+	{% include 'preferences/preferences_menu.html' %}
+{% endblock %}

@@ -1,0 +1,8 @@
+
+{% with shop.first_post as first_post %}
+	{% if first_post %}
+		<h5><a href="{% url bidding_view_post first_post.id %}">{{ first_post.title }}</a></h5>
+		<h5>Posted on {{ first_post.date_time|date:'j F' }}</h5>
+		<p>{{ first_post.body|safe|linebreaks|slice:':100' }}...</p>
+    {% endif %}
+{% endwith %}

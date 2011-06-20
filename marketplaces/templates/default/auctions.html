@@ -1,0 +1,54 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+{% load sell_tags %}
+
+{% block content %}
+<div id="breadcrumbs" class="grid_18 auctions">
+	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_auctions %}">{% trans "Auctions" %}</a>
+</div>
+
+{% block filter_content %}
+<div class="grid_4 auctions"></div>
+{% endblock %}
+
+{% block main_content %}
+<div class="grid_18 margin_h auctions_main">
+	<div class="block_main_content">
+	<h2>{{ total }} Auctions Found</h2>
+	<p>Listing {{ lots.object_list.count }} lot{{ lots.object_list.count|pluralize }}</p>
+	
+	{% if lots.object_list.count %}
+	{% for lot in lots.object_list %}
+	<div class="grid_3">
+		<div class="item_box">
+			<a href="{% url market_buy_product_redirect lot.product_ptr_id %}" target="_blank">
+			{% if lot.image %}
+			<img class="item" src="{{ lot.image.image.url_100x100 }}" title="{{ lot.description|striptags }}"/>
+			{% else %}
+			<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ lot.description|striptags }}"/>
+			{% endif %}
+			<div class="AuctionLotTitle">{{ lot.title|truncatewords:5 }}</div>
+			<div class="AuctionLotCategory">{{ lot.category.name }}</div>
+			<div class="AuctionLotPrice">{{ lot.price|money_format:lot.shop }}</div>
+			</a>
+		</div>
+	</div>
+	{% endfor %}
+	
+	<div class="clear"></div>
+	<div class="pagination">
+	{% with lots as objects %}
+		{% include 'paginator.html'%}
+	{% endwith %}
+	</div>
+			
+	{% else %}
+	{% trans "No lots found" %}
+	{% endif %}
+	<div class="clear"></div>	
+	</div>
+	
+</div>
+{% endblock %}
+
+{% endblock %}

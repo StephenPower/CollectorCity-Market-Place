@@ -1,0 +1,115 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div id="breadcrumbs" class="grid_18">
+	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_sell %}">{% trans "Sell" %}</a>
+</div>
+
+{% block filter_content %}
+<div class="grid_3 alpha omega block_filter">
+	<h4>{% trans "Dealer Resources" %}</h4>
+	<ul class="sell_dealer_resources">
+		<li><a class="sell_dealer_resources" href="/">{% trans "Create an account" %}</a></li>
+		<li><a class="sell_dealer_resources" href="/">{% trans "Naming my Store" %}</a></li>
+		<li><a class="sell_dealer_resources" href="/">{% trans "Do'es and Don't" %}</a></li>
+		<li><a class="sell_dealer_resources" href="/">{% trans "Fees/Pricing" %}</a></li>
+		<li><a class="sell_dealer_resources" href="/">{% trans "Selling FAQ" %}</a></li>
+		<li><a class="sell_dealer_resources" href="{% url market_privacy_policy %}">{% trans "Privacy Policy" %}</a></li>
+	</ul>
+</div>
+{% endblock %}
+
+<div class="grid_14 alpha omega block_main_content margin_h">
+	
+<h1>{% trans "SELL ON" %} {{ marketplace.name.upper }}</h1>
+<br/>
+<p>
+{{ marketplace.name }}  is the online Marketplace for buying and selling. 
+Created by a Collector and Dealer, We monitor the marketplace for counterfeits, and coins that don't match the description.
+</p>
+<br/>
+<hr></hr>
+<h1>{% trans "What You Can Sell on" %} {{ marketplace.name }}</h1>
+<br/><br/>
+<div class="grid_3 alpha omega shop_feature_box">
+	<p>{% trans "Coins" %}</p>
+	<img alt="Coins" src="{{ MEDIA_URL }}img/coins.jpg"/>
+</div>
+<div class="grid_3 alpha omega shop_feature_box">
+	<p>{% trans "Dealer To Dealer" %}</p>
+	<img alt="Coins" src="{{ MEDIA_URL }}img/dealer-to-dealer.jpg"/>
+</div>
+<div class="grid_3 alpha omega shop_feature_box">
+	<p>{% trans "Precious Metals" %}</p>
+	<img alt="Coins" src="{{ MEDIA_URL }}img/precious-metals.jpg"/>
+	
+</div>
+<div class="grid_3 alpha omega shop_feature_box">
+	<p>{% trans "Books & Supplies" %}</p>
+	<img alt="Coins" src="{{ MEDIA_URL }}img/books-and-supplies.jpg"/>
+</div>
+<div class="clear"></div>
+<br/><br/>
+<hr/>
+<h1>{% trans "What Do You Get" %}</h1>
+<br/><br/>
+<div class="grid_3 alpha omega margin_h">
+	<img alt="Your Own Store" src="{{ MEDIA_URL }}img/customize-store.jpg"/>
+	<div>Customize your store with a Graphic Designer or use our free Templates</div>
+</div>
+
+<div class="grid_3 alpha omega margin_h">
+	<img alt="Marketing" src="{{ MEDIA_URL }}img/build-value.jpg"/>
+	<div>Build the value of your store, not some Bay. Track metrics through Google Analytics and track orders, sales and customers</div>
+</div>
+
+<div class="grid_3 alpha omega margin_h">
+	<img alt="Payments & Security" src="{{ MEDIA_URL }}img/credit-cards.jpg"/>
+	<div>Accept Credit Cards, PayPal, Google Checkout or what ever payment you want. It's safe & secure PCI certified hosting so you don't have to worry</div>
+</div>
+
+<div class="grid_3 alpha omega margin_h">
+	<img alt="Running your shop" src="{{ MEDIA_URL }}img/automate-shop.jpg"/>
+	<div>Automate the running of your online shop by exporting to external marketplaces...</div>
+</div>
+
+<div class="clear"></div>
+<div class="alert"><b>What's Not Allowed</b>: Counterfeits, Altered, Doctored and Coins that Don't Match the Description</div>
+<div class="clear"></div>
+<hr></hr>
+<h1>{% trans "Why Sell on" %} {{ marketplace.name }}</h1>
+<br/><br/>
+<ul>
+	<li>
+		<div>
+			<h6>{% trans "No Technical Skills Required" %}</h6>
+			<p>Build the value of your online store and provide a safe way to reach collectors and other dealers.</p>
+		</div>
+	</li>
+	<li>
+		<div>
+			<h6>{% trans "No Percent of Gross" %}</h6>
+			<p>Fill your store, not a bay...</p>
+		</div>
+	</li>
+	<li>
+		<div>
+			<h6>{% trans "Safe and Secure" %}</h6>
+			<p>Great Coins went through the security and safety tests, so you don't have to. Minimize PCI compliance, Accept online credit cards with 128 Bit SSL encrypted Checkout, and Automatic Shop Backup</p>
+		</div>
+	</li>
+</ul>
+<br/><br/>
+{% if user.is_authenticated %}
+	<a id="signup-now" style="float:left;" href="{% url market_sell_signup %}"><span>{% trans "Sell On Great Coins" %}</span></a>
+{% else %}
+	<div class="alert">
+		In order to Sell on Great Coins, you need to
+		<a href="{% url market_buy_signup %}?sell_signup=1"><b>{% trans "Register" %}</b></a>
+	</div>
+{% endif %}
+</div>
+
+{% endblock %}
+

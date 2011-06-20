@@ -1,0 +1,33 @@
+{% extends "default/community.html" %}
+{% load i18n %}
+
+{% block profiles_selection %}current_selection{% endblock %}
+
+{% block community_content %}
+
+<div class="grid_18 alpha omega margin_v">
+
+{% if shops %}
+{% for shop in shops %}
+<div class="grid_5">
+	<a href="http://{{ shop.default_dns }}" target="_blank">
+	<div class="dealer_box">
+		{% if shop.owner.get_profile.photo %}
+		<img class="item" alt="{{ shop.name }}" src="{{ shop.owner.get_profile.photo.url_400x400 }}" height="128" width="135"/>
+		{% else %}
+		<img class="item" alt="{{ shop.name }}" src="{{ MEDIA_URL }}img/no-photo-big.jpg" height="128" width="135"/>
+		{% endif %}
+		<div>{{ shop.admin.get_full_name }}</div>
+		<div>{{ shop.default_dns }}</div>
+		<div>{{ shop.description|safe }}</div>
+	</div>
+	</a>
+</div>
+{% endfor %}
+{% else %}
+{% trans "No profiles found" %}
+{% endif %}
+</div>
+
+
+{% endblock %}

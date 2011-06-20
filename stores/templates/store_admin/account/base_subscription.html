@@ -1,0 +1,15 @@
+{% extends 'store_admin/account/base_account.html' %}
+{% load i18n %}
+
+{% block m_subscription %}current_sub_menu{% endblock %}
+
+{% block tab %}
+<ul>
+	<li class="tab inner {% block t_overview %}{% endblock %}">
+		<a href="{% url subscription_overview  %}">{% trans "Overview" %}</a>
+	</li>
+	<li class="tab inner {% block t_change_plan %}{% endblock %}">
+		<a href="{% url subscription_plans %}">{% trans "Change Plan" %}</a>
+	</li>
+</ul>
+{% endblock %}

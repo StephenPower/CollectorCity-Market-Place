@@ -1,0 +1,30 @@
+from django.forms import ModelForm
+
+from auctions.models import AuctionSession
+from models import Lot, ImageLot
+from market.models import MarketCategory, MarketSubCategory
+
+
+class LotForm(ModelForm):
+    
+    class Meta:
+        model = Lot
+        fields = ['title', 'description', 'starting_bid', 'reserve', 'weight', 'subcategory', 'category', 'session']
+        
+    
+    def __init__(self, request=None, *args, **kwargs):
+        super(LotForm, self).__init__(*args, **kwargs)
+        # Filter sessions and categorys for specific shop 
+        if request:
+            self.shop = request.shop
+            session = self.fields.get('session')
+            session.queryset = AuctionSession.objects.filter(shop=self.shop)
+            category = self.fields.get('category')
+            category.queryset = MarketCategory.objects.filter(marketplace=self.shop.marketplace)
+
+     
+
+class ImageLotForm(ModelForm):
+    class Meta:
+        model = ImageLot
+        fields = ['image']

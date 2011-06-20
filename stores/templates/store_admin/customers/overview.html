@@ -1,0 +1,49 @@
+{% extends 'store_admin/customers/base_customers.html' %}
+{% load i18n %}
+
+{% block m_overview %}current_sub_menu{% endblock %}
+
+{% block main %}
+	<div class="grid_6 box">
+		<div class="box_header"><h3>{% trans "Sold Items" %}</h3></div>
+		<div class="box_body">
+			{% for sell in sells|slice:":7" %}
+				<p><a href='{% url sell_details sell.id %}'>{{ sell.bidder.username }} - {{ sell.payment.state_actual.get_state_display }}</a></p>
+			{% endfor %}
+			<p><a href="{% url customers_sold_items %}"><b>{% trans "See all" %}</b></a></p>
+		</div>
+	</div>
+	{% comment %}
+	<div class="grid_6 box">
+		<div class="box_header"><h3>{% trans "Payments" %}</h3></div>
+		<div class="box_body">
+			{% for payment in payments %}
+				<p></p>	
+			{% endfor %}
+			<p><a href="">{% trans "See more" %}</a></p>
+		</div>
+	</div>
+	<div class="clear"></div>
+	
+	<div class="grid_6 box">
+		<div class="box_header"><h3>{% trans "Shipments" %}</h3></div>
+		<div class="box_body">
+			{% for shipment in shipments %}
+				<p></p>	
+			{% endfor %}
+			<p><a href="">{% trans "See more" %}</a></p>
+		</div>
+	</div>
+	{% endcomment %}
+	<div class="grid_6 box">
+		<div class="box_header"><h3>{% trans "Wish List" %}</h3></div>
+		<div class="box_body">
+			{% for wish in wishlistitems %}
+				<p>{{ wish }}</p>
+			{% endfor %}
+			<br/>
+			<p><a href="{% url customers_wish_lists %}"><b>{% trans "See more" %}</b></a></p>
+		</div>
+	</div>
+	<div class="clear"></div>
+{% endblock %}

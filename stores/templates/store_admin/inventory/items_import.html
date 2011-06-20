@@ -1,0 +1,65 @@
+{% extends 'store_admin/inventory/base_items.html' %}
+{% load i18n %}
+{% load sell_tags %}
+{% load store_admin_tags %}
+
+{% block toolbar %}
+    {{ block.super }}
+	<form method="get" action="." class="form_search">
+		<input type="text" name="q_title" value="{{ q_title }}"/>
+		<input type="hidden" name="filter_by" value="title"/>
+	</form>
+{% endblock %}
+
+{% block super_main %}
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#dialog-confirm").dialog(
+		{
+		autoOpen: false, 
+		modal: true,
+		resizable: false,
+		draggable: false,
+		width: 350,
+		heigth: 300,
+		buttons: {
+				"Cancel": function() { $(this).dialog("close"); },
+				"Confirm": function() { 
+					//window.location = "{% url shop_cancel_subscription shop.id %}" ;
+					var value = $("#confirm-input").val();
+					if (value == "Yes") {$("input[id='r']").val("True");}
+					$("#import-form").submit();
+				},
+			} 
+		}
+	);
+	
+	$("#action_import").click(function(event){
+		event.preventDefault();
+		$("#dialog-confirm").dialog("open");
+	});
+	
+});
+</script>
+
+
+{% block main %}
+	
+	<div id="dialog-confirm" title="Do you want to delete your current inventory?">
+		<div class="grid_2"><img src="{{ MEDIA_URL }}img/warning.png" style="margin: 5px;" width="60" height="50"/></div>
+		<h5>If you want to delete your current inventory you must confirm your action typing "Yes" (case sensitive) in the following input ...</h5>
+		<input type="text" name="confirm" id="confirm-input"></input>
+	</div>
+	
+	<!--  <p>{% trans "Export Inventory" %}:</p> -->
+	<p>{% trans "Import Inventory" %}:</p>
+	
+	<form action="{% url import_inventory %}" method="POST" enctype="multipart/form-data" id="import-form">
+		<input type="file" name="file">
+		<input type="hidden" name="r" value="False" id="r">
+		<div id="action_import" class="small awesome">{% trans "Import" %}</div>
+	</form>
+
+{% endblock %}
+	
+{% endblock %}

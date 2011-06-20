@@ -1,0 +1,21 @@
+{% load users_tags sell_tags i18n %}
+
+<ul>
+{% with shop.menu_set.all.0 as menu %}
+{% for link in menu.links %}
+	{% if link.visible %}
+		<li><a href="{{ link.to }}">{{ link.name }}</a></li>
+	{% endif %}
+{% endfor %}
+{% endwith %}
+
+{% if user.is_authenticated %}
+	<li><a href="{% url logout %}" id="{% block logout %}{% endblock %}">{% trans "Logout" %}</a></li>
+	{% if user|is_admin_shop:shop %}
+		<li><a href="{% url redirect_admin %}">{% trans "Site Admin" %}</a></li>
+	{% endif %}
+{% else %}		
+	<li><a href="{% url login %}">{% trans "Login" %}</a></li>
+	<li><a href="{% url user_register %}">{% trans "Register" %}</a></li>
+{% endif %}
+</ul>

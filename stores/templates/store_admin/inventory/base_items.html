@@ -1,0 +1,24 @@
+{% extends 'store_admin/inventory/base_inventory.html' %}
+{% load i18n %}
+{% load sell_tags %}
+
+{% block m_items %}current_sub_menu{% endblock %}
+
+{% block toolbar %}
+	{% block action %}
+		<div class="grid_1">
+			<img id="gear" src="{{ MEDIA_URL }}img/gear.png"></img>
+		</div>
+		<div id="actions_menu">
+			<div id="title">{% trans "Actions" %}: {% trans "Items For Sale" %}</div>
+			<div id="action">
+				<a href="{% url inventory_items_import %}"><img src="{{ MEDIA_URL }}img/import.png" class="icon">{% trans "Import" %}</a>			
+			</div>
+		</div>
+	{% endblock%}
+	<a href="{% url item_add  %}"><img src="{{ MEDIA_URL }}img/add.png" class="icon"/>{% trans "Add Item" %}</a>
+	
+{% endblock %}
+
+
+

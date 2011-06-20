@@ -1,0 +1,35 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div id="breadcrumbs" class="grid_18">
+	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_sell %}">{% trans "Sell" %}</a> &raquo; {% trans "Sign Up" %}
+</div>
+
+<div class="grid_14 block_main_content">
+<div class="step_guide">
+	<h3>{% trans "Sign Up for Your Store" %}</h3>
+	<span {% if step == 1 %}class="current"{% endif %}>1. {% trans "Store Info" %}</span>
+	<span {% if step == 2 %}class="current"{% endif %}>2. {% trans "Choose Your Plan" %}</span>
+	<span {% if step == 3 %}class="current"{% endif %}>3. {% trans "Billing" %}</span>
+	<span>4.  {% trans "Welcome" %}</span>
+</div>
+
+<div class="clear"></div>
+
+{% block step %}{% endblock %} 
+</div>
+
+<div class="grid_3 block_filter">
+	Already A Seller? <a href="{% url market_buy_login %}">{% trans "Sign In here" %}</a>
+	<br/><br/>
+	<h4>{% trans "Privacy Policy" %}</h4>
+	<p>{% trans "We take your privacy seriouly" %}</p>
+	<ul>
+		<li><a href="{% url market_privacy_policy %}">{% trans "Privacy Policy" %}</a></li>
+	</ul>
+</div>
+
+<div class="clear"></div>
+
+{% endblock %}

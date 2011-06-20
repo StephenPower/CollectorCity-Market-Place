@@ -1,0 +1,30 @@
+{% extends 'store_admin/preferences/base_preferences.html' %}
+{% load i18n %}
+
+{% block m_email %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}Email Settings{% endblock %}
+
+{% block menu_options %}
+{% endblock %}
+
+{% block main %}
+	<h3>{% trans "Templates" %}</h3>
+	{% for key,type in type_notification %}
+		<p><a href="javascript:edit_notification('{{ key }}')">{{ type }}</a></p>
+	{% endfor %}
+
+	<br/><br/>
+	
+	<div id="edit_notification">
+	</div>
+
+	<script type="text/javascript">
+		function edit_notification(key){
+			$('#edit_notification').empty()
+			$('#edit_notification').load("{% url ajax_edit_notification %}?key="+key)
+		}
+	</script>
+	
+	<div class="clear"></div>
+{% endblock %}

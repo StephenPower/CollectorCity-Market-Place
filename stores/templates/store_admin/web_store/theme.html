@@ -1,0 +1,296 @@
+{% extends 'store_admin/web_store/base_web_store.html' %}
+{% load i18n %}
+
+{% comment %}
+	{% block head %}
+			<link rel="stylesheet" href="{{ MEDIA_URL }}css/lightbox.css" type="text/css" media="screen" />
+	
+			<script src="{{ MEDIA_URL }}js/lightbox/prototype.js" type="text/javascript"></script>
+			<script src="{{ MEDIA_URL }}js/lightbox/scriptaculous.js?load=effects,builder" type="text/javascript"></script>
+			<script src="{{ MEDIA_URL }}js/lightbox/lightbox.js" type="text/javascript"></script>
+	{% endblock %}
+{% endcomment %}
+
+{% block m_theme %}current_sub_menu{% endblock %}
+
+
+{% block title_sub_menu %}
+	{% if form_template %}
+		{{ template.name|title }}
+	{% else %}
+		{{ asset.name|title }}
+	{% endif %}
+{% endblock %}
+
+{% block toolbar %}
+	{% block action %}
+		<div class="grid_1">
+			<img id="gear" src="{{ MEDIA_URL }}img/gear.png"></img>
+		</div>
+		<div id="actions_menu">
+			<div id="title">{% trans "Actions" %}: {% trans "Theme" %}</div>
+			<div id="action"><a href="{% url theme_export %}"><img src="{{ MEDIA_URL}}img/export.png" class="icon"/>{% trans "Export" %}</a></div>
+			<div id="action"><a href="{% url theme_import %}"><img src="{{ MEDIA_URL}}img/import.png" class="icon"/>{% trans "Import" %}</a></div>
+		</div>
+	{% endblock %}
+{% endblock %}
+
+{% block menu_options %}
+	<ul id="tree">
+		<li>{% trans "Site Layout" %}
+			<ul>
+				<li><a href="{% url web_store_theme theme.layout_id %}?edit=template"">{% trans "Layout" %}</a></li>
+			</ul>
+		</li>
+		<li>{% trans "Pages" %}
+			<ul>
+				<li><a href="{% url web_store_theme theme.home_id %}?edit=template"">{% trans "Home" %}</a></li>
+				<li><a href="{% url web_store_theme theme.about_us_id %}?edit=template"">{% trans "About Us" %}</a></li>
+				{% for template in templates.pages %}
+				<li><a href="{% url web_store_theme template.id %}?edit=template">{{ template.name.title }}</a></li>
+				{% endfor %}	
+			</ul>
+		</li>
+		<li>{% trans "Other" %}
+			<ul>
+				{% for template in templates.other_pages %}
+					<li><a href="{% url web_store_theme template.id %}?edit=template">{{ template.name.title }}</a></li>
+				{% endfor %}
+			</ul>
+		</li>
+	</ul>
+{% endblock %}
+
+{% block main %}
+
+	<script type="text/javascript">
+		function load_text(url){
+			$.post(url, function(data){
+				$("#id_text").val(data);										
+		    });			
+		}
+
+		$(function() {
+			$("#tree_assets").treeview({
+				collapsed: true,
+				animated: "medium",
+				persist: "location"
+			});
+			$("#tree_themes").treeview({
+				collapsed: true,
+				animated: "medium",
+				persist: "location"
+			});
+			$("#tree_old_versions").treeview({
+				collapsed: true,
+				animated: "medium",
+				persist: "location"
+			});
+		})
+
+	</script>	
+
+	{% block tinyMCE %}
+
+	{% endblock %}
+
+	<script type="text/javascript">
+
+		
+		$(function(){	
+			$('textarea').keydown(function(event) {
+				checkTab(event);
+			});
+		});	
+	
+		function submit_template(){
+			$.post(".?edit=template", $('#form_template').serialize(), function(data){
+				$("#notify_save_template").text(data).show().fadeOut(4000);
+				$('#tree_old_versions').load(".?edit=template #tree_old_versions");
+			})
+		}
+
+		function submit_asset(){
+			$.post(".?edit=asset", $('#form_asset').serialize(), function(data){
+				$("#notify_save_asset").text(data).show().fadeOut(4000);
+			})
+		}
+
+		var isCtrl = false;
+		document.onkeyup=function(e){
+			if(e.which == 17) 
+				isCtrl=false;
+			}
+		document.onkeydown=function(e){
+			if(e.which == 17) isCtrl=true;
+			if(e.which == 83 && isCtrl == true) {
+				document.form.submit();
+				return false;
+			}
+		}
+
+		
+		// Set desired tab- defaults to four space softtab
+		var tab = "    ";
+		        
+		function checkTab(evt) {
+		    var t = evt.target;
+		    var ss = t.selectionStart;
+		    var se = t.selectionEnd;
+		    // Tab key - insert tab expansion
+		    if (evt.keyCode == 9) {
+		        evt.preventDefault();
+		                
+		        // Special case of multi line selection
+		        if (ss != se && t.value.slice(ss,se).indexOf("\n") != -1) {
+		            // In case selection was not of entire lines (e.g. selection begins in the middle of a line)
+		            // we ought to tab at the beginning as well as at the start of every following line.
+		            var pre = t.value.slice(0,ss);
+		            var sel = t.value.slice(ss,se).replace(/\n/g,"\n"+tab);
+		            var post = t.value.slice(se,t.value.length);
+		            t.value = pre.concat(tab).concat(sel).concat(post);
+		                    
+		            t.selectionStart = ss + tab.length;
+		            t.selectionEnd = se + tab.length;
+		        }
+		                
+		        // "Normal" case (no selection or selection on one line only)
+		        else {
+		            t.value = t.value.slice(0,ss).concat(tab).concat(t.value.slice(ss,t.value.length));
+		            if (ss == se) {
+		                t.selectionStart = t.selectionEnd = ss + tab.length;
+		            }
+		            else {
+		                t.selectionStart = ss + tab.length;
+		                t.selectionEnd = se + tab.length;
+		            }
+		        }
+		    }
+		            
+		    // Backspace key - delete preceding tab expansion, if exists
+		   else if (evt.keyCode==8 && t.value.slice(ss - 4,ss) == tab) {
+		        evt.preventDefault();
+		                
+		        t.value = t.value.slice(0,ss - 4).concat(t.value.slice(ss,t.value.length));
+		        t.selectionStart = t.selectionEnd = ss - tab.length;
+		    }
+		            
+		    // Delete key - delete following tab expansion, if exists
+		    else if (evt.keyCode==46 && t.value.slice(se,se + 4) == tab) {
+		        evt.preventDefault();
+		              
+		        t.value = t.value.slice(0,ss).concat(t.value.slice(ss + 4,t.value.length));
+		        t.selectionStart = t.selectionEnd = ss;
+		    }
+		    // Left/right arrow keys - move across the tab in one go
+		    else if (evt.keyCode == 37 && t.value.slice(ss - 4,ss) == tab) {
+		        evt.preventDefault();
+		        t.selectionStart = t.selectionEnd = ss - 4;
+		    }
+		    else if (evt.keyCode == 39 && t.value.slice(ss,ss + 4) == tab) {
+		        evt.preventDefault();
+		        t.selectionStart = t.selectionEnd = ss + 4;
+		    }
+		}		
+		
+	</script>
+
+	{% block main_theme %}
+		<div class="grid_11 box">
+			{% if form_template %}
+				<h3>{{ template.name|title }}</h3>
+				<form name="form" method="post" action="javascript:submit_template();" id="form_template">
+					{% if form_template.text.errors %}<div class="error">{{ form_template.text.errors|join:", " }}</div>{% endif %}
+					<div class="editor">
+						{{ form_template.text }}
+					</div>
+					<br/>
+					
+					<br/><br/>	
+					<button class="large awesome" type="submit">{% trans "Save" %}</button>
+					<a href="{% url themes %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+				</form>
+				<br/>
+				<div id="notify_save_template"></div>
+				
+				<br/><br/>
+				
+				<ul id="tree_old_versions">
+					<li>{% trans "Old versions" %}
+					<ul>				
+					{% for v in version_list %}
+						<li><a href="javascript:load_text('{% url template_get_version v.pk %}')">{{ v.revision.date_created|date:"d F Y H:i" }}
+						{% if forloop.first %}
+							({% trans "current"%})
+						{% endif %}
+						</a></li>
+					{% endfor %}
+					</ul>
+				</ul>
+			{% else %}
+				<h3>{{ asset.name|title }}</h3>
+				<form name="form" method="post" action="javascript:submit_asset();" id="form_asset">
+					{% if form_asset.text.errors %}<div class="error">{{ form_asset.text.errors|join:", " }}</div>{% endif %}
+					<div class="editor">
+						{{ form_asset.text }}
+					</div>
+					<br/><br/>
+					<button type="submit" class="large awesome">{% trans "Save" %}</button>
+					<a href="{% url themes %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+				</form>
+				<br/>
+				<div id="notify_save_asset"></div>
+			{% endif %}
+		</div>
+	{% endblock %}
+	<div class="grid_1">&nbsp;</div>
+	<div class="grid_4">
+		<ul id="tree_themes">
+			<li>Themes
+			<ul>
+				<li><a href="{{ MEDIA_URL }}themes/default.zip">default.zip</a></li>
+				<li><a href="{{ MEDIA_URL }}themes/craft.zip">craft.zip</a></li>
+				<li><a href="{{ MEDIA_URL }}themes/electronics.zip">electronics.zip</a></li>
+				<li><a href="{{ MEDIA_URL }}themes/indiancent.zip">indiancent.zip</a></li>
+				<li><a href="{{ MEDIA_URL }}themes/thepennylady.zip">thepennylady.zip</a></li>
+				<li><a href="{{ MEDIA_URL }}themes/spotless.zip">spotless.zip</a></li>
+				<li><a href="{{ MEDIA_URL }}themes/vogue.zip">vogue.zip</a></li>
+				<li><a href="{{ MEDIA_URL }}themes/original.zip">original.zip</a></li>
+			</ul>
+			</li>
+		</ul>
+			
+		<br/>
+	
+		<ul id="tree_assets">
+			<li>
+			{% trans "Assets" %}
+			<ul>
+			{% for asset in assets %}
+				<li>
+				{% if asset.is_editable %}
+					<a href="{% url web_store_theme asset.id %}?edit=asset">{{ asset.name|slice:":20" }}</a>
+					<a href="{% url web_store_theme asset.id %}?edit=asset"><img src="{{ MEDIA_URL }}img/edit.png" class="icon"/></a>
+				{% else %}
+					<a href="{{ asset.file.url }}" rel="lightbox">{{ asset.name|slice:":20" }}</a>
+				{% endif %}
+				<a href="javascript:delete_object('{% url asset_delete asset.id %}', 'file')"><img src="{{ MEDIA_URL }}img/remove.png" class="icon"/></a>
+				</li>
+			{% endfor %}
+			</ul>
+			</li>
+		</ul>
+
+		<br/>
+
+		<a href="{% url asset_add %}"><img src="{{ MEDIA_URL }}img/add.png" class="icon"/>Add asset</a>
+		
+		<br></br><br></br>
+		
+		<a href="{% url theme_export %}"><img src="{{ MEDIA_URL}}img/export.png" class="icon"/><b>{% trans "Backup" %}</b></a>
+		
+		
+	</div>
+
+	<div class="clear"></div>
+{% endblock %}

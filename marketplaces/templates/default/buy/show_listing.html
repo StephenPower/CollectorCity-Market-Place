@@ -1,0 +1,144 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div id="breadcrumbs" class="grid_18">
+	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_buy %}">{% trans "Buy" %}</a> &raquo; {% trans "Show Listing" %}
+</div>
+
+<div class="grid_18 block_main_content">
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	$("div[id^='listing_box']").hide();
+});
+
+function open_shops_dialog(box_id){
+	var box = "listing_box_" + box_id;
+	$("#" + box).slideToggle();
+};
+
+function close_shops_dialog(box_id){
+	var box = "listing_box_" + box_id;
+	$("#" + box).slideUp();
+};
+
+</script>
+
+<h3>{% trans "Show Listing" %}</h3>
+<p>See which stores will be at your local show</p>
+
+<div class="notice grid_9">
+<form action="{% url buy_show_search %}" method="POST">
+	<div class="grid_4">
+		<label>{% trans "City" %}</label><input name="city" id="city"/>
+		<label>{% trans "State" %}</label>
+		<select name="state">
+		{% for state in states %}
+    		<option>{{ state.1 }}</option>
+		{% endfor %}
+		</select>
+		{% comment %}
+		<label>{% trans "Country" %}</label><input name="country" id="country"/>
+		<label>{% trans "Zip" %}</label><input name="zip" id="zip"/>
+		{% endcomment %}
+		<div class="margin_v">
+			<input type="submit" class="small awesome" style="border: none"alt="" value="{% trans 'Search' %}"/>
+		</div>
+	</div>
+</form>
+</div>
+
+<div class="clear"></div>
+
+{% if place %}
+<p>We have found {{ shows|length }} active shows near <b>{{ place }}</b></p>
+{% if shows %}
+{% for show in shows %}
+<div class="{% cycle 'row1' 'row2' %}">
+	<div class="grid_3">{{ show.1.date_from|date:"d F Y"  }} - (distance {{ show.0 }} Miles)</div>
+	<div class="grid_8">
+		<div><b>{{ show.1.name }} (duration {{ show.1.duration }} days)</b></div>
+		<div>{{ show.1.address }}</div>
+		<div>{{ show.1.city }}, {{ show.1.state }} ({{ show.1.zip }}), {{ show.1.country }}</div>		
+		<div><b>{% trans "Contact" %}: </b>{{ show.1.contact_info }}</div>
+		<div><b>{% trans "Admission" %}: </b>
+		{% ifequal show.1.admission 0 %}
+		{% trans "Free" %}
+		{% else %}
+		$ {{ show.1.admission }}
+		{% endifequal %}
+		</div>
+	</div>
+	<div class="grid_3">
+		<div class="awesome small blue" onclick="javascript:open_shops_dialog({{ show.1.id }})">{% trans "Show Listing" %}</div>
+	</div>
+	<div class="clear"></div>
+	<div id="listing_box_{{ show.id }}">
+	{% if show.dealertoshow_set.count %}
+		<hr/>
+		{% for dealer in show.dealertoshow_set.all %}
+			<li><a href="http://{{ dealer.shop.default_dns }}" target="_blank">{{ dealer.shop.name }}</a></li>
+		{% endfor %}
+		</ul>	
+	{% else %}
+		<div class="notice">No shops have been confirmed to this show</div>
+	{% endif %}
+	</div>
+	<div class="clear"></div>
+</div>
+{% endfor %}
+{% else %}
+	<div class="notice">{% trans "There is no shows at this time" %}</div>
+{% endif %}
+
+
+{% else %}
+<p>We have found {{ shows.count }} active shows</p>
+{% if shows %}
+{% for show in shows %}
+<div class="{% cycle 'row1' 'row2' %}">
+	<div class="grid_3">{{ show.date_from|date:"d F Y"  }}</div>
+	<div class="grid_8">
+		<div><b>{{ show.name }} (duration {{ show.duration }} days)</b></div>
+		<div>{{ show.address }}</div>
+		<div>{{ show.city }}, {{ show.state }} ({{ show.zip }}), {{ show.country }}</div>		
+		<div><b>{% trans "Contact" %}: </b>{{ show.contact_info }}</div>
+		<div><b>{% trans "Admission" %}: </b>
+		{% ifequal show.admission 0 %}
+		{% trans "Free" %}
+		{% else %}
+		$ {{ show.admission }}
+		{% endifequal %}
+		</div>
+	</div>
+	<div class="grid_3">
+		<div class="awesome small blue" onclick="javascript:open_shops_dialog({{ show.id }})">{% trans "Show Listing" %}</div>
+	</div>
+	<div class="clear"></div>
+	<div id="listing_box_{{ show.id }}">
+	{% if show.dealertoshow_set.count %}
+		<hr/>
+		{% for dealer in show.dealertoshow_set.all %}
+			<li><a href="http://{{ dealer.shop.default_dns }}" target="_blank">{{ dealer.shop.name }}</a></li>
+		{% endfor %}
+		</ul>	
+	{% else %}
+		<div class="notice">No shops have been confirmed to this show</div>
+	{% endif %}
+	</div>
+	<div class="clear"></div>
+</div>
+{% endfor %}
+{% else %}
+	<div class="notice">{% trans "There is no shows at this time" %}</div>
+{% endif %}
+{% endif %}
+
+
+<div class="clear"></div>
+
+</div>
+
+{% endblock %}

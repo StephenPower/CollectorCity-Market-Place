@@ -1,0 +1,18 @@
+{% extends 'preferences/preferences_payment.html' %}
+{% load uni_form_tags %}
+{% load i18n %}
+
+{% block main %}
+		
+	<div class="grid_15" style="background: white">
+		<form action="." method="POST" class="uniForm">
+			<fieldset class="blockLabels">
+				{{ form|as_uni_form }}
+				<div class="buttonHolder">
+					<button class="primaryAction small awesome" type="submit">{% trans 'Update' %}</button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+	
+{% endblock %}

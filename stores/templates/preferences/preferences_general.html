@@ -1,0 +1,66 @@
+{% extends 'store_admin/preferences/base_preferences.html' %}
+{% load i18n %}
+
+{% block m_general_settings %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}General Settings{% endblock %}
+
+{% block menu_options %}
+{% endblock %}
+
+{% block main %}
+	<form action="." method="post" name="form" class="myform">
+		<div class="fieldset">
+			{% if form.name_store.errors %}<div class="error">{{ form.name_store.errors|join:", " }}</div>{% endif %}
+			<label>{% trans "Store Name" %} <span class="req">*</span></label>
+			{{ form.name_store }}
+		</div>
+		<div class="fieldset">
+			{% if form.email.errors %}<div class="error">{{ form.email.errors|join:", " }}</div>{% endif %}
+			<label>{% trans "Email Address" %}</label>
+			{{ form.email }}
+		</div>
+		<div class="fieldset">
+			{% if form.phone.errors %}<div class="error">{{ form.phone.errors|join:", " }}</div>{% endif %}
+			<label>{% trans "Phone" %}</label>
+			{{ form.phone }}
+		</div>
+		<div class="fieldset">
+			<label>{% trans "Address" %} <span class="req">*</span></label>
+			{% if profile_form.street_address.errors %}<div class="error">{{ profile_form.street_address.errors|join:", " }}</div>{% endif %}
+			{{ profile_form.street_address }}
+			<label class="footer_note">{% trans "Street Address" %}</label>	
+		</div>
+		<div class="grid_13 alpha omega">
+			<div class="grid_4 fieldset">
+				{{profile_form.city.error}}
+				{% if profile_form.city.errors %}<div class="error">{{ profile_form.city.errors|join:", " }}</div>{% endif %}
+				{{ profile_form.city }}
+				<label class="footer_note">{% trans "City" %}</label>
+				{% if profile_form.zip.errors %}<div class="error">{{ profile_form.zip.errors|join:", " }}</div>{% endif %}
+				{{ profile_form.zip }}
+				<label class="footer_note">{% trans "Postal Code / Zip" %}</label>					
+			</div>
+			<div class="grid_6 fieldset">
+				{% if profile_form.state.errors %}<div class="error">{{ profile_form.state.errors|join:", " }}</div>{% endif %}
+				{{ profile_form.state }}
+				<label class="footer_note">{% trans "State" %}</label>
+				{% if profile_form.country.errors %}<div class="error">{{ profile_form.country.errors|join:", " }}</div>{% endif %}
+				{{ profile_form.country }}
+				<label class="footer_note">{% trans "Country" %}</label>					
+			</div>
+		</div>
+			
+		<div class="clear"></div>
+
+		<br/><br/><br/>
+		<button type="submit" class="small awesome">{% trans "Apply Settings" %}</button>
+		<button type="reset" class="small awesome" class="link_cancel">{% trans "Or Cancel" %}</button>
+		
+	</form>
+	
+{% endblock %}
+
+{% block menu %}
+	{% include 'preferences/preferences_menu.html' %}
+{% endblock %}

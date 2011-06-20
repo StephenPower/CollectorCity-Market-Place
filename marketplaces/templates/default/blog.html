@@ -1,0 +1,106 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div id="breadcrumbs" class="grid_18">
+	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_blog %}">{% trans "Blog" %}</a>
+</div>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	$("div[id^='comment_box']").hide();
+});
+
+function open_shops_dialog(box_id){
+	var box = "comment_box_" + box_id;
+	$("#" + box).slideToggle();
+};
+
+function close_shops_dialog(box_id){
+	var box = "comment_box_" + box_id;
+	$("#" + box).slideUp();
+};
+
+$(function() {
+	$("#tree").treeview({
+		collapsed: true,
+		animated: "fast",
+		persist: "location"
+	});
+})
+
+</script>
+
+{% block filter_content %}
+<div class="grid_4 alpha omega block_filter">
+
+	<!-- ARCHIVE SECTION -->
+	<h4>{% trans "Blog Archive" %}</h4>
+	{% regroup archive by month as post_list %}
+	<ul id="tree">
+	{% for post in post_list %}
+		{% if forloop.count == 7 %}
+    		{{ break }}
+		{% endif %}
+	    <li>{{ post.grouper }} ({{ post.list|length }})
+	    <ul>
+	        {% for item in post.list %}
+	        	<li><a href="{% url market_blog_view_post item.slug %}">{{ item.title|slice:"25" }}...</a></li>
+	        {% endfor %}
+	    </ul>
+	    </li>
+	{% endfor %}
+	</ul>
+	<br></br>
+
+	<!-- EDITOR POST's PICKS -->
+	<h4>{% trans "Editor Post's Picks" %}</h4>
+	<ul class="post_summary">
+	{% for pick in picks %}
+		{% if forloop.count == 5 %}
+    		{{ break }}
+		{% endif %}
+		<li><a href="{% url market_blog_view_post pick.post.slug %}">{{ pick.post.title }}</a></li>
+	{% endfor %}			
+	</ul>
+
+	<!-- LATEST POSTS SECTION -->
+	<h4>{% trans "Lastest Post" %}</h4>
+	<ul class="post_summary">
+	{% for post in latest_posts %}
+		{% if forloop.count == 5 %}
+    		{{ break }}
+		{% endif %}
+		<li><a href="{% url market_blog_view_post post.slug %}">{{ post.title }}</a></li>
+	{% endfor %}			
+	</ul>
+	
+	<!-- LATEST COMMENTS SECTION -->
+	<h4>{% trans "Latest Comments" %}</h4>
+	<ul class="comment_summary">
+	{% for comment in latest_comments %}
+    	<li><b>{{ comment.user }}</b> says : {{ comment.comment.capitalize|truncatewords:10 }}</li>
+	{% endfor %}			
+	</ul>
+</div>
+{% endblock %}
+
+<div class="grid_13 alpha omega block_main_content margin_h">
+
+{% for post in posts.object_list %}
+	{% include "default/post_render.html" %}
+	<hr></hr>
+{% endfor %}
+
+<div class="clear"></div>
+<div class="pagination">
+{% with posts as objects %}
+	{% include 'paginator.html'%}
+{% endwith %}
+</div>
+	
+</div>
+
+{% endblock %}
+

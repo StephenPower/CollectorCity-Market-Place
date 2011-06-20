@@ -1,0 +1,23 @@
+{% extends 'base_login.html' %}
+{% load i18n %}
+
+{% block title %}
+	<h2>{% trans "Import theme" %}</h2>
+{% endblock %}
+
+{% block main %}
+	<h3>Import theme</h3>
+	<br/>
+	
+	<form name="form" method="post" action="." enctype="multipart/form-data">
+		{% if form.file.errors %}<div class="error">{{ form.file.errors|join:", " }}</div>{% endif %}
+		<label>{% trans "File" %}: {{ form.file }}</label>
+		<br/><br/>	
+		<button type="submit" class="large awesome">{% trans "Upload" %}</button>
+		<a href="{% url themes %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+	</form>
+{% endblock %}
+
+{% block menu %}
+	{% include 'themes/themes_menu.html' %}
+{% endblock %}

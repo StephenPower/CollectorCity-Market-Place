@@ -1,0 +1,29 @@
+	<link rel="stylesheet" href="{{ MEDIA_URL }}css/jquery-ui-1.8.custom.css" />
+
+	
+
+	{% comment %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js" type="text/javascript"></script>
+	
+	
+	<script>
+        $(function(){
+	    var path = location.pathname.substring(1)
+	    page = path.split('/')[0];
+	    if (page != 'pages'){
+		    if (page == '') 
+			    page = 'home'
+		    else
+		        $('.menu a[href$="/' + page + '/"]').attr('class', 'current');
+		}else{
+			page = path.split('/')[1];
+		    $('.menu a[href$="/pages/' + page + '/"]').attr('class', 'current');
+		}
+	});
+    </script>
+    
+    
+    {% endcomment %}
+     

@@ -1,0 +1,31 @@
+{% extends 'base_login.html' %}
+{% load i18n %}
+
+{% block title %}
+	<h2>{% trans "Edit shop" %}</h2>
+{% endblock %}
+
+{% block main %}
+	<form name="form" method="post" action=".">
+	
+		{% if form.shop_name.errors %}<div class="error">{{ form.shop_name.errors|join:", " }}</div>{% endif %}
+		<p>{{ form.shop_name.label }}</p>
+		{{ form.shop_name }}
+		{% if form.username.errors %}<div class="error">{{ form.username.errors|join:", " }}</div>{% endif %}
+		<p>{{ form.username.label }}</p>
+		{{ form.username }}
+		{% if form.email.errors %}<div class="error">{{ form.email.errors|join:", " }}</div>{% endif %}
+		<p>{{ form.email.label }}</p>
+		{{ form.email }}
+
+		<br/><br/>	
+		<button type="submit" class="large awesome">{% trans "Add" %}</button>
+		<a href="{% url shop_list %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+		
+	</form>
+
+{% endblock %}
+
+{% block menu %}
+	{% include 'shops/shop_menu.html' %}
+{% endblock %}

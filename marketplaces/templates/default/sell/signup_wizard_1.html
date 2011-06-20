@@ -1,0 +1,76 @@
+{% extends "default/sell/signup_wizard_base.html" %}
+
+{% load i18n %}
+
+{% block step %}
+{% comment %}
+<div class="grid_14 announce">
+	<p><h1>Try {{ marketplace.title }} 30 day money back guarantee.</h1></p>
+	<p><h3>No % of Gross, No Hidden Fees</h3></p>
+</div>
+{% endcomment %}
+
+{% if plans %}
+<div class="table">
+	<div class="grid_3 t-column">
+		<div class="th"><h2>{% trans "Plan" %}</h2></div>
+		<div class="th">{% trans "Set Up Fee" %}</div>
+		<div class="th">{% trans "Transaction Fee" %}</div>
+		<div class="th">{% trans "Custom Domains" %}</div>
+		<div class="th">{% trans "Bandwidth" %}</div>
+		<div class="th">{% trans "SSL" %}</div>
+		{% comment %} <div class="th">{% trans "Custom Migrations" %}</div>{% endcomment %}
+		{% comment %} <div class="th">{% trans "Trial Period" %}</div>{% endcomment %}
+		<div class="th">{% trans "Billing Period" %}</div>
+		<div class="th">{% trans "Google Analytics" %}</div>
+		{% comment %}<div class="th">{% trans "Tax Integration" %}</div>{% endcomment %}
+		<div class="th">{% trans "Storage" %}</div>
+		{% comment %}<div class="th">{% trans "Admin Accounts" %}</div>{% endcomment %}
+		<div class="th">{% trans "Picture Per Item" %}</div>
+		<div class="th">{% trans "Picture Per Lot" %}</div>
+		<div class="th">{% trans "Auction Items" %}</div>
+		<div class="th">{% trans "Store Items" %}</div>
+		<div class="th">{% trans "Store Revenue" %}</div>
+		<div class="th">{% trans "Price" %}</div>
+	</div>
+	    {% for plan in plans %}
+    <div class="grid_3 t-column">
+		<div class="tr"><h2>{{ plan.name }}</h2></div>
+		<div class="tr">{% trans "Waived" %}</div>
+		<div class="tr">{% trans "None" %}</div>
+		<div class="tr">{% trans "Yes" %}</div>
+		<div class="tr">{% trans "Unlimited" %}</div>
+		<div class="tr">{% trans "Yes" %}</div>
+		{% comment %}<div class="tr">{% if plan.custom_migration %} {% trans "Yes" %} {% else %} {% trans "False" %} {% endif %}</div>{% endcomment %}
+		{% comment %}<div class="tr">{% if plan.has_trial_period %} {{ plan.trial_period }} Month {% else %} No Trial {% endif %}</div>{% endcomment %}
+		<div class="tr">{% if plan.billing_period == 1 %}Monthly{% else %}Every {{ plan.billing_period }} Months{% endif %}</div>
+		<div class="tr">{% if plan.google_analytics_support %} Yes {% else %} No {% endif %}</div>
+		{% comment %}<div class="tr">{% if plan.auto_tax_integration %} Yes {% else %} No {% endif %}</div>{% endcomment %}
+		<div class="tr">{% if plan.total_mbs_storage == 0 %}Unlimited{% else %}{{ plan.total_mbs_storage }} MB{% endif %}</div>
+		{% comment %}<div class="tr">{{ plan.admin_accounts }}</div>{% endcomment %}
+		<div class="tr">{% if plan.pictures_per_item == 0 %}Unlimited{% else %}up to {{ plan.pictures_per_item }}{% endif %}</div>
+		<div class="tr">{% if plan.pictures_per_lot == 0 %}Unlimited{% else %}up to {{ plan.pictures_per_lot }}{% endif %}</div>
+		<div class="tr">{% if plan.concurrent_auction_items == 0 %}Unlimited{% else %}up to {{ plan.concurrent_auction_items }}{% endif %}</div>
+		<div class="tr">{% if plan.concurrent_store_items == 0 %}Unlimited{% else %}up to {{ plan.concurrent_store_items }}{% endif %}</div>
+		<div class="tr">{% if plan.total_store_revenue == 0 %}Unlimited{% else %}up to {{ plan.total_store_revenue }}{% endif %}</div>
+		<div class="tr"><div class="price">US$ {{ plan.price }}</div></div>
+		<form name="form" method="post" action="." class="wizard">
+		<input type="hidden" name="1-plan_id" value="{{ plan.id }}" />
+		<div class="tr margin_v"><button type="submit" name="submit" class="button_next">{% trans "Choose" %}</button></div>
+		{% csrf_token %}
+		<input type="hidden" name="{{ step_field }}" value="{{ step0 }}" />
+		{{ previous_fields|safe }}
+		<input type="hidden" name="next" value="{{ next|escape }}" />
+		
+		</form>
+	</div>
+        {% endfor %}
+</div>
+{% else%}
+	{% if promotional_code %}
+<div class="alert">There is no plan that match with that code!</div>
+	{% else %}
+<div class="alert">There are no Plans charged yet!</div>
+	{% endif %}
+{% endif %} 
+{% endblock %}

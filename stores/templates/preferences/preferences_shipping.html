@@ -1,0 +1,148 @@
+{% extends 'store_admin/preferences/base_preferences.html' %}
+{% load i18n %}
+{% load sell_tags %}
+
+{% block m_shipping %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}Shipping Settings{% endblock %}
+
+{% block menu_options %}
+{% endblock %}
+
+{% block main %}
+	
+<script type="text/javascript">
+$(function() {
+	$("#tabs").tabs();
+});
+</script>
+
+<div id="tabs">
+
+	<ul>
+		<li><a href="#weight">{% trans "Flat Rate Shipping By Weight" %}</a><li>
+		<li><a href="#price">{% trans "Flat Rate Shipping By Price" %}</a><li>
+		<li><a href="#qty">{% trans "Flat Rate Shipping By Item QTY" %}</a><li>
+	</ul>
+	
+	<div id="weight">
+		<div class="bar_title">
+			<div class="grid_3 alpha omega bar_column"><b>{% trans "Name" %}</b></div>
+			<div class="grid_5 alpha omega bar_column"><b>{% trans "Apply when" %}</b></div>
+			<div class="grid_3 alpha omega bar_column"><b>{% trans "Price" %}</b></div>
+			<div class="grid_4 alpha omega bar_column"><b>{% trans "Action" %}</b></div>
+			<div class="clear"></div>
+		</div>	
+		{% for rate in shipping_weight %}
+		<div class="{% cycle 'row_1' 'row_2' %}">
+			<div class="grid_3 alpha omega column"><span>{{ rate.name }}<span></div>
+			<div class="grid_5 alpha omega column"><span>{{ rate.from_weight }}lbs {% trans "to" %} {{ rate.to_weight }}lbs</span></div>
+			<div class="grid_3 alpha omega column"><span>{{ rate.price|money_format:shop }}</span></div>
+			<div class="grid_4 alpha omega column"><a href="{% url delete_shipping_weight rate.id %}"><img src="{{ MEDIA_URL }}img/remove.png">{% trans "Remove" %}</a></div>
+			<div class="clear"></div>
+		</div>
+	    <div class="clear"></div>
+		{% endfor %}
+		
+		<div class="clear"></div>
+		<hr></hr>
+		<form action="." method="post" name="form_weight">
+			{% if form_weight.errors %}<div class="error">{% trans "Error in:" %} {{ form_weight.errors|join:", "|title }}</div>{% endif %}
+			<div class="grid_4">{% trans "Name" %}</div>
+			<div class="grid_3">{% trans "From weight" %}</div>
+			<div class="grid_3">{% trans "To weight" %}</div>
+			<div class="grid_3">{% trans "Price" %} USD</div>
+			<div class="clear"></div>
+			<div class="grid_4">{{ form_weight.name }}</div>
+			<div class="grid_3">{{ form_weight.from_weight }}lbs</div>
+			<div class="grid_3">{{ form_weight.to_weight }}lbs</div>
+			<div class="grid_3">${{ form_weight.price }}</div>
+			<button class="awesome small gray" type="submit"><img src="{{ MEDIA_URL }}img/add.png"/>&nbsp;{% trans "Add Flat Rate" %}</button>
+			<input type="hidden" name="type" value="weight"/>
+		</form>
+		
+	</div>
+
+	<div id="price">
+		<div class="bar_title">
+			<div class="grid_3 alpha omega bar_column"><b>{% trans "ID" %}</b></div>
+			<div class="grid_5 alpha omega bar_column"><b>{% trans "Apply when" %}</b></div>
+			<div class="grid_3 alpha omega bar_column"><b>{% trans "Price" %}</b></div>
+			<div class="grid_4 alpha omega bar_column"><b>{% trans "Action" %}</b></div>
+			<div class="clear"></div>
+		</div>	
+		{% for rate in shipping_price %}
+		<div class="{% cycle 'row_1' 'row_2' %}">
+			<div class="grid_3 alpha omega column"><span>{{ rate.name }}<span></div>
+			<div class="grid_5 alpha omega column"><span>{{ rate.from_price|money_format:shop }} {% trans "to" %} {{ rate.to_price|money_format:shop }}</span></div>
+			<div class="grid_3 alpha omega column"><span>{{ rate.price|money_format:shop }}</span></div>
+			<div class="grid_4 alpha omega column "><a href="{% url delete_shipping_price rate.id %}"><img src="{{ MEDIA_URL }}img/remove.png">{% trans "Remove" %}</a></div>
+			<div class="clear"></div>
+		</div>
+	    <div class="clear"></div>
+		{% endfor %}		
+		
+		<div class="clear"></div>
+		<hr></hr>
+		<form action="." method="post" name="form_price">
+			{% if form_price.errors %}<div class="error">{% trans "Error in:" %} {{ form_price.errors|join:", "|title }}</div>{% endif %}
+			<div class="grid_4">{% trans "Name" %}</div>
+			<div class="grid_3">{% trans "From price" %}</div>
+			<div class="grid_3">{% trans "To price" %}</div>
+			<div class="grid_3">{% trans "Price" %}</div>
+			<div class="clear"></div>
+			<div class="grid_4">{{ form_price.name }}</div>
+			<div class="grid_3">{{ form_price.from_price }}</div>
+			<div class="grid_3">{{ form_price.to_price }}</div>
+			<div class="grid_3">${{ form_price.price }}</div>
+			<button class="awesome small gray" type="submit"><img src="{{ MEDIA_URL }}img/add.png"/>&nbsp;{% trans "Add Flat Rate" %}</button>
+			<input type="hidden" name="type" value="price"/>
+		</form>
+	</div>
+
+	<div id="qty">
+		<div class="bar_title">
+			<div class="grid_3 alpha omega bar_column"><b>{% trans "Name" %}</b></div>
+			<div class="grid_5 alpha omega bar_column"><b>{% trans "Apply when" %}</b></div>
+			<div class="grid_3 alpha omega bar_column"><b>{% trans "Price" %}</b></div>
+			<div class="grid_4 alpha omega bar_column"><b>{% trans "Action" %}</b></div>
+			<div class="clear"></div>
+		</div>		
+		{% for rate in shipping_item %}
+		<div class="{% cycle 'row_1' 'row_2' %}">
+			<div class="grid_3 alpha omega column"><span>{{ rate.name }}<span></div>
+			<div class="grid_5 alpha omega column"><span>{{ rate.from_item }} {% trans "to" %} {{ rate.to_item }} {% trans "items" %}</span></div>
+			<div class="grid_3 alpha omega column"><span>{{ rate.price|money_format:shop }}</span></div>
+			<div class="grid_4 alpha omega column"><a href="{% url delete_shipping_item rate.id %}"><img src="{{ MEDIA_URL }}img/remove.png"></a>{% trans "Remove" %}</div>
+			<div class="clear"></div>
+		</div>
+	    <div class="clear"></div>
+		{% endfor %}
+		
+		<div class="clear"></div>
+		<hr></hr>
+		<form action="." method="post" name="form_item">
+			{% if form_item.errors %}<div class="error">{% trans "Error in:" %} {{ form_item.errors|join:", "|title }}</div>{% endif %}
+			<div class="grid_4">{% trans "Name" %}</div>
+			<div class="grid_3">{% trans "From item" %}</div>
+			<div class="grid_3">{% trans "To item" %}</div>
+			<div class="grid_3">{% trans "Price" %}</div>
+			<div class="clear"></div>
+			<div class="grid_4">{{ form_item.name }}</div>
+			<div class="grid_3">{{ form_item.from_item }}</div>
+			<div class="grid_3">{{ form_item.to_item }}</div>
+			<div class="grid_3">${{ form_item.price }}</div>
+			<button class="awesome small gray" type="submit"><img src="{{ MEDIA_URL }}img/add.png"/>&nbsp;{% trans "Add Flat Rate" %}</button>
+			<input type="hidden" name="type" value="item"/>
+		</form>
+	</div>
+	
+			
+</div>
+
+	
+{% endblock %}
+
+{% block menu %}
+	{% include 'preferences/preferences_menu.html' %}
+{% endblock %}

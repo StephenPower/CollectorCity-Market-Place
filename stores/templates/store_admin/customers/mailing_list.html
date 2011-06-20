@@ -1,0 +1,47 @@
+{% extends 'store_admin/customers/base_customers.html' %}
+{% load i18n %}
+
+{% block m_mailing_list %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}{% trans "Mailing list" %}{% endblock %}
+
+{% block toolbar %}
+	{% block action %}
+		<img id="gear" src="{{ MEDIA_URL }}img/gear.png"></img>
+		<div id="actions_menu">
+			<div id="title">{% trans "Actions" %}: {% trans "Mailing list" %}</div>
+			<div id="action"><a href="{% url customers_export_mailinglist %}"><img src="{{ MEDIA_URL }}img/export.png" class="icon"/>{% trans "Export To CSV" %}</a></div>
+		</div>
+	{% endblock%}
+{% endblock%}
+	
+{% block search %}
+	<form method="POST" action="." class="form_search">
+		<input type="text" name="search_text" value="{{ search_text }}"/>
+	</form>
+{% endblock %}
+
+{% block super_main %}
+	<div class="clear"></div>
+	<div class="bar_title">
+		<div class="grid_1 alpha omega bar_column">
+			<a href="./?sort_by=oldest"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+			<a href="./?sort_by=newest"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+		</div>
+		<div class="grid_10 alpha omega bar_column"><b>{% trans "Mail" %}</b>
+			<a href="./?sort_by=email"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+			<a href="./?sort_by=-email"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+		</div>
+		<div class="clear"></div>
+	</div>
+	{% for member in mailing_list %}
+		<div class="{% cycle 'row_1' 'row_2' %} row_small">
+			<div class="grid_1 alpha omega column"><span>#{{ member.id }}</span></div>
+			<div class="grid_10 alpha omega column"><span>{{ member.email }}</span></div>
+			<div class="clear"></div>
+		</div>
+	{% empty %}
+		<div class="notice">{% trans "There is no email registered yet" %}</div>
+	{% endfor %}
+
+{% endblock %}

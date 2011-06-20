@@ -1,0 +1,61 @@
+{% extends 'store_admin/inventory/base_auctions.html' %}
+{% load i18n %}
+{% load sell_tags %}
+
+
+{% block title %}
+	<h2>{% trans "Lot Overview - All" %}</h2>
+{% endblock %}
+
+{% block main %}
+	<div class="grid_15 margin_v padding_v">
+		<div class="grid_2 alpha omega"><span>{% trans "Lot #" %}</span></div>
+		<div class="grid_5 alpha omega"><span>{% trans "Title" %}</span></div>
+		<div class="grid_4 alpha omega"><span>{% trans "Status" %}</span></div>
+		<div class="grid_3 alpha omega"><span>{% trans "Price" %}</span></div>
+	</div>
+	<div class="clear"></div>
+	
+	<!-- for -->
+	{% for lot in lots.object_list %}
+		<div class="grid_15 list padding_v {% cycle 'detail1' 'detail2' %}">
+			<div class="grid_2 alpha omega"><a rel="{{ lot.image.image.url_100x100 }}" href="{% url lot_details lot.id %}" class="aa" title="{{ lot.title }}"># {{ lot.id }}</a></div>
+			<div class="grid_5 alpha omega"><span>{{ lot.title }}</span></div>
+			<div class="grid_4 alpha omega"><span>{{ lot.get_state_display }}</span></div>
+			<div class="grid_3 alpha omega"><span>{{ lot.current_bid|money_format:shop }}</span></div>
+		</div>
+		<div class="clear"></div>
+	{% endfor %}
+	
+	
+	<div class="pagination">
+		{% with lots as objects %}
+			{% include 'paginator.html'%}
+		{% endwith %}
+	</div>
+	
+	
+	<script type="text/javascript">
+
+		$(".list a").imgPreview({
+		    containerID: 'imgPreviewWithStyles',
+		    /* Change srcAttr to rel: */
+		    srcAttr: 'rel',
+		    imgCSS: {
+		        // Limit preview size:
+		        height: 100
+		    },
+		    // When container hides: 
+		    onHide: function(link){
+		        $('span', this).remove();
+		    }
+		});
+		
+	</script>
+	
+	
+{% endblock %}
+
+{% block menu %}
+	{% include 'lots/lots_menu.html' %}
+{% endblock %}

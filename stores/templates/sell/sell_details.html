@@ -1,0 +1,122 @@
+{% extends 'store_admin/customers/base_customers.html' %}
+{% load i18n %}
+{% load sell_tags%}
+
+{% block m_sold_items %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}
+	{% trans "Sale Details" %}: #{{ sell.id }} - {{ sell.date_time|date:"d F Y H:i" }}
+{% endblock %}
+
+{% block toolbar %}
+	{% if sell.closed %}
+		<a href="{% url sell_open sell.id %}"><img src="{{ MEDIA_URL}}img/lock-open.gif" class="icon"/>{% trans "Open this sell" %}</a>
+	{% else %}
+		<a href="{% url sell_close sell.id %}"><img src="{{ MEDIA_URL}}img/lock.gif" class="icon"/>{% trans "Close this sale" %}</a>
+	{% endif %}
+{% endblock %}
+
+
+{% block menu_options %}
+{% endblock %}
+
+{% block main %}
+	
+	<div class="grid_7">
+		<p>{% trans 'ID' %}: #{{ sell.id }}</p>
+		<p>{% trans 'Time' %}: {{ sell.date_time|date:"d F Y H:i" }}</p>
+		<p>{% trans 'Total' %}: {{ sell.total|money_format:shop }}</p>
+		{% if sell.cancel %}
+			<p>{% trans "State" %}: <b>Canceled</b></p>
+		{% endif %}
+	</div>	
+	<div class="grid_7">
+		<h4>{% trans "Shipping Info:" %}</h4>
+		<p>{{ sell.shippingdata}}</p>
+	</div>
+	<div class="clear"></div>
+	
+	<br/><br/>
+	<div>
+		<div class="grid_15">
+	    	<h4>{% trans "Details:" %}</h4>
+			<div class="grid_6 omega"><span>{% trans "Description" %}</span></div>				
+			<div class="grid_3"><span>{% trans "Price" %}</span></div>
+			<div class="grid_3"><span>{% trans "Quantity" %}</span></div>
+			<div class="grid_3 alpha omega"><span>{% trans "Total" %}</span></div>
+		</div>
+		<div class="clear"></div>
+		<hr></hr>
+		{% for item_sell in sell.sellitem_set.all %}
+		<div class="grid_15" id="{% cycle 'detail1' 'detail2' %}">
+			<div class="grid_2 omega detail">
+			{% if item_sell.product.image %}
+				<img src="{{ item_sell.product.image.image.url_100x100 }}" width="50px" />
+			{% else %}
+				<img src="{{ MEDIA_URL }}img/no-photo.jpg" width="50px" />
+			{% endif %}	
+			</div>
+			<div class="grid_4 omega detail">
+				{{ item_sell.product.title|title }}
+			</div>					
+			<div class="grid_3 detail">{{ item_sell.product.price|money_format:shop }}</div>					
+			<div class="grid_3 detail">{{ item_sell.qty }}</div>
+			<div class="grid_3 alpha omega detail">{{ item_sell.get_total|money_format:shop }}</div>
+			<div class="clear"></div>
+		</div>
+		{% endfor %}
+		
+		
+	</div>
+	<div class="clear"></div>
+	
+	<br/><br/>
+	<div class="grid_7 resume_shopping">
+		<h4>{% trans "Payment Status" %}</h4>			
+		{% for payment in sell.payment.paymenthistory_set.all %}
+				<p>{{ payment.date_time|date:'r' }} - {{ payment.get_state_display }}</p>
+		{% endfor %}
+
+		{% if not sell.cancel %}
+
+			{% if sell.is_manual_payment %}
+				{% ifequal sell.payment.state_actual.state 'PE' %}
+						<a href="{% url sell_manual_pay sell.id %}" class="large awesome blue">{% trans "Paid" %}</a>
+						<a href="{% url sell_manual_fail sell.id %}" class="large awesome red">{% trans "Failed Sale" %}</a>
+					<div class="clear"></div>
+				{% endifequal %}
+			{% endif %}	
+			
+			{% ifequal sell.payment.state_actual.state 'PA' %}
+				<br/>
+				<div><a href="{% url sell_refund sell.id %}" class="medium awesome orange">{% trans "Refund Sale" %}</a></div>
+			{% endifequal %}
+	
+			{% ifnotequal sell.payment.state_actual.state 'PA' %}
+				<br/>
+				<div><a href="{% url sell_cancel sell.id %}" class="medium awesome orange">{% trans "Cancel Sale" %}</a></div>
+			{% endifnotequal %}
+				
+		{% endif %}	
+	</div>
+	<div class="grid_7 resume_shopping">
+		<h4>{% trans "Shipping Status" %}</h4>			
+		{% for shipping in sell.shipping.shippinghistory_set.all %}
+			<p>{{ shipping.date_time|date:'r' }} - {{ shipping.get_state_display }}</p>
+		{% endfor %}
+		
+		{% if not sell.cancel %}
+			<br/>
+			{% ifequal sell.shipping.state_actual.state 'PE' %}
+				<div><a href="{% url sell_dispatched sell.id %}" class="medium awesome green">{% trans "Dispatched" %}</a></div>
+			{% else %}
+				{% ifequal sell.shipping.state_actual.state 'DI' %}
+					<div><a href="{% url sell_fulfilled sell.id %}" class="medium awesome orange">{% trans "Fulfilled" %}</a></div>
+				{% endifequal %}
+			{% endifequal %}
+		{% endif %}
+		
+	</div>
+	<div class="clear"></div>
+
+{% endblock %}

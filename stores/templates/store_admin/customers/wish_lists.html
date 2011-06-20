@@ -1,0 +1,53 @@
+{% extends 'store_admin/customers/base_customers.html' %}
+{% load i18n %}
+
+{% block m_wish_lists %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}{% trans "Wish List Items" %}{% endblock %}
+
+{% block toolbar %}
+	<form method="POST" action="." class="form_search">
+		<input type="text" name="search_text" value="{{ search_text }}"/>
+	</form>
+{% endblock %}
+
+{% block super_main %}
+
+	<div class="bar_title">
+		<div class="grid_1 alpha omega bar_column">
+			<a href="./?sort_by=oldest"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+			<a href="./?sort_by=newest"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+		</div>
+		<div class="grid_2 alpha omega bar_column"><b>{% trans "User" %}</b>
+			<a href="./?sort_by=username"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+		</div>
+		<div class="grid_3 alpha omega bar_column"><b>{% trans "Description" %}</b></div>
+		<div class="grid_4 alpha omega bar_column"><b>{% trans "Category" %}</b>
+			<a href="./?sort_by=category"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+		</div>
+		<div class="grid_2 alpha omega bar_column"><b>{% trans "Price" %}</b>
+			<a href="./?sort_by=price"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>	
+			<a href="./?sort_by=-price"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+		</div>
+		<div class="grid_2 alpha omega bar_column"><b>{% trans "Status" %}</b></div>
+		<div class="grid_2 alpha omega bar_column"><b>{% trans "Action" %}</b></div>
+		<div class="clear"></div>
+	</div>
+	{% for item in wishlistitems %}
+	<div class="{% cycle 'row_1' 'row_2' %}" title="{{ item.description|striptags }}">
+		<div class="grid_1 alpha omega column">#{{ item.id }}</a></div>
+		<div class="grid_2 alpha omega column"><span>{{ item.posted_by }}</span></div>
+		<div class="grid_3 alpha omega column"><span>{{ item.description|safe }}</span></div>
+		<div class="grid_4 alpha omega column"><span>{{ item.category.name }} | {% if item.subcategory %}{{ item.subcategory.name }}{% else %} --- {% endif %}</span></div>
+		<div class="grid_2 alpha omega column"><span>{{ item.ideal_price }}</span></div>
+		<div class="grid_2 alpha omega column"><span>{% trans "Pending" %}</span></div>
+		<div class="grid_2 alpha omega column"><a href="{% url customers_send_notification item.id %}">{% trans "Send Notification" %}</a></div>
+		<div class="clear"></div>
+	</div>
+	
+	{% empty %}
+		<div class="notice">{% trans "There is no wishlist items to show" %}</div>
+	{% endfor %}
+
+	
+{% endblock %}

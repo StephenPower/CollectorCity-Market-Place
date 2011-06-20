@@ -1,0 +1,33 @@
+{% extends 'store_admin/web_store/navigation.html'%}
+{% load i18n %}
+
+{% block title_sub_menu %}{{ link.name }}{% endblock %}
+
+{% block toolbar %}
+	<a href="javascript:delete_object('{% url link_delete link.id %}', 'link')"><img src="{{ MEDIA_URL}}img/remove.png" class="icon"/>{% trans "Delete link" %}</a>
+{% endblock %}
+
+{% block main_navigation %}
+	<form name="form" method="post" action="." enctype="multipart/form-data">
+	
+		<h4>{% trans "Name" %}:</h4>
+		{% if form.name.errors %}<div class="error">{{ form.name.errors|join:", " }}</div>{% endif %}
+		{{ form.name }}
+		<br/>
+		
+		<h4>{% trans "Title" %}:</h4>
+		{% if form.title.errors %}<div class="error">{{ form.title.errors|join:", " }}</div>{% endif %}
+		{{ form.title }}	
+		<br/>
+
+		<h4>{% trans "Link to" %}:</h4>
+		{% if form.to.errors %}<div class="error">{{ form.to.errors|join:", " }}</div>{% endif %}
+		{{ form.to }}	
+		<br/>
+
+		<br/>
+
+		<button type="submit" class="large awesome">{% trans "Save" %}</button>
+		<a href="{% url navigation %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+	</form>
+{% endblock %}

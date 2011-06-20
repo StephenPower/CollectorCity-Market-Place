@@ -1,0 +1,28 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div id="breadcrumbs" class="grid_18">
+	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_community %}">{% trans "Community" %}</a>
+</div>
+
+<div class="grid_18 alpha omega block_main_content margin_h">
+	
+<h1>{{ marketplace.name.upper }} {% trans "COMMUNITY" %}</h1>
+<br/>
+<div id="community_navbar">
+	<ul >
+		<li class="{% block overview_selection %}{% endblock %}"><a href="{% url community_overview %}">{% trans "Overview" %}</a></li>
+		<li class="{% block forums_selection %}{% endblock %}"><a href="{% url community_forums %}">{% trans "Forums" %}</a></li>
+		<li class="{% block blogs_selection %}{% endblock %}"><a href="{% url community_blogs %}">{% trans "Member Blogs" %}</a></li>
+		<li class="{% block faq_selection %}{% endblock %}"><a href="{% url community_faq %}">{% trans "FAQ" %}</a></li>
+		<li class="{% block profiles_selection %}{% endblock %}"><a href="{% url community_profiles %}">{% trans "Profiles" %}</a></li>
+	</ul>
+</div>
+
+{% block community_content %}Aca iria la info{% endblock %}
+
+</div>
+
+{% endblock %}
+

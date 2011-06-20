@@ -1,0 +1,26 @@
+{% extends 'base_login.html' %}
+{% load i18n %}
+
+{% block m_web_store %}current_menu{% endblock %}
+
+{% block title_menu_left %}{% trans "Web Store" %}{% endblock %}
+
+{% block arrow_left %}{% url inventory %}{% endblock %}
+{% block arrow_right %}{% url home_admin %}{% endblock %}
+
+{% block title_sub_menu %}{% endblock %}
+
+{% block sub_menu %}
+    <ul>
+		<li class="links_sub_menu {% block m_overview %}{% endblock %}"><a href="{% url web_store_overview %}">{% trans "Overview" %}</a></li>
+		<li class="links_sub_menu {% block m_marketing %}{% endblock %}"><a href="{% url web_store_marketing %}">{% trans "Marketing" %}</a></li>
+		<li class="links_sub_menu {% block m_theme %}{% endblock %}"><a href="{% url web_store_theme %}">{% trans "Theme" %}</a></li>
+		<li class="links_sub_menu {% block m_pages %}{% endblock %}"><a href="{% url web_store_pages %}">{% trans "Pages" %}</a></li>
+		<li class="links_sub_menu {% block m_blog %}{% endblock %}"><a href="{% url web_store_blogs %}">{% trans "Blogs" %}</a></li>
+		<li class="links_sub_menu {% block m_navigation %}{% endblock %}"><a href="{% url web_store_navigation %}">{% trans "Navigation" %}</a></li>
+	</ul>
+{% endblock %}
+
+
+{% block main %}
+{% endblock %}

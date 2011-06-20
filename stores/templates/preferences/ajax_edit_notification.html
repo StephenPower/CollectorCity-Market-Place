@@ -1,0 +1,95 @@
+{% load i18n %}
+
+<h3>{% trans "Email Template Area" %}</h3>
+
+<form method="POST" action="{% url ajax_edit_notification %}" name="form">
+	
+	<div class="grid_8">
+	<p>{% trans "Email Subject" %}</p>
+	{{ form.subject }}
+	<p>{% trans "Email Body" %}</p>
+	{{ form.body }}
+	
+	<input type="hidden" name="key" value="{{ key }}"/>
+	
+	<br/>
+	{% if email_notification.id %}
+    <a href="{% url send_template %}?email={{ user.email }}&id={{ email_notification.id }}">{% trans "Send Template to" %} {{ user.email }}</a>
+    {% else %}
+	<div style="width: 280px; margin: 8px 0px; padding: 0px 10px; background: #FFBFEF; border: 1px solid #F99AFF"><p>{% trans "This template is not saved yet..." %}</p></div>
+	{% endif %}
+	
+	<br></br><br></br>
+	
+	<button type="submit" class="small awesome">{% trans "Apply Settings" %}</button>
+	<button type="reset" class="small awesome" class="link_cancel">{% trans "Or Cancel" %}</button>
+		
+	</div>
+		
+	<div class="grid_4">
+		<b>{% trans "Variables you can use in this template" %}</b>
+		
+		{% if key == 'OC' %}
+    	<ul>
+    		<li>buyer_name</li>
+			<li>buyer_email</li>
+			<li>gateway</li>
+			<li>shop</li>
+			<li>shipping_street_address</li>
+			<li>shipping_city</li>
+			<li>shipping_state</li>
+			<li>shipping_zip</li>
+			<li>shipping_country</li>
+			<li>sell_date</li>
+			<li>sell_total</li>
+			<li>sell_without_taxes</li>
+			<li>sell_total_taxes</li>
+			<li>sell_total_shipping</li>
+			<li>items (item: qty, title, total)</li>
+		</ul>
+		{% endif %}
+		
+		{% if key == 'NON' %}
+    	<ul>
+    		<li>buyer_name</li>
+			<li>buyer_email</li>
+			<li>gateway</li>
+			<li>shop</li>
+			<li>shipping_street_address</li>
+			<li>shipping_city</li>
+			<li>shipping_state</li>
+			<li>shipping_zip</li>
+			<li>shipping_country</li>
+			<li>sell_date</li>
+			<li>sell_total</li>
+			<li>sell_without_taxes</li>
+			<li>sell_total_taxes</li>
+			<li>sell_total_shipping</li>
+			<li>items (item: qty, title, total)</li>
+		</ul>
+		{% endif %}
+		
+		{% if key == 'CB' %}
+    	<ul>
+    		<li>{{ shop }}</li>    		
+		</ul>
+		{% endif %}
+		
+		{% if key == 'AWC' %}
+    	<ul>
+    		<li>bidder_name</li>
+    		<li>bid_amount</li>
+		    <li>bid_time</li>
+		    <li>shop</li>
+		    <li>session_title</li>
+		    <li>session_description</li>
+		    <li>session_start</li>
+		    <li>session_end</li>
+		    <li>lot_title</li>
+		    <li>lot_description</li>
+		</ul>
+		{% endif %}
+		
+	</div>
+	<div class="clear"></div>	
+</form>

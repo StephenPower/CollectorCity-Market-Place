@@ -1,0 +1,26 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div id="breadcrumbs" class="grid_18">
+	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_buy %}">{% trans "Buy" %}</a> &raquo; {% trans "Categories" %}
+</div>
+
+<div class="grid_18 block_main_content margin_h">
+<h3>{% trans "All Categories" %}</h3>
+
+{% for category in marketplace.marketcategory_set.all %}
+<div class="grid_18 alpha omega category_box margin_v">
+	<h4><b><a href="{% url market_search_category category.slug %}">{{ category.name }}</a></b></h4>
+	{% for subcategory in category.subcategories.all %}
+	<div class="grid_3">
+		<a href="{% url market_search_subcategory category.slug subcategory.slug %}">{{ subcategory.name }}</a>
+	</div>
+	{% endfor %}
+</div>
+<hr></hr>
+{% endfor %}
+
+</div>
+
+{% endblock %}

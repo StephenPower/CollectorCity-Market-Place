@@ -1,0 +1,37 @@
+{% extends 'store_admin/preferences/base_preferences.html' %}
+{% load i18n %}
+
+{% block m_auctions %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}Auction Settings{% endblock %}
+
+{% block menu_options %}
+{% endblock %}
+
+{% block main %}
+	<form action="." method="post" name="form">
+		<h3>{% trans "Auction Type" %}</h3>
+		<label>{{ form.allow_sessions }}{% trans "Allow Sessions" %}</label><br/>
+		<label>{{ form.allow_open_auctions }}{% trans "Allow Open Auctions" %}</label>
+		
+		<br/>
+	
+		<h3>{% trans "Open Auction Settings" %}</h3>
+		{% if form.default_days.errors %}<div class="error">{{ form.default_days.errors|join:", " }}</div>{% endif %}
+		<p>{% trans "Default Days" %} {{ form.default_days }}</p>
+		<label>{{ form.open_auto_extend }}{% trans "Auto Extend" %}</label>
+	
+		<br/>
+	
+		<h3>{% trans "Sessions Settings" %}</h3>
+		<label>{{ form.session_auto_extend }}{% trans "Auto Extend" %}</label>
+		
+		<br/><br/><br/>
+		<button type="submit" class="small awesome">{% trans "Apply Settings" %}</button>
+		<button type="reset" class="small awesome" class="link_cancel">{% trans "Or Cancel" %}</button>
+	</form>
+{% endblock %}
+
+{% block menu %}
+	{% include 'preferences/preferences_menu.html' %}
+{% endblock %}

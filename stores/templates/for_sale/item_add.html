@@ -1,0 +1,252 @@
+{% extends 'base_login.html' %}
+{% load i18n %}
+
+{% block title %}
+	<h2>{% trans "For Sale" %}</h2>
+{% endblock %}
+
+{% block main %}
+	<h3>{% trans "Item Description" %}</h3>
+	
+	<form action="." method="post" name="form" enctype="multipart/form-data">
+	
+		{% if form.title.errors %}<div class="error">{{ form.title.errors|join:", " }}</div>{% endif %}
+		<h4 style="padding-bottom: 0px; margin-bottom:0px;">{% trans "Title" %}:</h4>
+		<span style="display: block; color:#AAAAAA;">{% trans "Example: 1942 Walking Liberty Half; 12 Foot garden Hose Kit" %}</span>
+		{{ form.title }}	
+		<br/>
+	
+		{% if form.description.errors %}<div class="error">{{ form.description.errors|join:", " }}</div>{% endif %}
+		<h4>{% trans "Describe the Item" %}:</h4>
+		{{ form.description }}
+			
+		<br/><br/>
+		
+		<div class="grid_8 alpha omega">
+			<h3>{% trans "Item Properties" %}</h3>
+			<div id="select_category" class="grid_4 alpha omega categories_selection">
+				{% if form.category.errors %}<div class="error">{{ form.category.errors|join:", " }}</div>{% endif %}
+				<p>{% trans "Categories" %}:</p>
+				{{ form.category }}
+				<br/>
+				{% comment %}
+				<a href="#" onclick="javascript:add_category(); return false;">{% trans "Create New" %}</a>
+				{% endcomment %}
+				<br/><br/>
+			</div>
+			<div id="select_sub_category" class="grid_4 alpha omega">
+				{% if form.subcategory.errors %}<div class="error">{{ form.subcategory.errors|join:", " }}</div>{% endif %}
+				<p>{% trans "SubCategory" %}:</p>
+				{{ form.subcategory }}
+				<br/>
+				{% comment %}
+				<a href="#" onclick='javascript:add_sub_category(); return false;'); return false;">{% trans "Create New" %}</a>
+				{% endcomment %}
+			</div>
+			<div class="clear"></div>
+			
+ 			{% if form.price.errors %}<div class="error">{{ form.price.errors|join:", " }}</div>{% endif %}
+     		<p>{% trans "Price" %}:</p>
+     		{{ form.price }}
+
+			{% if form.weight.errors %}<div class="error">{{ form.weight.errors|join:", " }}</div>{% endif %}
+     		<p>{% trans "Weight" %}:</p>
+     		{{ form.weight }} lbs.
+     		
+ 			{% if form.qty.errors %}<div class="error">{{ form.qty.errors|join:", " }}</div>{% endif %}
+			<p>{% trans "Qty" %}:</p>
+     		{{ form.qty }}
+		</div>
+	
+		<div class="grid_5 margin_h padding_h">
+			<h3>{% trans "Item Images" %}</h3>
+			
+			<!-- for images -->
+			<div class="add_file">
+			</div>
+			
+			<br/><br/>
+			
+			<div class="grid_5">
+				<a href="javascript:add_image();" class="small awesome">{% trans "Add Image" %}</a>
+			</div>
+			<div class="clear"></div>
+		</div>	
+		
+		<div class="clear"></div>
+		<br/><br/>
+	
+		<button type="submit" class="large awesome">{% trans "Add" %}</button>
+		<a href="{% url items_all %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+				
+	</form>
+
+	<div id="dialog_session" title="{% trans 'Add Session' %}">
+	</div>
+	<div id="dialog_category" title="{% trans 'Add Category' %}">
+	</div>
+	<div id="dialog_sub_category" title="{% trans 'Add SubCategory' %}">
+	</div>
+	
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#dialog_category").dialog({
+				autoOpen:false,
+				resizable: false,
+				closeOnEscape: true, 
+				modal: true,
+			});
+			$("#dialog_sub_category").dialog({
+				autoOpen:false,
+				resizable: false,
+				closeOnEscape: true, 
+				modal: true,
+			});
+			$("#dialog_session").dialog({
+				autoOpen:false,
+				resizable: false,
+				width: 400,
+				position: 'top',
+				autoOpen:false,
+				closeOnEscape: true, 
+				modal: true,
+			});
+
+			$("#dialog_category").keypress(function(e){
+	            code= (e.keyCode ? e.keyCode : e.which);
+	            if (code == 13 || code == 10) {
+	            	e.preventDefault();
+	            	submit_category();
+	            }
+	        });
+			$("#dialog_sub_category").keypress(function(e){
+	            code= (e.keyCode ? e.keyCode : e.which);
+	            if (code == 13 || code == 10) {
+	            	e.preventDefault();
+	            	submit_sub_category();
+	            }
+	        });
+	        $("#dialog_session").keypress(function(e){
+	            code= (e.keyCode ? e.keyCode : e.which);
+	            if (code == 13 || code == 10) {
+	            	e.preventDefault();
+	            	submit_session();
+	            }
+	        });
+			
+			$("#id_item-category").change(function () {
+				categories= new Array()
+			    $("#id_item-category option:selected").each(function () {
+			    	categories.push($(this).val())
+			    });
+		    	$("#id_item-subcategory").empty();
+			    if (categories.length > 0){
+				      $.post("{% url ajax_sub_category %}", { 'categories': categories }, function(data){
+					      $("#id_item-subcategory").append(data);
+				      });
+	      		}
+		    })
+		    .trigger('change');
+		});
+
+		function add_image(){
+			id = $('.add_file').children().length
+			$('.add_file').append('<div "id="file_'+id+'"><input type="file" name="file">&nbsp;<a href="javascript:rem_image('+id+')">{% trans "Delete" %}</a></div>');
+		}
+
+		function rem_image(id){
+			$('#file_'+id).remove();
+		}
+		
+		
+		function add_category(){
+			$('#dialog_category').empty()
+			$('#dialog_category').load("{% url ajax_category_add %}")
+			$('#dialog_category').dialog('open');
+		}
+
+				
+		function close_category(){
+			$('#dialog_category').dialog('close');
+		}
+
+		function submit_category(){
+			$.post("{% url ajax_category_add %}", $("#form_category").serialize(), function(data){
+				if (data == ''){
+                	$.post("{% url ajax_category %}", function(data){
+				    	$("#id_item-category").empty();
+				    	$("#id_item-category").append(data);
+				    });
+                	$('#dialog_category').dialog('close');
+				} else{
+					$("#dialog_category").empty();
+					$("#dialog_category").append(data);
+				}
+		    });					
+		} 
+
+
+		function add_sub_category(){
+			$('#dialog_sub_category').empty()
+			$('#dialog_sub_category').load("{% url ajax_sub_category_add %}")
+			$('#dialog_sub_category').dialog('open');
+		}
+
+		function close_sub_category(){
+			$('#dialog_sub_category').dialog('close');
+		}
+
+		function submit_sub_category(){
+			categories= new Array()
+		    $("#id_item-category option:selected").each(function () {
+		    	categories.push($(this).val())
+		    });
+			$.post("{% url ajax_sub_category_add %}", $("#form_sub_category").serialize(), function(data){
+				if (data == ''){
+                	$.post("{% url ajax_sub_category %}", {'categories': categories}, function(data){
+				    	$("#id_item-subcategory").empty();
+				    	$("#id_item-subcategory").append(data);
+				    });
+					$('#dialog_sub_category').dialog('close');
+				} else{
+					$("#dialog_sub_category").empty();
+					$("#dialog_sub_category").append(data);
+				}
+		    });					
+		} 
+
+
+		function add_session(){
+			$('#dialog_session').empty()
+			$('#dialog_session').load("{% url ajax_session_add %}")
+			$('#dialog_session').dialog('open');
+		}
+				
+		function close_session(){
+			$('#dialog_session').dialog('close');
+		}
+
+		function submit_session(){
+			$.post("{% url ajax_session_add %}", $("#form_session").serialize(), function(data){
+				if (data == ''){
+                	$.post("{% url ajax_session %}", function(data){
+				    	$("#id_item-session").empty();
+				    	$("#id_item-session").append(data);
+				    });
+                	$('#dialog_session').dialog('close');
+				}else{
+					$("#dialog_session").empty();
+					$("#dialog_session").append(data);
+				}
+		    });					
+		} 
+
+				
+	</script>
+
+{% endblock %}
+
+{% block menu %}
+	{% include 'for_sale/items_menu.html' %}
+{% endblock %}

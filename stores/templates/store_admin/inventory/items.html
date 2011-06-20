@@ -1,0 +1,186 @@
+{% extends 'store_admin/inventory/base_items.html' %}
+{% load i18n %}
+{% load sell_tags %}
+{% load store_admin_tags %}
+
+{% block toolbar %}
+    {{ block.super }}
+    
+    <script type="text/javascript">
+		function delete_all(){
+			$("#items_selection").submit();
+		};
+	</script>
+			
+    <a id="item_bulk_delete" style="cursor: pointer" onclick="javascript:delete_all()"><img src="{{ MEDIA_URL }}img/remove.png" class="icon"/>{% trans "Delete Items" %}</a>
+    
+	<form method="get" action="." class="form_search">
+		<input type="text" name="q_title" value="{{ q_title }}"/>
+		<input type="hidden" name="filter_by" value="title"/>
+	</form>
+{% endblock %}
+
+{% block menu_options %}
+	<script type="text/javascript">
+		$(function() {
+			$("#tree_cat").treeview({
+				collapsed: true,
+				animated: "fast",
+				unique: true,
+				persist: "location",
+			});
+		})		
+ 	</script>
+	 	
+	<ul id="tree_cat">
+		<li class="open">{% trans "Category" %}
+			<ul>
+				{% for category in shop.marketplace.marketcategory_set.all %}
+					<li><a href="{% url inventory_items %}?filter_by=category&id_category={{ category.id }}">{{ category.name }}</a>
+					<ul id="sub_tree">
+						{% for subcategory in category.subcategories.all %}
+							<li><a href="{% url inventory_items %}?filter_by=subcategory&id_subcategory={{ subcategory.id }}">{{ subcategory.name }}</a></li>
+						{% endfor %}
+					</ul>
+					</li>
+				{% endfor %}
+			</ul>
+		</li>
+
+{% endblock %}
+
+{% block super_main %}
+
+	<div class="bar_title">
+		<div class="grid_1 alpha omega bar_column">
+			&nbsp;
+		</div>
+		<div class="grid_1 alpha omega bar_column">
+			<a href="./?{{ filter_params|update_filters:'order_by=oldest' }}"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+			<a href="./?{{ filter_params|update_filters:'order_by=newest' }}"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+		</div>
+		<div class="grid_5 alpha omega bar_column"><b>{% trans "Title" %}</b></div>
+		<div class="grid_5 alpha omega bar_column"><b>{% trans "Category" %}</b></div>
+		<div class="grid_2 alpha omega bar_column"><b>{% trans "Qty" %}</b>
+			<a href="./?{{ filter_params|update_filters:'order_by=qty' }}"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+			<a href="./?{{ filter_params|update_filters:'order_by=-qty' }}"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+		</div>
+		<div class="grid_2 alpha omega bar_column"><b>{% trans "Price" %}</b>
+			<a href="./?{{ filter_params|update_filters:'order_by=price' }}"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
+			<a href="./?{{ filter_params|update_filters:'order_by=-price' }}"><img src="{{ MEDIA_URL }}img/icon_up.gif"/></a>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<form action="{% url items_bulk_delete %}" method="POST" id="items_selection" >
+	{% for item in products.object_list %}
+		<div class="{% cycle 'row_1' 'row_2' %}" title="{{ item.descriptio|safe }}">
+			<div class="grid_1 alpha omega column"><input type="checkbox" name="{{ item.id }}"/></div>
+			<div class="grid_1 alpha omega column"><a rel="{{ item.image.image.url_100x100 }}" href="{% url item_details item.id %}" ># {{ item.id }}</a></div>
+			<div class="grid_5 alpha omega column"><span>{{ item.title }}</span></div>
+			<div class="grid_5 alpha omega column"><span>{{ item.category.name }} | {{ item.subcategory.name }}</span></div>
+			{% comment %}
+			<div class="grid_2 alpha omega column"><span>{{ item.qty }}</span></div>
+			{% endcomment %}
+			<div class="grid_2 alpha omega column"><input id="qty_{{ item.id }}" type="text" value="{{ item.qty }}" width="10px" readonly="readonly"/></div>
+			<div class="grid_2 alpha omega column">$<input id="price_{{ item.id }}" type="text" value="{{ item.price }}" width="10px" readonly="readonly"/></div>
+			<div class="clear"></div>
+		</div>
+	{% endfor %}
+	</form>
+	
+	{% block main %}
+		<div class="clear"></div>
+		{% if total > 10 %}
+		<div>
+			<br></br>
+			{% trans "Show Results By" %} 
+			{% if filter_params.items_per_page != 10 %}<a href="./?{{ filter_params|update_filters:'items_per_page=10' }}">10</a>{% else %}<b>10</b>{% endif %} |
+			{% if filter_params.items_per_page != 20 %}<a href="./?{{ filter_params|update_filters:'items_per_page=20' }}">20</a>{% else %}<b>20</b>{% endif %} | 
+			{% if filter_params.items_per_page != 50 %}<a href="./?{{ filter_params|update_filters:'items_per_page=50' }}">50</a>{% else %}<b>50</b>{% endif %} | 
+			{% if filter_params.items_per_page != 100 %}<a href="./?{{ filter_params|update_filters:'items_per_page=100' }}">100</a>{% else %}<b>100</b>{% endif %}
+		</div>
+		{% endif %}
+		<div class="pagination">
+		{% with products as objects %}
+			{% include 'paginator.html'%}
+		{% endwith %}
+		</div>
+		<div class="clear"></div>
+
+		<hr/>
+	
+	{% endblock %}
+	
+	<script type="text/javascript">
+	function trim(stringToTrim) {
+		return stringToTrim.replace(/^\s+|\s+$/g,"");
+	}
+	
+	// -------------- Ajax Change QTY		
+	
+	var init_qty;
+	
+	$("input[id*='qty_']").focusin(function(){
+		$("input[id*='qty_']").attr("readonly", "readonly");
+		$(this).removeAttr("readonly").focus();
+		init_qty = trim($(this).val());
+	});
+	
+	$("input[id*='qty_']").blur(function(){
+		var value = trim($(this).val());
+		var item_id = $(this).attr("id");
+		var input = $(this);
+		if (init_qty != value) {
+			
+			$.ajax({
+				type: "POST",
+				async: false,
+				url: "{% url ajax_change_qty %}",
+				data: "item_id="+item_id+"&new_qty="+value,
+	  			error: function(xml, error) {
+	    			input.val(init_qty);
+	    			alert("Could not update the qty value");
+	  			}
+			});	
+		}else{
+			input.val(init_qty);
+		}
+		input.attr("readonly", "readonly");
+	});
+	
+	
+	// -------------- Ajax Change Price
+	
+	var init_price;
+	
+	$("input[id*='price_']").focusin(function(){
+		$("input[id*='price_']").attr("readonly", "readonly");
+		$(this).removeAttr("readonly").focus();
+		init_price = trim($(this).val());
+	});
+	
+	$("input[id*='price_']").blur(function(){
+		var value = trim($(this).val());
+		var item_id = $(this).attr("id");
+		var input = $(this);
+		if (init_price != value) {
+			
+			$.ajax({
+				type: "POST",
+				async: false,
+				url: "{% url ajax_change_price %}",
+				data: "item_id="+item_id+"&new_price="+value,
+	  			error: function(xml, error) {
+	    			input.val(init_price);
+	    			alert("Could not update the price value");
+	  			}
+			});	
+		}else{
+			input.val(init_price);
+		}
+		input.attr("readonly", "readonly");
+	});
+	
+	</script>
+	
+{% endblock %}

@@ -1,0 +1,4 @@
+{% if about.location %}	
+	<iframe src ="http://{{ DEFAULT_DNS }}{% url bidding_map about.id %}" width="458" height="416" class="iframe">
+	</iframe>
+{% endif %}

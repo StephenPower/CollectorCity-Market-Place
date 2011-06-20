@@ -1,0 +1,38 @@
+{% extends 'base_login.html' %}
+{% load i18n %}
+
+{% block title %}
+	<h2>{% trans "Shops - All" %}</h2>
+{% endblock %}
+
+{% block main %}
+	{% if shops %}
+		<div class="grid_17 margin_v">
+			<div class="grid_2 alpha omega"><span><b>{% trans "Shop Name" %}</b></span></div>
+			<div class="grid_3 alpha omega"><span><b>{% trans "Activity Start Date" %}</b></span></div>
+			<div class="grid_3 alpha omega"><span><b>{% trans "Dns" %}</b></span></div>
+			<div class="grid_3 alpha omega"><span><b>{% trans "User" %}</b></span></div>
+			<div class="grid_3 alpha omega"><span><b>{% trans "Email" %}</b></span></div>
+			<div class="grid_3 alpha omega"><span><b>{% trans "Options" %}</b></span></div>
+		</div>
+		<div class="clear"></div>
+		{% for shop in shops %}
+		<div class="grid_17 margin_v">
+			<div class="grid_2 alpha omega"><span>{{ shop.name }}</span></div>
+			<div class="grid_3 alpha omega"><span>{{ shop.date_time|date:"Y-m-d" }}</span></div>
+			<div class="grid_3 alpha omega"><span>{{ shop.default_dns }}</span></div>
+			<div class="grid_3 alpha omega"><span>{{ shop.owner.get_full_name }}({{ shop.owner.username }})</span></div>
+			<div class="grid_3 alpha omega"><span>{{ shop.owner.email }}</span></div>
+			<div class="grid_3 alpha omega"><span><a href="{% url shop_subscription shop.id %}">Subscription</a></span></div>
+		</div>
+		<div class="clear"></div>
+		{% endfor %}
+	{% else %}
+		<h3>{% trans "No shops found." %}</h3>
+	{% endif %}
+	
+{% endblock %}
+
+{% block menu %}
+	{% include 'shops/shop_menu.html' %}
+{% endblock %}

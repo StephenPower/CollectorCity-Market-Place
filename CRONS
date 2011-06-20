@@ -1,0 +1,3 @@
+
+python manage.py cron_fetch_import_images
+

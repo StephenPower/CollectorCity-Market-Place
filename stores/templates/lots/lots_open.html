@@ -1,0 +1,42 @@
+{% extends 'store_admin/inventory/base_auctions.html' %}
+{% load i18n %}
+
+{% block title %}
+	<h2>{% trans "Lot Overview - Open" %}</h2>
+{% endblock %}
+
+{% block main %}
+	<div class="grid_15 margin_v padding_v">
+		<div class="grid_2 alpha omega"><span>{% trans "Lot #" %}</span></div>
+		<div class="grid_3 alpha omega"><span>{% trans "Date" %}</span></div>
+		<div class="grid_3 alpha omega"><span>{% trans "Current Bidder" %}</span></div>
+		<div class="grid_2 alpha omega"><span>{% trans "Total Bids" %}</span></div>
+		<div class="grid_3 alpha omega"><span>{% trans "Time Left" %}</span></div>
+		<div class="grid_2 alpha omega"><span>{% trans "Total" %}</span></div>
+	</div>
+	<div class="clear"></div>
+	
+	<!-- for -->
+	<div class="grid_15 margin_v">
+		<div class="grid_2 alpha omega"><a href="{% url lot_details %}"># 1002</a></div>
+		<div class="grid_3 alpha omega"><span>01 March 2010 12:44</span></div>
+		<div class="grid_3 alpha omega"><a href="">Sebastian</a></div>
+		<div class="grid_2 alpha omega"><a href="">22</a></div>
+		<div class="grid_3 alpha omega"><span>2 {% trans "Days" %}</span></div>
+		<div class="grid_2 alpha omega"><span>$ 101.45</span></div>
+	</div>
+	<div class="clear"></div>
+	<div class="grid_15 margin_v">
+		<div class="grid_2 alpha omega"><a href="{% url lot_details %}"># 1002</a></div>
+		<div class="grid_3 alpha omega"><span>01 March 2010 12:44</span></div>
+		<div class="grid_3 alpha omega"><a href="">Sebastian</a></div>
+		<div class="grid_2 alpha omega"><a href="">22</a></div>
+		<div class="grid_3 alpha omega"><span>2 {% trans "Days" %}</span></div>
+		<div class="grid_2 alpha omega"><span>$ 101.45</span></div>
+	</div>
+	<div class="clear"></div>
+{% endblock %}
+
+{% block menu %}
+	{% include 'lots/lots_menu.html' %}
+{% endblock %}

@@ -1,0 +1,9 @@
+{% load i18n %}
+{% load users_tags sell_tags %}
+
+{% if shop|is_bidder:user %}
+		<p>
+			<a href="{% url my_shopping %}">Shopping Cart</a> ({{ user|total_cart_items:shop }})&nbsp;&nbsp; 
+			<a href="{% url my_orders %}">My Orders</a>
+		</p>
+{% endif %}

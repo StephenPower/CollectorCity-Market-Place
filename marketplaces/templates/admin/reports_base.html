@@ -1,0 +1,17 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block extrastyle %}
+	{{ block.super }}
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/960_20.css" />
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/reports.css" />
+{% endblock %}
+
+{% block content %}
+<div class="container_20">
+	<div id="report">
+	{% block report %}
+	{% endblock %}
+	</div>	
+</div>
+{% endblock %}

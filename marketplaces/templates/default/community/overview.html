@@ -1,0 +1,80 @@
+{% extends "default/community.html" %}
+{% load i18n %}
+
+{% block overview_selection %}current_selection{% endblock %}
+
+{% block community_content %}
+
+<div class="grid_14 alpha omega margin_v">
+<h1>{% trans "Latest Announcements" %}</h1>
+
+{% for announce in announcements %}
+<div class="announcement">
+	<div class="grid_3">
+		<img class="item" src="{{ announce.image.url_100x100 }}"/>
+	</div>
+	<div class="grid_10">
+		<span class="post_date">{{ announce.posted_on|date:'F j, Y' }}</span> | <span><b>{{ announce.posted_by }}</b></span>
+		<div class="margin_v">{{ announce.announcement }}</div>
+	</div>
+</div>
+<div class="clear"></div>
+{% endfor %}
+
+<div class="clear"></div>
+<br/><br/>
+
+<h1>{% trans "Just Launched" %}</h1>
+	
+{% for shop in shops %}
+<div class="grid_5">
+	<a href="http://{{ shop.default_dns }}" target="_blank">
+	<div class="dealer_box">
+		{% if shop.owner.get_profile.photo %}
+		<img class="item" alt="{{ shop.name }}" src="{{ shop.owner.get_profile.photo.url_400x400 }}" height="128" width="135"/>
+		{% else %}
+		<img class="item" alt="{{ shop.name }}" src="{{ MEDIA_URL }}img/no-photo-big.jpg" height="128" width="135"/>
+		{% endif %}
+		<div>{{ shop.admin.get_full_name }}</div>
+		<div>{{ shop.default_dns }}</div>
+		<div>{{ shop.description|safe }}</div>
+	</div>
+	</a>
+</div>
+{% endfor %}
+
+<div class="clear"></div>
+<br/><br/>
+
+<h1>{% trans "Latest Blog Posts" %}</h1>
+
+{% for post in last_posts %}
+
+{% include "default/community/post_render.html" %}
+
+{% empty %}
+<div class="notice">{% trans "There are no posts to show at this moment" %}</div>
+{% endfor %}
+
+</div>
+
+<div class="grid_3 alpha omega block_filter">
+	<h4>{{ marketplace.name }} {% trans "on the Web" %}</h4>
+	<ul>
+		<li><a href="/">{% trans "Follow us on Twitter" %}</a></li>
+		<li><a href="/">{% trans "Follow us on Facebook" %}</a></li>
+	</ul>
+	
+	<h4>{% trans "Subscribe to Our Newsletter" %}</h4>
+    <form action="." method="POST" class="newsletter_form">
+    	
+    	{% if mailing_list_form.email.errors %}<div class="error">{{ mailing_list_form.email.errors|join:", " }}</div>{% endif %}
+		<b>{{ mailing_list_form.email.label.title }}</b>
+		{{ mailing_list_form.email }} {{ mailing_list_form.email.help_text }}
+    	
+		<input type="submit" value="{% trans 'Subscribe' %}"></input>
+    </form>
+	
+</div>
+
+{% endblock %}

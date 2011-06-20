@@ -1,0 +1,31 @@
+{% extends 'preferences/preferences_payment.html' %}
+{% load uni_form_tags %}
+{% load i18n %}
+
+{% block main %}
+		
+	<div class="grid_15" style="background: white">
+		<div class="grid_5">
+			<img src="{{ MEDIA_URL }}img/manual-payments.png"/>
+		</div>
+		<div class="grid_9 alpha omega">
+			<h4>{% trans "Available Manual Payments Settings" %}</h4>
+			{% for manual_payment in manual_payments %}
+				#{{ manual_payment.id }} - {{ manual_payment.name }} (<a href="{% url edit_manual_payment manual_payment.id %}">edit</a> | <a href="{% url delete_manual_payment manual_payment.id %}">remove</a>)<br/>
+			{% endfor %}
+		</div>
+		<div class="clear"></div><br/>
+		<div style="padding-left: 5px;">
+			<form action="{% url save_manual_payment %}" method="POST" class="uniForm">
+				<fieldset class="blockLabels">
+					{{ manual_payment_form|as_uni_form }}
+					<div class="buttonHolder">
+						<button class="primaryAction small awesome" type="submit">{% trans 'Save' %}</button>
+					</div>
+				</fieldset>
+			</form>				
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+{% endblock %}

@@ -1,0 +1,27 @@
+{% load i18n %}
+
+	<div class="grid_4 margin_h padding_h margin_v padding_v">
+		<div class="border-bottom padding_v margin_v">
+			<h3>{% trans "Menu" %}</h3>
+		</div>
+		<p><a href="{% url blog_pages %}">{% trans "List blog and pages" %}</a></p>
+	</div>
+	<div class="clear"></div>
+
+	<div class="grid_4 margin_h padding_h margin_v padding_v">
+		<div class="border-bottom padding_v margin_v">
+			<h3>{% trans "Pages" %}</h3>
+		</div>
+		<p><a href="{% url page_create %}">{% trans "Create a new page" %}</a></p>
+	</div>
+	<div class="clear"></div>
+
+	<div class="grid_4 margin_h padding_h margin_v padding_v">
+		<div class="border-bottom padding_v margin_v">
+			<h3>{% trans "Blog" %}</h3>
+		</div>
+		<p><a href="{% url post_add %}">{% trans "New Post" %}</a></p>
+	</div>
+	<div class="clear"></div>
+
+	

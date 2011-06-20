@@ -1,0 +1,38 @@
+{% extends 'admin/reports_base.html' %}
+{% load i18n adminmedia %}
+
+{% block breadcrumbs %}
+	<div class="breadcrumbs">
+		<a href="/admin/">{% trans "Home" %}</a> &gt; 
+		<a href="{% url admin_reports %}">Reports</a> &gt; 
+		<a href="">Monthly Recurring Revenue</a>
+	</div>
+{% endblock %}
+
+{% block report %}
+	<h1>Monthly Recurring Revenue Report</h1>
+	<div class="table">
+		<div class="grid_20">
+		{% for col_name in columns %}		
+			<div class="th"><b>{{ col_name }}</b></div>
+		{% endfor %}
+		</div>
+		<div class="clear"></div>		
+		<hr></hr>
+		{% for row in rows %}
+		<div class="grid_20 margin_v">
+			{% for col_value in row %}
+    		<div class="td">{{ col_value }}</div>
+			{% endfor %}			
+		</div>
+		<div class="clear"></div>
+		{% endfor %}
+		<hr></hr>
+		<div class="grid_20 margin_v">
+		{% for total in totals %}
+			<div class="td"><b>{{ total }}</b></div>
+		{% endfor %}
+		</div>
+		<div class="clear"></div>
+	</div>
+{% endblock %}

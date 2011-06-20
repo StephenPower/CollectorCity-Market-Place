@@ -1,0 +1,10 @@
+{% extends 'store_admin/inventory/base_inventory.html' %}
+{% load i18n %}
+{% load sell_tags %}
+
+{% block m_lots %}current_sub_menu{% endblock %}
+
+{% block toolbar %}
+	<a href="{% url lot_add  %}"><img src="{{ MEDIA_URL }}img/add.png" class="icon">{% trans "Add Item" %}</a>  
+{% endblock %}
+

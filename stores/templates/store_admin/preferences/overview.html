@@ -1,0 +1,76 @@
+{% extends 'store_admin/preferences/base_preferences.html' %}
+{% load i18n %}
+{% load sell_tags %}
+
+{% block m_overview %}current_sub_menu{% endblock %}
+
+{% block menu_options %}
+{% endblock %}
+
+{% block main %}
+	<div class="grid_5 box">
+		<div class="box_header"><h3>{% trans "General Settings" %}</h3></div>
+		<div class="box_body">
+			<p>Shop Name: {{ shop.preference.name_store }}</p>
+			<p>Email Address: {{ shop.preference.email }}</p>
+			<p>Phone Number: {{ shop.preference.phone }}</p>
+			<p>Physical Address: {{ shop.admin.get_profile.street_address }}, {{ shop.admin.get_profile.city }}, {{ shop.admin.get_profile.state }}, {{ shop.admin.get_profile.country }}</p>
+			<p>Store Pa	ssword: {{ shop.preference.store_password }}</p>
+		</div>
+	</div>
+	<div class="grid_5 box">
+		<div class="box_header"><h3>{% trans "Taxes" %}</h3></div>
+		<div class="box_body">
+			{% comment %}
+			<p>Apply Taxes to Shipments in the same state as your physical store: {{ shop.preference.taxes_same_state_store }}</p>
+			<p>Apply Taxes to Shipping Fees: {{ shop.preference.taxes_to_shipping_fees }}</p>
+			{% endcomment %}
+			{% for tax in shop.taxstate_set.all %}
+			<p>{{ tax }}</p>
+			{% endfor %}
+		</div>
+	</div>
+	<div class="grid_5 box">
+		<div class="box_header"><h3>{% trans "Payments" %}</h3></div>
+		<div class="box_body">
+			<p>Google Checkout Enabled: {{ google }}</p>
+			<p>PayPal Enabled: {{ paypal }} </p>
+			<p>Braintree Enabled: {{ braintree }}</p>
+			<p>Manual Payment: {{ manual }}</p>
+		</div>
+	</div>
+	<div class="clear"></div>
+	<div class="grid_5 box">
+		<div class="box_header"><h3>{% trans "Auctions" %}</h3></div>
+		<div class="box_body">
+			<p>Allow Sessions: {{ shop.preference.allow_sessions }}</p> 
+			<p>Allow Open Auctions: {{ shop.preference.allow_open_auctions }}</p>
+			<p>Open Auction Default Days: {{ shop.preference.default_days }}</p>
+			<p>Auto-extend Enabled: {{ shop.preference.open_auto_extend }}</p>
+			<p>Session Auto-extend Enabled: {{ shop.preference.session_auto_extend }}</p>
+		</div>
+	</div>
+	<div class="grid_5 box">
+		<div class="box_header"><h3>{% trans "Shipping" %}</h3></div>
+		<div class="box_body">
+			{% for item in shop.shippingitem_set.all %}
+			<p>{{ item }}</p>
+			{% endfor %}
+			{% for item in shop.shippingweight_set.all %}
+			<p>{{ item }}</p>
+			{% endfor %}
+			{% for item in shop.shippingprice_set.all %}
+			<p>{{ item }}</p>
+			{% endfor %}
+		</div>
+	</div>
+	<div class="grid_5 box">
+		<div class="box_header"><h3>{% trans "DNS & Domain" %}</h3></div>
+		<div class="box_body">
+			{% for domain in shop.dnsshop_set.all %}
+			<p>{{ domain.dns }}</p>
+			{% endfor %}
+		</div>
+	</div>
+	<div class="clear"></div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'store_admin/web_store/base_web_store.html' %}
+{% load i18n %}
+
+{% block m_overview %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}Web Store{% endblock %}
+
+{% block main %}
+	<div class="grid_5 box">
+		<div class="box_header"><h3>{% trans "Marketing" %}</h3></div>
+		<div class="box_body">
+			<p><a href="{% url web_store_marketing %}">{% trans "Google Analytics" %}</a></p>
+			<p><a href="{% url web_store_shows %}">{% trans "Shows" %}</a></p>
+		</div>	
+	</div>
+	<div class="grid_5 box">
+		<div class="box_header"><h3>{% trans "Theme" %}</h3></div>
+		<div class="box_body">
+			<p><a href="{% url web_store_theme %}">{% trans "Templates" %}</a></p>
+			<p><a href="{% url web_store_theme %}">{% trans "Assets" %}</a></p>
+		</div>
+	</div>
+	<div class="grid_5 box">
+		<div class="box_header"><h3>{% trans "Navigation" %}</h3></div>
+		<div class="box_body">
+			<p><a href="{% url web_store_navigation %}">{% trans "Edit Menu" %}</a></p>
+			<p><a href="{% url web_store_navigation %}">{% trans "Edit Footer" %}</a></p>
+		</div>
+	</div>
+	<div class="clear"></div>
+
+	<div class="grid_5 box">
+		<div class="box_header"><h3>{% trans "Pages" %}</h3></div>
+		<div class="box_body">
+			<p><a href="{% url page_edit_home %}">{% trans "Home" %}</a></p>
+			<p><a href="{% url page_edit_about %}">{% trans "About" %}</a></p>
+			{% for page in static_pages %}
+				<p><a href="{% url page_edit_static page.id %}">{{ page.title }}</a></p>
+			{% endfor %}
+			{% for page in dynamic_pages %}
+				<p><a href="{% url page_edit_dynamic page.id %}">{{ page.page.title }}</a></p>
+			{% endfor %}
+		</div>
+	</div>
+
+	<div class="grid_5 box">
+		<div class="box_header"><h3>{% trans "Blog" %}</h3></div>
+		<div class="box_body">
+			{% for post in posts %}
+				<p><a href="{% url post_edit post.id %}">{{ post.title }}</a></p>
+			{% endfor %}
+		</div>
+	</div>
+	
+	<div class="clear"></div>
+{% endblock %}

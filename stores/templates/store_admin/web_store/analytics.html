@@ -1,0 +1,32 @@
+{% extends 'store_admin/web_store/marketing.html' %}
+{% load i18n %}
+
+{% block title_sub_menu %}Account number{% endblock %}
+
+{% block t_google %}current_tab{% endblock %}
+
+{% block menu_options %}
+	<ul id="tree">
+		<li>{% trans "Google Analytics" %}
+			<ul>
+				<li><a href="{% url web_store_marketing %}">{% trans "Account Number" %}</a></li>
+				<li>
+					<a href="http://www.google.com/analytics/" target="_blank">
+					{% comment %}<img src="{{ MEDIA_URL }}img/help.png" class="icon">{% endcomment %}
+					{% trans "Link to Google help" %}</a>
+				</li>
+			</ul>
+		</li>
+	</ul>
+{% endblock %}
+
+{% block main %}
+	<div class="grid_10 box">
+		<h3>{% trans "Google Analytics Account Number" %}</h3>
+		<form action="." method="post">
+			{{ form.as_p }}
+			<button type="submit" class="large awesome" value='save'>{% trans "Save" %}</button>
+		</form>
+	</div>
+	<div class="clear"></div>
+{% endblock %}

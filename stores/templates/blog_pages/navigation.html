@@ -1,0 +1,62 @@
+{% extends 'base_login.html' %}
+{% load i18n %}
+
+{% block title %}
+	<h2>{% trans "Navigation" %}</h2>
+{% endblock %}
+
+{% block main %}
+
+	<style type="text/css">
+		#sortable { list-style-type: none; margin: 0; padding: 0;}
+		#sortable li { margin: 0 5px 5px 5px; padding: 5px; font-size: 1.2em; height:15px; }
+		html>body #sortable li { height:15px; line-height: 1.2em; }
+		.ui-state-highlight { height:15px; line-height: 1.2em; }
+	</style>
+	
+	<script type="text/javascript">
+	$(function() {
+		{% for menu in menus %}
+			$(".sortable_{{ menu.id }}").sortable({
+				placeholder: 'ui-state-highlight',
+	
+				update : function () { 
+				    var order = $('.sortable_{{ menu.id }}').sortable('serialize'); 
+				    $.get('{% url link_order %}?name={{ menu.name|slugify }}&'+order);
+				} 
+			    	
+			});
+			$(".sortable_{{ menu.id }}").disableSelection();
+		{% endfor %}
+	});
+	</script>
+	
+	{% for menu in menus %}
+		<h3>{{ menu.name }}</h3>
+		<br/>
+		<div class="grid_13 alpha omega">
+		<ul id="sortable" class="sortable_{{ menu.id }}">
+			{% for link in menu.links %}
+				<li class="ui-state-default" id="{{ menu.name|slugify }}_{{ link.id }}">
+					<div class="grid_5 alpha omega"><img src="{{ MEDIA_URL }}img/arrow.png"/><a href="{% url link_edit link.id %}">{{ link.name }}</a></div>
+					<div class="grid_5 alpha omega"><a href="{{ link.to }}">{{ link.to }}</a></div>
+					<div class="grid_2 alpha omega"><a href="javascript:delete_object('{% url link_delete link.id %}', 'link')"><img src="{{ MEDIA_URL }}img/remove.png"></a></div>
+					<div class="clear"></div>
+				</li>
+			{% endfor %}
+		</ul>
+		</div>
+		<div class="clear"></div>
+		<br/>
+		<a href="{% url link_add menu.id %}">{% trans "Add link" %}</a>
+		
+	{% endfor %}
+
+	
+	
+	
+{% endblock %}
+
+{% block menu %}
+	{% include 'blog_pages/navigation_menu.html' %}
+{% endblock %}

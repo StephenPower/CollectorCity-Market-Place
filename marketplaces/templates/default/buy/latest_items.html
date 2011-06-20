@@ -1,0 +1,50 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+{% load sell_tags %}
+
+
+{% block content %}
+<div id="breadcrumbs" class="grid_18">
+	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_buy %}">{% trans "Buy" %}</a> &raquo; {% trans "Latest Items" %}
+</div>
+
+<div class="grid_18 block_main_content">
+
+<h3>{% trans "Latest Items" %}</h3>
+<p>Find the Coin you've always looked for with our marketplace of dealers. Post Your Wish List For all the dealers to see.</p>
+
+{% for product in latest_items %}
+<div class="grid_18">	
+	<div class="grid_4">
+		<a href="{% url market_buy_product_redirect product.id %}" target="_blank">
+		{% if product.child.image %}
+	 	<img class="item" src="{{ product.child.image.image.url_100x100 }}" title="{{ product.description|striptags }}"/>
+	 	{% else %}
+	 	<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ product.description|striptags }}"/>
+	 	{% endif %}
+		<div>{{ product.title|truncatewords:5 }}</div>
+		<div>{{ product.category.name }}</div>
+		<div>{{ product.child.price|money_format:product.shop }}</div>
+		</a>
+	</div>
+	<div class="grid_10">
+		<p>{% trans "More Items from" %} {{ product.shop }}</p>
+		{% for other_product in product.shop.last_posted_products %}
+		<div class="grid_1">
+			<a href="{% url market_buy_product_redirect other_product.id %}" target="_blank">
+			{% if other_product.child.image %}
+			<img src="{{ other_product.child.image.image.url_100x100 }}" height="42" width="42" title="{{ other_product.description|striptags }}"/></img>
+			{% else %}
+			<img src="{{ MEDIA_URL }}img/no-photo-small.jpg" height="42" width="42" title="{{ other_product.description|striptags }}"/></img>
+			{% endif %}
+			</a>
+		</div>
+		{% endfor%}
+	</div>
+</div>
+<div class="clear"></div>
+{% endfor %}
+
+</div>
+
+{% endblock %}

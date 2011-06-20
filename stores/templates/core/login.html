@@ -1,0 +1,24 @@
+{% extends 'base_shop.html' %}
+{% load i18n uni_form_tags %}
+
+{% block body %}
+	<div class="container_20">
+		<div class="grid_8 prefix_4">
+			<form action="." method="POST" class="big_form">
+				<fieldset class="register">
+				{{ form.as_p }}
+				<div class="buttonHolder">
+					<br/>
+					<button type="submit" class="button_primary">{% trans "Login" %}</button>
+		        	<input type="hidden" name="next" value="{{ next|escape }}" />
+		        </div>
+		        </fieldset>
+			</form>
+		</div>
+		<br/><br/><br/><br/>
+		<br/><br/><br/><br/>
+	</div>
+	<div class="clear"></div>
+{% endblock %}
+
+	

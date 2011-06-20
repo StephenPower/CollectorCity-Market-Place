@@ -1,0 +1,75 @@
+{% extends 'store_admin/inventory/base_auctions.html' %}
+{% load i18n %}
+
+
+{% block title_sub_menu %}{% trans "Add Session" %}{% endblock %}
+
+{% block main %}
+	<h3>{% trans "Auction Description" %}</h3>
+	
+	<form name="form" method="post" action=".">
+	
+		{% if form.title.errors %}<div class="error">{{ form.title.errors|join:", " }}</div>{% endif %}
+		<h4 style="padding-bottom: 0px; margin-bottom:0px;">{% trans "Title" %}:</h4>
+		<span style="display: block; color:#AAAAAA;">{% trans "Example: Friday Night Auction; Coins and Currency; Cars and Trucks" %}</span>
+		{{ form.title }}
+		<br/>
+		
+		
+		{% if form.description.errors %}<div class="error">{{ form.description.errors|join:", " }}</div>{% endif %}
+		<h4>{% trans "Describe the Session" %}:</h4>
+		{{ form.description }}	
+		<br/>
+	
+	
+		<h3>{% trans "Session Properties" %}</h3>
+		
+			
+		{% if form.date_from.errors %}<div class="error">{{ form.date_from.errors|join:", " }}</div>{% endif %}
+		<p>{% trans "Date Start" %}</p>
+		{{ form.date_from }}
+		
+		{% if form.time_from.errors %}<div class="error">{{ form.time_from.errors|join:", " }}</div>{% endif %}
+		<p>{% trans "Time Start" %}</p>
+		{{ form.time_from }}
+	
+	
+		{% if form.date_to.errors %}<div class="error">{{ form.date_to.errors|join:", " }}</div>{% endif %}
+		<p>{% trans "Date End" %}</p>
+		{{ form.date_to }}
+		
+		{% if form.time_to.errors %}<div class="error">{{ form.time_to.errors|join:", " }}</div>{% endif %}
+		<p>{% trans "Time End" %}</p>
+		{{ form.time_to }}
+		
+	
+		
+		<div class="clear"></div>
+		
+		<br/><br/>	
+		<button type="submit" class="small awesome">{% trans "Add" %}</button>
+		<a href="{% url inventory_auctions %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+		
+	</form>
+
+	<script type="text/javascript">
+		$(function() {
+			$("#id_date_from").datepicker();
+			$("#id_date_to").datepicker();
+  		    $("#id_time_from").AnyTime_picker(
+				      { format: "%H:%i", labelTitle: "Time" } );
+  		    $("#id_time_to").AnyTime_picker(
+				      { format: "%H:%i", labelTitle: "Time" } );
+		});
+	</script>
+	<style type="text/css">
+		div.AnyTime-win { background: #ffffff;}
+		.AnyTime-pkr .AnyTime-cur-btn {border:1px solid #FCEFA1; color:#363636;}
+	</style>
+	
+	
+{% endblock %}
+
+{% block menu %}
+	{% include 'auctions/auctions_menu_details.html' %}
+{% endblock %}

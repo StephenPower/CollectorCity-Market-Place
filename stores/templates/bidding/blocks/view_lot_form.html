@@ -1,0 +1,83 @@
+{% load sell_tags %}
+{% load i18n %}
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#dialog-confirm").dialog(
+		{
+		autoOpen: false, 
+		modal: true,
+		resizable: false,
+		draggable: false,
+		width: 350,
+		heigth: 300,
+		buttons: { 
+				"Cancel": function() { $(this).dialog("close"); },
+				"Confirm": function() { $("#bid_form").submit(); },
+			} 
+		}
+	);
+	
+	({  })
+	$("#bidbutton").click(function(event){
+		event.preventDefault();
+		var a = $("#id_amount").attr("value");
+		if(!isNaN(a)){
+			$("#bid_amount").text(a)
+			$("#dialog-confirm").dialog("open");
+		}
+	});
+		
+});
+</script>
+
+<div id="dialog-confirm" title="Confirm your action please...">
+	<h6>Are you sure you want to bid $ <span id="bid_amount">--</span> for this item?</h6>
+</div>
+
+<p>Bids:
+	<span class="big">
+	{% ifequal lot.count_bids 0 %} 
+		{{ lot.count_bids }}
+	{% else %}
+		<a href="{% url bidding_view_history_lot lot.id %}">{{ lot.count_bids }}</a>
+	{% endifequal %}
+	</span>
+</p>
+
+<br/>
+
+<p>
+
+{% if lot.is_active %}
+	{% ifequal lot.count_bids 0 %}
+		Starting bid
+	{% else %}
+		Current bid	
+	{% endifequal %}
+	: <span class="big">{{ lot.current_bid|money_format:shop }}</span> 
+		{% if lot.reserve %}
+			{% if lot.reserve_has_been_met %}({% trans "Reserve Met" %}){% else %}({% trans "Reserve Not Met" %}){% endif %}
+		{% endif %}
+{% else %}
+	{% if lot.is_sold %}
+		Final bid
+		: <span class="big">{{ lot.current_bid|money_format:shop }}</span>
+	{% endif %}
+{% endif %}
+
+</p>
+
+{% if lot.shop.admin != user %}
+	{% if lot.is_active %}
+		<form method="get" action="{% url bidding_view_lot lot.id %}" id="bid_form">
+			{% if form.amount.errors %}<div class="error">{{ form.amount.errors|join:", " }}</div>{% endif %}
+			<p>Your bid:{{ form.amount }} &nbsp;
+				<button id="bidbutton" type="submit" class="small awesome">Place Bid</button>
+			</p>
+			
+			<p>(Enter {{ lot.next_bid_from|money_format:shop }} or more)</p>
+					
+		</form>
+	{% endif %}
+{% endif %}

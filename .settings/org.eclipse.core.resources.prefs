@@ -1,0 +1,5 @@
+#Sun Jun 19 22:50:19 EDT 2011
+eclipse.preferences.version=1
+encoding//stores/cron_past_due.py=utf-8
+encoding//stores/cron_send_daily_invoice.py=utf-8
+encoding//stores/cron_update_bt_payment_status.py=utf-8

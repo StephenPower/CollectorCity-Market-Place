@@ -1,0 +1,45 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="grid_18 block_main_content">
+	<div class="announce left">
+		<p><h1>Welcome to {{ marketplace.name }} {{ shop.admin.username }} !!</h1></p>
+		<p>{{ marketplace.name }} is the online Marketplace for buying and selling coins.<br/>
+		A collector and a Dealer wanted to create a market where buyers and sellers to find the very best coins.<br/>
+		We monitor the marketplace for counterfiets and coins that don't match the description.</p> 
+	</div>
+	
+	<h1>{% trans "Here is What You Can Do to Get Started" %}</h1>
+	<br/>
+	
+	<div class="grid_18">
+	<div class="grid_3 alpha omega shop_feature_box">
+		<p>{% trans "Post Coins" %}</p>
+		<img alt="Coins" src="{{ MEDIA_URL }}img/coins.jpg"></img>
+	</div>
+
+	<div class="grid_3 alpha omega shop_feature_box">
+		<p>{% trans "Setup Paymentys" %}</p>
+		<img alt="Coins" src="{{ MEDIA_URL }}img/coins.jpg"></img>
+	</div>
+	
+	<div class="grid_3 alpha omega shop_feature_box">
+		<p>{% trans "Choose Your Store Look" %}</p>
+		<img alt="Coins" src="{{ MEDIA_URL }}img/coins.jpg"></img>
+	</div>
+	
+	<div class="grid_3 alpha omega shop_feature_box">
+		<p>{% trans "Auction Coins" %}</p>
+		<img alt="Coins" src="{{ MEDIA_URL }}img/coins.jpg"></img>
+	</div>
+	</div>
+	
+	<br/> 
+	
+	<p>** {% trans "The credit card charge will be appear as" %} <b>{{ marketplace.charge_on_card_as }}</b></p>
+	
+	<h3>{% trans "Go to your shop now" %} <a href="http://{{ shop.default_dns }}" class="blue">http://{{ shop.default_dns }}</a></h3>
+</div>
+<div class="clear"></div>
+{% endblock %}

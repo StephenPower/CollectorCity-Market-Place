@@ -1,0 +1,7 @@
+{% load i18n %}
+
+<form name="form_sub_category" id="form_sub_category" method='post'>
+	{{ form_sub_category.as_p }}
+	<a href="#" onclick="javascript:submit_sub_category(); return false;" class="small awesome">{% trans "Add" %}</a>
+	<a href="javascript:close_sub_category();" class="small awesome">{% trans "Cancel" %}</a>
+</form>

@@ -1,0 +1,53 @@
+{% extends 'preferences/preferences_payment.html' %}
+{% load uni_form_tags %}
+{% load i18n %}
+
+{% block main %}
+	
+	<div class="grid_15" style="background: white">
+		<div class="grid_5">
+			<img src="{{ MEDIA_URL }}img/googlecheckout-logo.gif"/>
+			<div class="grid_5 prefix_1">
+				{% if google_settings %}
+				<a class="small awesome" href="{% url delete_googlecheckout_settings google_settings.id %}">{% trans "Deactivate" %}</a>
+				{% endif %}
+			</div>
+		</div>
+		<div class="grid_9 alpha omega">
+			<h4>{% trans "Google Check Out Settings" %}</h4>
+			
+			<div>
+				To enable this service you must provide your Google Checkout account credentials.<br/>
+				{% comment %}
+				<div style="background: #FFFFEE; font-size: 8px; margin-top:5px; margin-bottom: 5px; padding: 10px; width: 270px">
+				Google merchant ID: 77175458950507<br/>
+				Google merchant key: mJJ69xVcMEjUYW3h9DWVew<br/>
+				(*) This are not valid ids, just example values.
+				</div>
+				{% endcomment %}
+			</div>
+
+			<div>
+			In order to start using Google Checkout you must manually log into your Google Checkout account and complete the process<br/>
+			<ol>
+				<li>Log into your Google Checkout Merchant account <a href="http://google.com/checkout">click here</a></li>
+				<li>Go to <i>Settings</i> tab and click on <i>Integration</i></li>
+				<li>In the textfield <i>API callback URL</i> put this https://{{ shop.default_dns }}/services/google/ipn/</li>
+				<li>On <i>Callback contents</i> select the choice "Notification as HTML (name/value pairs)"</li>
+				<li>Save settings</li>
+			</ol>
+			</div>
+			<form action="{% url save_googlecheckout_settings %}" method="POST" class="uniForm">
+				<fieldset class="blockLabels">
+					{{ google_form|as_uni_form }}
+					<div class="buttonHolder">
+						<button class="small awesome" type="submit">{% trans 'Save' %}</button>
+					</div>
+				</fieldset>
+			</form>
+			<br></br>
+		</div>
+		<div class="clear"></div>
+	</div>
+	
+{% endblock %}

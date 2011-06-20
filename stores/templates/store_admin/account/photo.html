@@ -1,0 +1,26 @@
+{% extends 'store_admin/account/profile.html' %}
+{% load i18n %}
+
+{% block t_picture %}current_tab{% endblock %}
+
+{% block title_sub_menu %}Update Profile{% endblock %}
+
+{% block menu_options %}
+{% endblock %}
+
+{% block main %}
+
+<div class="grid_11 box">
+
+	<img src="{{ shop.owner.get_profile.photo.url_128x135 }}"/>
+	<form action="{% url add_profile_photo %}" method="POST" name="form_image" enctype="multipart/form-data">
+		<p>{% trans "Photo" %}:
+		<input type="file" name="photo"/>
+		</p>
+		<button type="submit" class="small awesome"/>Add Photo</button>
+	</form>
+
+</div>
+
+<div class="clear"></div>
+{% endblock %}

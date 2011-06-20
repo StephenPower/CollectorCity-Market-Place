@@ -1,0 +1,53 @@
+8
+
+dir
+288
+http://django-reversion.googlecode.com/svn/trunk/src/reversion/locale/ru/LC_MESSAGES
+http://django-reversion.googlecode.com/svn
+
+
+
+2009-10-16T15:26:02.390479Z
+245
+dave@pod.me.uk
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+ab604574-8a94-11dd-aa62-cdabd1f4ca1e
+
+django.po
+file
+
+
+
+
+2010-07-22T18:26:16.000000Z
+cc3fe2e79a46fd04d6ebb1794889f70f
+2009-10-16T15:26:02.390479Z
+245
+dave@pod.me.uk
+
+django.mo
+file
+
+
+
+
+2010-07-22T18:26:16.000000Z
+120ee27f8fcc4a6d557fd90ca9b81e5b
+2009-10-16T15:26:02.390479Z
+245
+dave@pod.me.uk
+has-props
+

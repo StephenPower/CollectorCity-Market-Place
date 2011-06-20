@@ -1,0 +1,54 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+{% load sell_tags %}
+
+{% block content %}
+<div id="breadcrumbs" class="grid_18">
+	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_for_sale %}">{% trans "Items For Sale" %}</a>
+</div>
+
+{% block filter_content %}
+<div class="grid_4"></div>
+{% endblock %}
+
+{% block main_content %}
+<div class="grid_18 margin_h">
+	<div class="block_main_content">
+	<h2>{{ total }} items for sale found</h2>
+	<p>Listing {{ items.object_list.count }} item{{ items.object_list.count|pluralize }}</p>
+	
+	{% if items.object_list.count %}
+	{% for item in items.object_list %}
+	<div class="grid_3 margin_h">
+		<div class="item_box">
+			<a href="{% url market_buy_product_redirect item.product_ptr_id %}" target="_blank">
+			{% if item.image %}
+			<img class="item" src="{{ item.image.image.url_100x100 }}" title="{{ item.description|striptags }}"/>
+			{% else %}
+			<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ item.description|striptags }}"/>
+			{% endif %}
+			<div>{{ item.title|truncatewords:5 }}</div>
+			<div>{{ item.category.name }}</div>
+			<div>{{ item.price|money_format:item.shop }}</div>
+			</a>
+		</div>
+	</div>
+	{% endfor %}
+	
+	<div class="clear"></div>
+	<div class="pagination">
+	{% with items as objects %}
+		{% include 'paginator.html'%}
+	{% endwith %}
+	</div>
+			
+	{% else %}
+	{% trans "No items for sale found" %}
+	{% endif %}
+	<div class="clear"></div>	
+	</div>
+	
+</div>
+{% endblock %}
+
+{% endblock %}

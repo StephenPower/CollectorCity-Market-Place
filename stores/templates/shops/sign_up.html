@@ -1,0 +1,136 @@
+{% extends 'base_shop.html' %}
+{% load i18n %}
+
+{% block title_header %}
+<h1>{% trans "Sign Up" %}</h1>
+<div class="subtitle">Sub - Text. bla bla bla bla. <span class="white">Other bla</span></div>
+{% endblock %}
+
+
+{% block body %}
+
+<div class="container_20" id="container">
+	<div class="grid_14 prefix_3">
+		{% if flash.message %}
+	        <div id="flash_message">
+	        <div class="body {{ flash.severity|default:"notice" }}">
+	        	<p><h3>{{ flash.message }}</h3></p>
+	        </div>
+	        </div>
+    	{% endif %}
+		<form name="form" method="post" action="." class="big_form">
+			<fieldset class="register">
+			{% if form.name_store.errors %}<div class="error">{{ form.name_store.errors|join:", " }}</div>{% endif %}
+			<h2>{{ form.name_store.label }}</h2>
+			{{ form.name_store }}
+			<br/><br/>
+			
+			{% if form.shop_name.errors %}<div class="error">{{ form.shop_name.errors|join:", " }}</div>{% endif %}
+			<h2>{{ form.shop_name.label }}</h2>
+			<label>http://{{ form.shop_name }}.{{ DEFAULT_DNS }}</label>
+			<br/><br/><br/><br/>
+			
+			<h2>{% trans "Create your administration account" %}</h2>
+			<br/>
+
+			{% if form.first_name.errors %}<div class="error">{{ form.first_name.errors|join:", " }}</div>{% endif %}
+			<h3>{{ form.first_name.label }}</h3>
+			{{ form.first_name }}
+
+			{% if form.last_name.errors %}<div class="error">{{ form.last_name.errors|join:", " }}</div>{% endif %}
+			<h3>{{ form.last_name.label }}</h3>
+			{{ form.last_name }}
+
+			{% if form.username.errors %}<div class="error">{{ form.username.errors|join:", " }}</div>{% endif %}
+			<h3>{{ form.username.label }}</h3>
+			{{ form.username }}
+			
+			{% if form.email.errors %}<div class="error">{{ form.email.errors|join:", " }}</div>{% endif %}
+			<h3>{{ form.email.label }}</h3>
+			{{ form.email }}
+
+			{% if form.password1.errors %}<div class="error">{{ form.password1.errors|join:", " }}</div>{% endif %}
+			<h3>{{ form.password1.label }}</h3>
+			{{ form.password1 }}
+
+			{% if form.password2.errors %}<div class="error">{{ form.password2.errors|join:", " }}</div>{% endif %}
+			<h3>{{ form.password2.label }}</h3>
+			{{ form.password2 }}
+
+			<h2>{% trans "Choose your plan" %}</h2>
+			<br/>
+			{% if form.plan_id.errors %}<div class="error">{{ form.plan_id.errors|join:", " }}</div>{% endif %}
+			{{ form.plan_id }}
+
+			<br></br>
+			<br></br>
+			<h2>{% trans "Your Billing Address" %}</h2>
+			<br/>
+			{% if form.street.errors %}<div class="error">{{ form.street.errors|join:", " }}</div>{% endif %}
+			<h3>{{ form.street.label }}</h3>
+			{{ form.street }}
+			
+			{% if form.city.errors %}<div class="error">{{ form.city.errors|join:", " }}</div>{% endif %}
+			<h3>{{ form.city.label }}</h3>
+			{{ form.city }}
+			
+			{% if form.zip.errors %}<div class="error">{{ form.zip.errors|join:", " }}</div>{% endif %}
+			<h3>{{ form.zip.label }}</h3>
+			{{ form.zip }}
+			
+			{% if form.state.errors %}<div class="error">{{ form.state.errors|join:", " }}</div>{% endif %}
+			<h3>{{ form.state.label }}</h3>
+			{{ form.state }}
+			
+			{% if form.country.errors %}<div class="error">{{ form.country.errors|join:", " }}</div>{% endif %}
+			<h3>{{ form.country.label }}</h3>
+			{{ form.country }}
+			
+			<br></br>
+			<br></br>
+			<h2>{% trans "Your billing information" %}</h2>
+			<br/>
+			{% if form.cc_number.errors %}<div class="error">{{ form.cc_number.errors|join:", " }}</div>{% endif %}
+			<h3>{{ form.cc_number.label }}</h3>
+			{{ form.cc_number }}
+			
+			<h3>{% trans "Expiration Date" %}</h3>
+			{{ form.cc_expiration_month }}
+			{{ form.cc_expiration_year }}
+			
+			<br></br>
+			<br></br>
+			{% if form.card_security_number.errors %}<div class="error">{{ form.card_security_number.errors|join:", " }}</div>{% endif %}
+			<h3>{{ form.card_security_number.label }}</h3>
+			{{ form.card_security_number }}
+			
+			<a href="https://www.braintreegateway.com/merchants/{{ merchant_id }}/verified" target="_blank">
+				<img src="https://braintree-badges.s3.amazonaws.com/01.png" border="0"/>
+			</a>
+			
+			<br/><br/><br/>
+			<h2>{% trans "Terms and conditions" %}</h2>
+
+			{% if form.terms.errors %}<div class="error">{{ form.terms.errors|join:", " }}</div>{% endif %}
+			<label>{{ form.terms }} {% trans "I have read and agree to the" %} <a href="" class="blue">{% trans "Terms & Conditions" %}</a></label>
+			<br/><br/><br/><br/>
+			<div class="buttonHolder">
+				<br/>
+				<button type="submit" class="button_primary">{% trans "Create Store" %}</button>
+		       	<input type="hidden" name="next" value="{{ next|escape }}" />
+		    </div>
+			</fieldset>
+		</form>
+	</div>
+	<div class="clear"></div>
+</div>
+	
+	<script type="text/javascript">
+	$("#id_name_store").keyup(function(e){
+	    var name = $(this).val();
+	       $("#id_shop_name").val(name.toLowerCase().replace(/[^a-z0-9-]/ig, ''));
+	       $("#id_username").val(name.toLowerCase().replace(/[^a-z0-9-]/ig, ''));
+	}); 
+	</script>
+	
+{% endblock %}

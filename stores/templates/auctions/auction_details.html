@@ -1,0 +1,63 @@
+{% extends 'store_admin/inventory/base_auctions.html' %}
+{% load i18n %}
+{% load sell_tags %}
+
+{% block title_sub_menu %}
+	{% trans "Auction Details" %}: {{ auction.title|title }}
+{% endblock %}
+
+{% block main %}
+	<h3>{{ auction.title|title }}</h3>
+	<p>{% trans "Status" %}: {{ auction.status }}</p>
+	<p>{% trans "Start" %}: {{ auction.start|date:"d F Y H:i" }}</p>
+	<p>{% trans "End" %}: {{ auction.end|date:"d F Y H:i" }}</p>
+	<p>{% trans "Description" %}: {{ auction.description|safe }}</p>
+	
+	<br/>
+	
+	{% if auction.lot_set.all %}
+	
+		<div class="bar_title">
+			<div class="grid_2 alpha omega bar_column"><span>{% trans "Lot #" %}</span></div>	
+			<div class="grid_5 alpha omega bar_column"><span>{% trans "Title" %}</span></div>	
+			<div class="grid_3 alpha omega bar_column"><span>{% trans "Status" %}</span></div>	
+			<div class="grid_2 alpha omega bar_column"><span>{% trans "Price" %}</span></div>	
+			<div class="clear"></div>
+		</div>
+	{% endif %}
+	
+	{% for lot in auction.lot_set.all %}
+		<div class="{% cycle 'row_1' 'row_2' %} row_small">
+			<div class="grid_2 alpha omega column"><a rel="{{ lot.image.url_100x100 }}" href="{% url lot_details lot.id %}" class="aa" title="{{ lot.title }}"># {{ lot.id }}</a></div>
+			<div class="grid_5 alpha omega column"><span>{{ lot.title }}</span></div>
+			<div class="grid_3 alpha omega column"><span>{{ lot.get_state_display }}</span></div>
+			<div class="grid_2 alpha omega column"><span>{{ lot.current_bid|money_format:shop }}</span></div>
+			<div class="clear"></div>
+		</div>
+	{% empty %}
+		<h4>{% trans "No lots in this session" %}</h4>
+	{% endfor %}
+	
+	
+	<script type="text/javascript">
+
+		$(".list a").imgPreview({
+		    containerID: 'imgPreviewWithStyles',
+		    /* Change srcAttr to rel: */
+		    srcAttr: 'rel',
+		    imgCSS: {
+		        // Limit preview size:
+		        height: 100
+		    },
+		    // When container hides: 
+		    onHide: function(link){
+		        $('span', this).remove();
+		    }
+		});
+		
+	</script>
+{% endblock %}
+
+{% block menu %}
+	{% include 'auctions/auctions_menu.html' %}
+{% endblock %}

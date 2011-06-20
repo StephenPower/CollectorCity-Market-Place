@@ -1,0 +1,5 @@
+{% if flash.message %}
+	<div class="{{ flash.severity|default:"notice" }}">
+	   	<p>{{ flash.message }}</p>
+	</div>
+{% endif %}

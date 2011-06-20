@@ -1,0 +1,18 @@
+{% extends "admin/reports_base.html" %}
+{% load i18n adminmedia %}
+
+{% block breadcrumbs %}
+	<div class="breadcrumbs"><a href="/admin/">{% trans "Home" %}</a> &gt; <a href="{% url admin_reports %}">Reports</a></div>
+{% endblock %}
+
+
+{% block report %}
+<h2>{% trans "Available Reports" %}</h2>
+<hr></hr><br></br>
+<ul>
+	<li><a href="{% url admin_shop_subscriptions %}">Shop Subscriptions</a></li>
+	<li><a href="{% url admin_daily_activity %}">Daily Activity (Sign Up / Cancell)</a></li>
+	<li><a href="{% url admin_monthly_revenue %}">MMR (Monthly Recurring Revenue)</a></li>
+	<li><a href="{% url admin_daily_transactions %}">Daily Transactions</a></li>
+</ul>
+{% endblock %}
