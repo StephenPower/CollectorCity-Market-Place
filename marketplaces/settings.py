@@ -159,7 +159,7 @@ AUTH_PROFILE_MODULE = 'users.Profile'
 LOGIN_URL = '/buy/login/'
 LOGIN_REDIRECT_URL= '/redirect' 
 
-GOOGLE_KEY = 'ABQIAAAAyzeHb2pW9itVqg6nabu-OxTXCAfJ5xohYoj4xmeFNYA-r64HsxTDZtuI70-4l5S44ZnehIPzKxMNXQ'
+GOOGLE_KEY = ''
 
 DEFAULT_DNS = 'shop.com'
 
