@@ -64,7 +64,13 @@ def ajax_session_add(request):
     try:
         form_session = AuctionSessionForm(request.POST or None, prefix="session")
         if form_session.is_valid():
-    
+            today = datetime.datetime.today()
+            
+            sessions = AuctionSession.objects.filter(shop=request.shop).filter(end__gt=today)
+            html = ""
+            for session in sessions:
+                html += '<option value="%d">%s</option>' % (session.id, session.title)
+                
             auction_session = form_session.save(commit = False)
             d = datetime.datetime(form_session.cleaned_data['date_from'].year,
                                   form_session.cleaned_data['date_from'].month,
@@ -82,8 +88,10 @@ def ajax_session_add(request):
             auction_session.end = d
             auction_session.shop = request.shop
             auction_session.save() 
-                    
-            return HttpResponse("")
+            
+            html += '<option value="%d" selected="selected">%s</option>' % (auction_session.id, auction_session.title)    
+            return HttpResponse(html)
+        
         return render_to_response('category/ajax_session_add.html', {'form_session': form_session},
                                   RequestContext(request))
     except:
@@ -93,9 +101,11 @@ def ajax_session_add(request):
 
 @shop_admin_required
 def ajax_session(request):
-    shop = request.shop
-    sessions = AuctionSession.objects.filter(shop=shop)
+    today = datetime.datetime.today()
+    
+    sessions = AuctionSession.objects.filter(shop=request.shop).filter(end__gt=today)
     html = ""
     for session in sessions:
         html += '<option value="%d">%s</option>' % (session.id, session.title)
+    
     return HttpResponse(html)      

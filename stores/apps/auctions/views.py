@@ -10,7 +10,7 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from forms import AuctionSessionForm
 from models import AuctionSession
 
-from core.decorators import shop_admin_required
+from core.decorators import shop_admin_required, auctions_feature_required
 
 import datetime
 
@@ -85,8 +85,10 @@ PAGE_AUCTIONS = 10
 
     
 
-@shop_admin_required    
+@shop_admin_required
+@auctions_feature_required
 def auction_add(request):
+    
     form = AuctionSessionForm(request.POST or None)
     if form.is_valid():
         auction_session = form.save(commit = False)
@@ -112,8 +114,9 @@ def auction_add(request):
                               RequestContext(request))
 
 
-
+@auctions_feature_required
 def auction_details(request, auction_id):
+    
     auction = get_object_or_404(AuctionSession, pk=auction_id)
     shop = request.shop
     if auction.shop != shop:

@@ -7,11 +7,13 @@
 
 {% block toolbar %}
 	{% block action %}
+		{% if shop.mailinglist_feature_enabled %}
 		<img id="gear" src="{{ MEDIA_URL }}img/gear.png"></img>
 		<div id="actions_menu">
 			<div id="title">{% trans "Actions" %}: {% trans "Mailing list" %}</div>
 			<div id="action"><a href="{% url customers_export_mailinglist %}"><img src="{{ MEDIA_URL }}img/export.png" class="icon"/>{% trans "Export To CSV" %}</a></div>
 		</div>
+		{% endif %}
 	{% endblock%}
 {% endblock%}
 	
@@ -21,7 +23,10 @@
 	</form>
 {% endblock %}
 
-{% block super_main %}
+{% block main %}
+
+{% if shop.mailinglist_feature_enabled %}
+	
 	<div class="clear"></div>
 	<div class="bar_title">
 		<div class="grid_1 alpha omega bar_column">
@@ -44,4 +49,16 @@
 		<div class="notice">{% trans "There is no email registered yet" %}</div>
 	{% endfor %}
 
+{% else %}	
+	<div class="enable_feature"><a class="enable_feature_box" href="{% url enable_feature 'mailinglist' %}">{% trans "Enable Mailing List Feature" %} for ${{ shop.mailinglist_feature_price }}</a><img src="{{ MEDIA_URL }}img/help-icon.png" onclick="javascript:show_help_text('htb_container');"/></div>
+	
+	<div class="htb_container">
+		<img id="stick" src="{{ MEDIA_URL }}img/stick.png"/>
+		<div class="help_text_box">
+			{{ shop.mailinglist_feature_help_text }}
+			<div class="close"><img onclick="javascript: close_help_text('htb_container')" src="{{ MEDIA_URL }}img/remove.png"/></div>
+		</div>
+	</div>
+{% endif %}
+		
 {% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'admin/reports_base.html' %}
+{% load i18n adminmedia %}
+
+{% block breadcrumbs %}
+	<div class="breadcrumbs">
+		<a href="/admin/">{% trans "Home" %}</a> &gt; 
+		<a href="{% url admin_reports %}">Reports</a> &gt; 
+		<a href="">Shop Revenue By Type</a>
+	</div>
+{% endblock %}
+
+{% block report %}
+	<h1>Shop Revenue By Type</h1>
+	
+	
+{% endblock %}

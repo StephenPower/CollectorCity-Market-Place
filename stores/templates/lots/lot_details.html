@@ -22,13 +22,13 @@
 		
 		<div id="images">
 		{% for img in lot.imagelot_set.all %}		
-			<div class="grid_3 alpha omega">
+			<div class="image">
 				<img src="{{ img.image.url_100x100 }}" height="100"/>
-				<a href="{% url del_image lot.id img.id %}">{% trans "Delete" %}</a><br/>
+				<div><a href="{% url del_image lot.id img.id %}">{% trans "Delete" %}</a></div>
 				{% if img.primary_picture %}
-				Primary Picture
+				<div>Primary Picture</div>
 				{% else %}
-				<a href="{% url set_lot_primary_picture lot.id img.id %}">{% trans "Set as Primary" %}</a>
+				<div><a href="{% url set_lot_primary_picture lot.id img.id %}">{% trans "Set as Primary" %}</a></div>
 				{% endif %}
 			</div>
 		{% endfor %}

@@ -33,9 +33,11 @@
 		<div class="grid_20 margin_v">
 			<div class="grid_3 alpha omega"><span>{{ shop.name }}</span></div>
 			<div class="grid_3 alpha omega"><span>{{ shop.date_time|date:"Y-m-d" }}</span></div>
-			<div class="grid_4 alpha omega"><span>{{ shop.default_dns }}</span></div>
+			<div class="grid_4 alpha omega"><span title="{{ shop.default_dns }}">
+			{% if shop.default_dns|length > 25 %}{{ shop.default_dns|slice:"25" }}...{% else %} {{ shop.default_dns }}{% endif %}</span></div>
 			<div class="grid_3 alpha omega"><span>{{ shop.owner.get_full_name }}({{ shop.owner.username }})</span></div>
-			<div class="grid_4 alpha omega"><span>{{ shop.owner.email }}</span></div>
+			<div class="grid_4 alpha omega"><span title="{{ shop.owner.email }}">
+			{% if shop.owner.email|length > 25 %}{{ shop.owner.email|slice:"25" }}...{% else %} {{ shop.owner.email }}{% endif %}</span></div>
 			<div class="grid_3 alpha omega"><span><a href="#" onclick="javascript:mostrar('{% url admin_shop_subscription_details shop.id %}')">Subscription</a></span></div>
 		</div>
 		<div class="clear"></div>

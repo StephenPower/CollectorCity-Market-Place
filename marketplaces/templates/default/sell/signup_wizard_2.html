@@ -10,34 +10,113 @@ tinyMCE.init({
 	theme : "advanced",
 	readonly : true ,
 });
+
+$(document).ready(function(){
+	$("#id_2-shop_address").click(function(){
+	if ($("#id_2-shop_address").is(":checked")){
+	    //show the hidden div
+	    $("#address_fields").hide("fast");
+	}
+	else{     
+	    //otherwise, hide it
+	    $("#address_fields").show("fast");
+	}
+	});
+	
+	$('form').submit(function(){
+		$('input[type=submit]').attr("disabled", "disabled");		
+	});
+});
 </script>
 
-<form name="form" method="post" action="." class="wizard">
-	{% if form.non_field_errors %} Error : <div class="error">{{ form.non_field_errors }}</div>{% endif %}
-
+<form id="form" name="form" method="post" action="." class="form-stacked span8 offset2" id="wizard">
+	{% if form.non_field_errors %} Error : <div class="alert-message block-message error">{{ form.non_field_errors }}</div>{% endif %}
 	{% csrf_token %}
-	{% for field in form %}
-	{% if field.errors %}<div class="error">{{ field.errors|join:", " }}</div>{% endif %}
-	<h4>{{ field.label.title }}</h4>
-	{% if field.label.title == "Terms" %}
-	<textarea rows="20" cols="80">
+	
+	<fieldset>	
+		<label>{{ form.shop_address.label }}</label>{{ form.shop_address }}	
+	</fieldset>
+	
+	<div id="address_fields">
+	
+	{% if form.billing_street.errors %}<div class="alert-message block-message error">{{ form.billing_street.errors|join:", " }}</div>{% endif %}	
+	<label>{{ form.billing_street.label.title }}</label>
+	{{ form.billing_street }}
+	<br></br>
+	{% if form.billing_city.errors %}<div class="alert-message block-message error">{{ form.billing_city.errors|join:", " }}</div>{% endif %}	
+	<label>{{ form.billing_city.label.title }}</label>
+	{{ form.billing_city }}	
+	<br></br>
+	{% if form.billing_state.errors %}<div class="alert-message block-message error">{{ form.billing_state.errors|join:", " }}</div>{% endif %}	
+	<label>{{ form.billing_state.label.title }}</label>
+	{{ form.billing_state }}
+	<br></br>
+	{% if form.billing_zip.errors %}<div class="alert-message block-message error">{{ form.billing_zip.errors|join:", " }}</div>{% endif %}	
+	<label>{{ form.billing_zip.label.title }}</label>
+	{{ form.billing_zip }}
+	<br></br>
+	</div>
+		
+	{% if form.cc_number.errors %}<div class="alert-message block-message error">{{ form.cc_number.errors|join:", " }}</div>{% endif %}	
+	<label>{{ form.cc_number.label.title }}</label>
+	{{ form.cc_number }}
+	
+	{% if form.cc_expiration_month.errors %}<div class="alert-message block-message error">{{ form.cc_expiration_month.errors|join:", " }}</div>{% endif %}	
+	<label>{{ form.cc_expiration_month.label.title }}</label>
+	{{ form.cc_expiration_month }}
+	<br></br>
+	{% if form.cc_expiration_year.errors %}<div class="alert-message block-message error">{{ form.cc_expiration_year.errors|join:", " }}</div>{% endif %}	
+	<label>{{ form.cc_expiration_year.label.title }}</label>
+	{{ form.cc_expiration_year }}
+	<br></br>
+	{% if form.card_security_number.errors %}<div class="alert-message block-message error">{{ form.card_security_number.errors|join:", " }}</div>{% endif %}	
+	<label>{{ form.card_security_number.label.title }}</label>
+	{{ form.card_security_number }}
+	
+	{% if form.terms.label.title == "Terms" %}
+	<label>Terms</label>
+	<textarea rows="10" cols="140">
 	{{ marketplace.termsandconditions_set.all.0.text }}
 	</textarea>
-	<div class="grid_2">{{ field }} I Agree</div>
+	<label>{{ form.terms }} I Agree</label>
 	{% else %}
-	{{ field }} {{ field.help_text }}
+	{{ form.terms }} {{ form.terms.help_text }}
 	{% endif %}
-	<br/><br/>
-	{% endfor %}
-	
 	<input type="hidden" name="{{ step_field }}" value="{{ step0 }}" />
 	{{ previous_fields|safe }}
 
 	<div class="buttonHolder">
 		<br/>
-		<button type="submit" class="button_next">{% trans "Next" %}</button>
+<div class="submit-active"> 
+
+
+
+	<button id="ButtonBuy" type="submit" class="btn primary">{% trans "Buy" %}</button>
        	<input type="hidden" name="next" value="{{ next|escape }}" />
+</div>
+<div class="submit-passive" style="display: none;"> 
+        <input type="button" class="btn primary disable" value="Buy" disabled>
+   </div>
+
+
+
+
     </div>
-	</fieldset>
-</form> 
+	
+	
+</form>
+
+
+<script>
+
+$(document).ready(function() {
+    $("#form").submit(function() {
+        $("#form .submit-active, #form .submit-passive").toggle();
+    });
+});
+
+</script>
+
+
+ 
 {% endblock %}

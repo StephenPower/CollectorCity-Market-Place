@@ -2,11 +2,11 @@
 {% load i18n %}
 
 {% block content %}
-<div id="breadcrumbs" class="grid_18">
-	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_buy %}">{% trans "Buy" %}</a> &raquo; {% trans "Show Listing" %}
-</div>
-
-<div class="grid_18 block_main_content">
+<ul class="breadcrumb">
+ <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider">/</span></li>
+ <li><a href="{% url market_buy %}">{% trans "Buy" %}</a><span class="divider">/</span></li>
+ <li class="active">{% trans "Show Listing" %}</li>
+</ul>
 
 <script type="text/javascript">
 
@@ -25,13 +25,12 @@ function close_shops_dialog(box_id){
 };
 
 </script>
+<div class="span122 offset2">
 
-<h3>{% trans "Show Listing" %}</h3>
+<h2>{% trans "Show Listing" %}</h2>
 <p>See which stores will be at your local show</p>
 
-<div class="notice grid_9">
-<form action="{% url buy_show_search %}" method="POST">
-	<div class="grid_4">
+<form class="form-stacked" action="{% url buy_show_search %}" method="POST">
 		<label>{% trans "City" %}</label><input name="city" id="city"/>
 		<label>{% trans "State" %}</label>
 		<select name="state">
@@ -39,106 +38,148 @@ function close_shops_dialog(box_id){
     		<option>{{ state.1 }}</option>
 		{% endfor %}
 		</select>
-		{% comment %}
-		<label>{% trans "Country" %}</label><input name="country" id="country"/>
-		<label>{% trans "Zip" %}</label><input name="zip" id="zip"/>
-		{% endcomment %}
-		<div class="margin_v">
-			<input type="submit" class="small awesome" style="border: none"alt="" value="{% trans 'Search' %}"/>
-		</div>
-	</div>
+	<input type="submit" class="btn primary" alt="" value="{% trans 'Search' %}"/>
 </form>
-</div>
 
-<div class="clear"></div>
 
 {% if place %}
-<p>We have found {{ shows|length }} active shows near <b>{{ place }}</b></p>
+<p>We have found {{ shows|length }} show(s) near <b>{{ place }}</b></p>
 {% if shows %}
+<table class="zebra-striped">
+<thead>
+<tr>
+<th>Date</th>
+<th>Distance</th>
+<th>Show Name</th>
+<th>Duration</th>
+<th>Address</th>
+<th>Admission</th>
+<th>Dealers Attending A</th>
+</tr>
+</thead>
+<tbody>
 {% for show in shows %}
-<div class="{% cycle 'row1' 'row2' %}">
-	<div class="grid_3">{{ show.1.date_from|date:"d F Y"  }} - (distance {{ show.0 }} Miles)</div>
-	<div class="grid_8">
-		<div><b>{{ show.1.name }} (duration {{ show.1.duration }} days)</b></div>
-		<div>{{ show.1.address }}</div>
-		<div>{{ show.1.city }}, {{ show.1.state }} ({{ show.1.zip }}), {{ show.1.country }}</div>		
-		<div><b>{% trans "Contact" %}: </b>{{ show.1.contact_info }}</div>
-		<div><b>{% trans "Admission" %}: </b>
-		{% ifequal show.1.admission 0 %}
-		{% trans "Free" %}
+<tr>
+	<td>{{ show.1.date_from|date:"F d Y"  }}</td>
+	<td>{{ show.0 }} Miles </td>
+	<td>{{ show.1.name }}</td>
+	<td>{{ show.1.duration }} Days</td>
+	<td>
+	<address>
+	<p> {{ show.1.address }}</p>
+	<p>{{ show.1.city|title }},{{ show.1.state}} {{ show.1.zip }}</p>
+	<p> {{ show.1.country }}</p>
+	</address>
+	</td>
+	<td>	{% ifequal show.1.admission 0 %}
+		<p>{% trans "Free" %}</p></td>
 		{% else %}
-		$ {{ show.1.admission }}
+		$ {{ show.1.admission }}</td>
 		{% endifequal %}
-		</div>
-	</div>
-	<div class="grid_3">
-		<div class="awesome small blue" onclick="javascript:open_shops_dialog({{ show.1.id }})">{% trans "Show Listing" %}</div>
-	</div>
-	<div class="clear"></div>
+	<td>
+	{{ show.dealertoshow_set.count }}	
+	{% if show.dealerstoshow_set.count %}
+	<div class="btn primary" onclick="javascript:open_shops_dialog({{ show.1.id }})">{% trans "Show Listing" %}</div>
 	<div id="listing_box_{{ show.id }}">
-	{% if show.dealertoshow_set.count %}
-		<hr/>
+		{% if show.dealertoshow_set.count %}
+			<hr/>
 		{% for dealer in show.dealertoshow_set.all %}
-			<li><a href="http://{{ dealer.shop.default_dns }}" target="_blank">{{ dealer.shop.name }}</a></li>
+			{% with dealer.shop as shop %}
+			{% if shop.active %}
+			<li><a href="http://{{ shop.default_dns }}" target="_blank">{{ shop.name }}</a></li>
+			{% endif %}
+			{% endwith%}
 		{% endfor %}
 		</ul>	
-	{% else %}
-		<div class="notice">No shops have been confirmed to this show</div>
-	{% endif %}
+		<div class="alert-message warning">No shops confirmed to {{show.1.name}} </div>
+    	
+		{% else %}
+		<div class="alert-warning info">No Dealers Confirmed For This Show</div>
+		{% endif %}
 	</div>
-	<div class="clear"></div>
-</div>
+	</td>
+	{% else %}
+	<p>No Shops Confirmed to {{show.1.name|title }}</p></td>
+	{% endif %}
+</tr>	
 {% endfor %}
+</tbody>
+</table>
+
 {% else %}
-	<div class="notice">{% trans "There is no shows at this time" %}</div>
+	<div class="alert-message warning">{% trans "There are no shows at this time" %}</div>
 {% endif %}
 
 
 {% else %}
 <p>We have found {{ shows.count }} active shows</p>
+{% comment %}
 {% if shows %}
+<table class="zebra-striped">
+<thead>
+<tr>
+<th>Date</th>
+<th>Distance</th>
+<th>Show Name</th>
+<th>Duration</th>
+<th>Address</th>
+<th>Admission</th>
+<th>Dealers Attending B</th>
+</tr>
+</thead>
+<tbody>
 {% for show in shows %}
-<div class="{% cycle 'row1' 'row2' %}">
-	<div class="grid_3">{{ show.date_from|date:"d F Y"  }}</div>
-	<div class="grid_8">
-		<div><b>{{ show.name }} (duration {{ show.duration }} days)</b></div>
-		<div>{{ show.address }}</div>
-		<div>{{ show.city }}, {{ show.state }} ({{ show.zip }}), {{ show.country }}</div>		
-		<div><b>{% trans "Contact" %}: </b>{{ show.contact_info }}</div>
-		<div><b>{% trans "Admission" %}: </b>
-		{% ifequal show.admission 0 %}
-		{% trans "Free" %}
+<tr>
+	<td>{{ show.date_from|date:"F d Y"  }}</td>
+	<td>{{ show.0 }} Miles</td>
+	<td>{{ show.0.name }}</td>
+	<td>{{ show.0.duration }} </td>
+	<td> <address>
+		<p> {{ show.0.address }}</p>
+		<p> {{ show.0.city }}, {{ show.1.state }} {{ show.1.zip }}</p>
+		<p> {{ show.1.country }}</p>
+	     </address>	
+	</td>
+	<td>	
+		{% ifequal show.1.admission 0 %}
+		<p>{% trans "Free" %}</p></td>
 		{% else %}
-		$ {{ show.admission }}
+		<p>$ {{ show.1.admission }}</p></td>
 		{% endifequal %}
-		</div>
-	</div>
-	<div class="grid_3">
-		<div class="awesome small blue" onclick="javascript:open_shops_dialog({{ show.id }})">{% trans "Show Listing" %}</div>
-	</div>
-	<div class="clear"></div>
+     
+	{% if show.dealerstoshow_set.count %}
+	<td><div class="btn primary" onclick="javascript:open_shops_dialog({{ show.1.id }})">{% trans "Show Listing" %}</div>
 	<div id="listing_box_{{ show.id }}">
 	{% if show.dealertoshow_set.count %}
 		<hr/>
 		{% for dealer in show.dealertoshow_set.all %}
-			<li><a href="http://{{ dealer.shop.default_dns }}" target="_blank">{{ dealer.shop.name }}</a></li>
+			{% with dealer.shop as shop %}
+			{% if shop.active %}
+			<li><a href="http://{{ shop.default_dns }}" target="_blank">{{ shop.name }}</a></li>
+			{% endif %}
+			{% endwith%}
 		{% endfor %}
 		</ul>	
 	{% else %}
-		<div class="notice">No shops have been confirmed to this show</div>
+		<div class="alert-message warning">No shops confirmed to {{show.1.name}} </div>
 	{% endif %}
 	</div>
-	<div class="clear"></div>
-</div>
+
+    	{% else %}
+	<td class="alert-warning info">No Dealers Confirmed For This Show</td>
+	
+	{% endif %}
+	</td>
+</tr>
 {% endfor %}
+</tbody>
+</table>
 {% else %}
-	<div class="notice">{% trans "There is no shows at this time" %}</div>
+	<div class="notice">{% trans "There Are No Shows At This Time" %}</div>
 {% endif %}
 {% endif %}
 
-
-<div class="clear"></div>
-
+{% endcomment %}
+{% endif %}
 </div>
-
 {% endblock %}

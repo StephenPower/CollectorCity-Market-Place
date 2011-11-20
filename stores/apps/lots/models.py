@@ -166,7 +166,8 @@ class Lot(Product):
     def sold(self):
         from sell.models import Cart
         from preferences.models import EmailNotification
-        from django.core.mail import send_mail    
+        from django.core.mail import send_mail
+        from django.conf import settings
         from django.template import Context, Template
         
         self.state = 'S'
@@ -187,6 +188,7 @@ class Lot(Product):
                      'lot_title': self.title,
                      'lot_description': striptags(self.description) })
         
+        admin_email = self.shop.marketplace.contact_email
         try:
             notification = EmailNotification.objects.filter(type_notification='AWC', shop=self.shop).get()
             subj_template = Template(notification.subject)
@@ -194,21 +196,19 @@ class Lot(Product):
             
             subj_text = subj_template.render(c)
             body_text = body_template.render(c)
-            send_mail(subj_text, body_text, 'no-reply@greatcoins.com',  [self.bid_actual.bidder.email], fail_silently=True)
+            send_mail(subj_text, body_text, settings.EMAIL_FROM, [self.bid_actual.bidder.email], fail_silently=True)
             
         except EmailNotification.DoesNotExist:
             msg = "You made a bid u$s %s for %s and have won the auction!. Please contact %s to get more details about this purchase. Thanks" % (self.bid_actual.bid_amount, self.title, self.shop.admin.email)
-            send_mail("Congratulations!!", msg, 'no-reply@greatcoins.com',  [self.bid_actual.bidder.email], fail_silently=True)
+            send_mail("Congratulations!!", msg, settings.EMAIL_FROM,  [self.bid_actual.bidder.email], fail_silently=True)
             
         except Exception, e:
-            from django.conf import settings
-            send_mail("Could not send email to lot winner!", "Message could not be delivered to %s" % self.bid_actual.bidder.email, 'no-reply@greatcoins.com',  [mail for (name, mail) in settings.ADMINS], fail_silently=True)         
+            send_mail("Could not send email to lot winner!", "Message could not be delivered to %s" % self.bid_actual.bidder.email, settings.EMAIL_FROM,  [mail for (name, mail) in settings.STAFF]+[admin_email], fail_silently=True)         
         
     
     def didnt_sell(self):
         self.state = 'N'
         self.save()
-        
 
     def sell_actual(self):
         from sell.models import SellItem

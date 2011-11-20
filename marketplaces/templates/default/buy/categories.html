@@ -2,25 +2,45 @@
 {% load i18n %}
 
 {% block content %}
-<div id="breadcrumbs" class="grid_18">
-	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_buy %}">{% trans "Buy" %}</a> &raquo; {% trans "Categories" %}
-</div>
+<ul class="breadcrumb">
+	<li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider">/</span></li>
+	<li><a href="{% url market_buy %}">{% trans "Buy" %}</a><span class="divider">/</span></li>
+	<li class="active">{% trans "Categories" %}</li>
+</ul>
 
-<div class="grid_18 block_main_content margin_h">
-<h3>{% trans "All Categories" %}</h3>
+<div class="row">
+<div class="span12 offset2">
+<h2>{% trans "All Categories" %}</h2>
+
+<table class="zebra-striped">
+<thead>
+<tr>
+	<th>Categories</th>
+	<th>Subcategories</th>
+</tr>
+</thead>
+<tbody>
+
 
 {% for category in marketplace.marketcategory_set.all %}
-<div class="grid_18 alpha omega category_box margin_v">
-	<h4><b><a href="{% url market_search_category category.slug %}">{{ category.name }}</a></b></h4>
+
+   {% ifnotequal category.product_set.count 0 %}
+	<tr>
+	<td><h3><a href="{% url market_search_category category.slug %}">{{ category.name }}</a><h3></td>
+	<td>
 	{% for subcategory in category.subcategories.all %}
-	<div class="grid_3">
-		<a href="{% url market_search_subcategory category.slug subcategory.slug %}">{{ subcategory.name }}</a>
-	</div>
+	   {% ifnotequal subcategory.product_set.count 0 %}
+		<em><p><a href="{% url market_search_subcategory category.slug subcategory.slug %}">{{ subcategory.name }}</a></p></em>
+	   {% endifnotequal %}
 	{% endfor %}
-</div>
-<hr></hr>
+	</td>
+	</tr>
+   {% endifnotequal %}
+	
 {% endfor %}
 
+</tbody>
+</table>
 </div>
 
 {% endblock %}

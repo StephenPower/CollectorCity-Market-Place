@@ -3,39 +3,51 @@
 {% load sell_tags %}
 
 {% block content %}
-<div id="breadcrumbs" class="grid_18 auctions">
-	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_auctions %}">{% trans "Auctions" %}</a>
-</div>
+<ul class="breadcrumb">
+ <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider"> / </span></li>
+ <li><a href="{% url market_auctions %}">{% trans "Auctions" %}</a></li>
+</ul>
 
 {% block filter_content %}
-<div class="grid_4 auctions"></div>
 {% endblock %}
 
 {% block main_content %}
-<div class="grid_18 margin_h auctions_main">
-	<div class="block_main_content">
+<div class="span12 offset2">
+	<div class="content">
 	<h2>{{ total }} Auctions Found</h2>
-	<p>Listing {{ lots.object_list.count }} lot{{ lots.object_list.count|pluralize }}</p>
+	<p>Listing {{ lots.object_list.count }} lot{{ lots.object_list.count|pluralize }}</h5>
 	
 	{% if lots.object_list.count %}
 	{% for lot in lots.object_list %}
-	<div class="grid_3">
+		<div id="{{ lot.product_ptr_id }}" class="modal hide fade">
+		 <div class="modal-header">
+		 <a href="#" class="close">&times;</a>
+		 <h3>{{ lot.title|title|safe }}</h3>
+		</div>
+	       	 <div class="modal-body">
+		 <p><img src="{{ lot.image.image.url_100x100 }}"> </p>
+		 <p>{{ lot.description|safe }}</p>
+		</div>
+	       <div class="modal-footer">
+		<a href="{% url market_buy_product_redirect lot.product_ptr_id %}" target="_blank" class="btn primary">Go To Dealer's Product Page</a> 
+		</div>
+		</div>	
+
+
 		<div class="item_box">
-			<a href="{% url market_buy_product_redirect lot.product_ptr_id %}" target="_blank">
+			<a data-controls-modal="{{ lot.product_ptr_id }}" data-backdrop="true" data-keyboard="true">
 			{% if lot.image %}
 			<img class="item" src="{{ lot.image.image.url_100x100 }}" title="{{ lot.description|striptags }}"/>
 			{% else %}
 			<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ lot.description|striptags }}"/>
 			{% endif %}
-			<div class="AuctionLotTitle">{{ lot.title|truncatewords:5 }}</div>
-			<div class="AuctionLotCategory">{{ lot.category.name }}</div>
-			<div class="AuctionLotPrice">{{ lot.price|money_format:lot.shop }}</div>
+			<div class="title">{{ lot.title|truncatewords:5 }}</div>
+			<div class="dealer">{{ lot.category.name }}</div>
+			<div class="price">{{ lot.price|money_format:lot.shop }}</div>
 			</a>
 		</div>
-	</div>
 	{% endfor %}
 	
-	<div class="clear"></div>
 	<div class="pagination">
 	{% with lots as objects %}
 		{% include 'paginator.html'%}
@@ -45,7 +57,6 @@
 	{% else %}
 	{% trans "No lots found" %}
 	{% endif %}
-	<div class="clear"></div>	
 	</div>
 	
 </div>

@@ -16,9 +16,11 @@ class LotForm(ModelForm):
         super(LotForm, self).__init__(*args, **kwargs)
         # Filter sessions and categorys for specific shop 
         if request:
+            import datetime
+            today = datetime.datetime.today()
             self.shop = request.shop
             session = self.fields.get('session')
-            session.queryset = AuctionSession.objects.filter(shop=self.shop)
+            session.queryset = AuctionSession.objects.filter(shop=self.shop).filter(end__gt=today)
             category = self.fields.get('category')
             category.queryset = MarketCategory.objects.filter(marketplace=self.shop.marketplace)
 

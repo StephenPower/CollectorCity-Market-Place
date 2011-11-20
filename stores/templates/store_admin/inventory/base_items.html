@@ -2,6 +2,15 @@
 {% load i18n %}
 {% load sell_tags %}
 
+{% block submenu_extra_text %}
+	{% if total and items_plan_limit %}
+	<ul class="submenu_text">
+		<li>You have {{ total }} items Listed</li>
+		<li>You have {{ items_plan_limit }} items in your Plan</li>
+	</ul>
+	{% endif %}
+{% endblock %}
+
 {% block m_items %}current_sub_menu{% endblock %}
 
 {% block toolbar %}
@@ -19,6 +28,3 @@
 	<a href="{% url item_add  %}"><img src="{{ MEDIA_URL }}img/add.png" class="icon"/>{% trans "Add Item" %}</a>
 	
 {% endblock %}
-
-
-

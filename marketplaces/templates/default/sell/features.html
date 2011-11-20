@@ -1,0 +1,94 @@
+{% extends "default/base.html" %}
+
+{% load i18n %}
+{% block content %}
+
+{% if marketplans %}
+<div class="span16">
+	<h3>Plan Details {{ marketplace.title }}</h3>
+
+<div class="table span14 offset2">
+<div class="span3" >
+<div class="PlanHeader">
+<span>{% trans "Plan" %}</span>
+</div>
+<div class="p btn disabled clear row1">{% trans "Set Up Fee" %}</div>
+<div class="p btn disabled clear">{% trans "Transaction Fee" %}</div>
+<div class="p btn disabled clear row1">{% trans "Custom Domains" %}</div>
+<div class="p btn disabled clear">{% trans "Bandwidth" %}</div>
+<div class="p btn disabled clear row1">{% trans "SSL" %}</div>
+{% comment %} <div class="p btn disabled clear">{% trans "Custom Migrations" %}</div>{% endcomment %}
+{% comment %} <div class="p btn disabled clear">{% trans "Trial Period" %}</div>{% endcomment %}
+<div class="p btn disabled clear">{% trans "Billing Period" %}</div>
+<div class="p btn disabled clear row1">{% trans "Google Analytics" %}</div>
+{% comment %}<div class="p btn disabled clear">{% trans "Tax Integration" %}</div>{% endcomment %}
+<div class="p btn disabled clear">{% trans "Storage" %}</div>
+{% comment %}<div class="p btn disabled clear">{% trans "Admin Accounts" %}</div>{% endcomment %}
+<div class="p btn disabled clear row1">{% trans "Picture Per Item" %}</div>
+<div class="p btn disabled clear">{% trans "Picture Per Lot" %}</div>
+<div class="p btn disabled clear row1">{% trans "Auction Items" %}</div>
+<div class="p btn disabled clear">{% trans "Store Items" %}</div>
+<div class="p btn disabled clear row1">{% trans "Store Revenue" %}</div>
+<div class="p btn disabled clear">{% trans "Monthly Price" %}</div>
+</div>
+{% for plan in marketplans %}
+
+<div class="{{ plan.name }} PriceCol-{{ plan.id }} span3">
+
+{% if plan.name == "Business" %}
+
+<div class="Plan-Title Business"><h2>{{ plan.name }}</h2><span class="PlanLead">#1 Plan</span></div>
+
+{% else %}
+
+<div class="Plan-Title"><h2>{{ plan.name }}</h2></div>
+
+{% endif %}
+
+<p class="btn disabled clear row1">{% trans "Waived" %}</p>
+<p class="btn disabled clear row2">{% trans "None" %}</p>
+<p class="btn disabled clear row1">{% trans "Yes" %}</p>
+<p class="btn disabled clear row2">{% trans "Unlimited" %}</p>
+<p class="btn disabled clear row1">{% trans "Yes" %}</p>
+{% comment %}<p class="btn disabled clear row1">{% if plan.custom_migration %} {% trans "Yes" %} {% else %} {% trans "False" %} {% endif %}</div>{% endcomment %}
+{% comment %}<p class="btn disabled clear row1">{% if plan.has_trial_period %} {{ plan.trial_period }} Month {% else %} No Trial {% endif %}</div>{% endcomment %}
+<p class="btn disabled clear row2">{% if plan.billing_period == 1 %}Monthly{% else %}Every {{ plan.billing_period }} Months{% endif %}</p>
+<p class="btn disabled clear row1">{% if plan.google_analytics_support %} Yes {% else %} No {% endif %}</p>
+{% comment %}<p class="btn disabled clear row1">{% if plan.auto_tax_integration %} Yes {% else %} No {% endif %}</div>{% endcomment %}
+<p class="btn disabled clear row2">{% if plan.total_mbs_storage == 0 %}Unlimited{% else %}{{ plan.total_mbs_storage }} MB{% endif %}</p>
+{% comment %}<p class="btn disabled clear row1">{{ plan.admin_accounts }}</div>{% endcomment %}
+<p class="btn disabled clear row1">{% if plan.pictures_per_item == 0 %}Unlimited{% else %}up to {{ plan.pictures_per_item }}{% endif %}</p>
+<p class="btn disabled clear row2">{% if plan.pictures_per_lot == 0 %}Unlimited{% else %}up to {{ plan.pictures_per_lot }}{% endif %}</p>
+<p class="btn disabled clear row1">{% if plan.concurrent_auction_items == 0 %}Unlimited{% else %}up to {{ plan.concurrent_auction_items }}{% endif %}</p>
+<p class="btn disabled clear row2">{% if plan.concurrent_store_items == 0 %}Unlimited{% else %}up to {{ plan.concurrent_store_items }}{% endif %}</p>
+<p class="btn disabled clear row1">{% if plan.total_store_revenue == 0 %}Unlimited{% else %}up to {{ plan.total_store_revenue }}{% endif %}</p>
+<p class="btn disabled clear row2 price_table">US$ {{ plan.price }}</p>
+</div>
+        {% endfor %}
+</div>
+<div class="SignUpFeaturePage span11 offset2 alert-message block-message success">
+<div class="SignUpCopyText span6">
+<h2>Try {{ marketplace.name }} !!!</h2>
+<h4>Get Started in 45 seconds, no hassles, no fuss</H4>
+</div>
+<a href="{% url market_sell %}" name="1-plan_id" class= "btn success" value="{{ plan.id }}" />
+Create Your Shop</a>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div> 
+{% else%}
+        <div class="alert-message info">There are no Plans for this marketplace!</div>
+{% endif %} 
+{% endblock content %}

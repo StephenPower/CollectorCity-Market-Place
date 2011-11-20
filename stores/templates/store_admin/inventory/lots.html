@@ -41,7 +41,7 @@
 		<li>{% trans "Auctions" %}
 			<ul>
 				{% for session in shop.auctionsession_set.all %}
-					<li><a href="{% url inventory_lots %}?filter_by=session&id_session={{ session.id }}">{{ session.title }}</a></li>
+				<li><a href="{% url inventory_lots %}?filter_by=session&id_session={{ session.id }}">{{ session.title }}</a></li>
 				{% endfor %}
 			</ul>
 		</li>
@@ -57,7 +57,7 @@
 {% endblock %}
 
 {% block super_main %}
-
+{% if shop.auctions_feature_enabled %}
 	<div class="bar_title">
 		<div class="grid_1 alpha omega bar_column">
 			<a href="./?{{ filter_params|update_filters:'order_by=oldest' }}"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
@@ -85,23 +85,23 @@
 		<div class="clear"></div>
 	</div>
 	{% for lot in products.object_list %}
-		<div class="{% cycle 'row_1' 'row_2' %}" title="{{ lot.description|striptags }}">
-			<div class="grid_1 alpha omega column"><a rel="{{ lot.image.image.url_100x100 }}" href="{% url lot_details lot.id %}" ># {{ lot.id }}</a></div>
-			<div class="grid_2 alpha omega column"><span>{{ lot.title }}</span></div>
-			<div class="grid_3 alpha omega column"><span>{{ lot.category.name }} | {{ lot.subcategory.name }}</span></div>
-			<div class="grid_2 alpha omega column"><span>{{ lot.get_state_display }}</span></div>
+	<div class="{% cycle 'row_1' 'row_2' %}" title="{{ lot.description|striptags }}">
+		<div class="grid_1 alpha omega column"><a rel="{{ lot.image.image.url_100x100 }}" href="{% url lot_details lot.id %}" ># {{ lot.id }}</a></div>
+		<div class="grid_2 alpha omega column"><span>{{ lot.title }}</span></div>
+		<div class="grid_3 alpha omega column"><span>{{ lot.category.name }} | {{ lot.subcategory.name }}</span></div>
+		<div class="grid_2 alpha omega column"><span>{{ lot.get_state_display }}</span></div>
 
-			<div class="grid_1 alpha omega column"><span>{{ lot.bids.count }}</span></div>
-			<div class="grid_2 alpha omega column">
-				<span><a href="{% url auction_details lot.session.id %}">{{ lot.session.title }}</a></span>
-				<br/><span>left: {{ lot.time_left }}</span>
-			</div>
-			<div class="grid_2 alpha omega column"><span>{{ lot.starting_bid|money_format:shop }}</span></div>
-			<div class="grid_2 alpha omega column"><span>
-				{% ifnotequal lot.bids.count 0 %}{{ lot.bid_actual.bid_amount|money_format:shop }}{% else %}-{% endifnotequal%}
-			</span></div>
-			<div class="clear"></div>
+		<div class="grid_1 alpha omega column"><span>{{ lot.bids.count }}</span></div>
+		<div class="grid_2 alpha omega column">
+			<span><a href="{% url auction_details lot.session.id %}">{{ lot.session.title }}</a></span>
+			<br/><span>left: {{ lot.time_left }}</span>
 		</div>
+		<div class="grid_2 alpha omega column"><span>{{ lot.starting_bid|money_format:shop }}</span></div>
+		<div class="grid_2 alpha omega column"><span>
+			{% ifnotequal lot.bids.count 0 %}{{ lot.bid_actual.bid_amount|money_format:shop }}{% else %}-{% endifnotequal%}
+		</span></div>
+		<div class="clear"></div>
+	</div>
 	{% endfor %}
 	
 	{% block main %}
@@ -123,5 +123,6 @@
 		</div>
 		<div class="clear"></div>
 	{% endblock %}
-	
+{% endif %}
+
 {% endblock %}

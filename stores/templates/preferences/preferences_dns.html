@@ -9,18 +9,26 @@
 {% endblock %}
 
 {% block main %}
- 	<div class="grid_5"><h3>{% trans "Store" %}</h3></div>
+	<div class="grid_5"><h3>{% trans "Store" %}</h3></div>
 	<div class="grid_2"><h3>{% trans "Status" %}</h3></div>
 	<div class="grid_4"><h3>{% trans "Options" %}</h3></div>
 	
 	<div class="clear"></div>
 	{% for dns in dnss %}
-		<div class="grid_5"><span><a href="http://{{ dns.dns }}">{{ dns.dns }}</a></span></div>
+		<div class="grid_5">
+			<span id="dns_field_{{ dns.id }}"><a href="http://{{ dns.dns }}">{{ dns.dns }}</a></span>
+			
+			<form action="{% url edit_dns dns.id %}" method="POST" name="change_dns_form" id="edit_form_{{ dns.id }}">
+				<span><input id="dns_name" name="dns" type="text" value="{{ dns.dns }}"/></span>
+			</form>			
+			
+		</div>
 		<div class="grid_2"><span>{% trans "OK " %}</span></div>
 		{% if dns.dns != shop.default_dns %}		
 		<div class="grid_4">
 			<a href="{% url set_default_dns dns.id %}">Set as default</a> | 		
-			<a href="{% url delete_dns dns.id %}">Remove</a>
+			<a href="{% url delete_dns dns.id %}">Remove</a> | 
+			<a href="javascript:edit_dns('{{ dns.id }}')">Edit</a>
 		</div>
 		{% else %}
 		<div class="grid_4">[ default ]</div>
@@ -30,16 +38,42 @@
 	{% endfor %}
 	<br/><br/>
 	
+	{% if shop.dns_feature_enabled %}
+	<div class="grid_5">
 	<form action="." method="post" name="form">
 		<h3>{% trans "Add Domain" %}</h3>
 		<p>{% trans "Enter a previously registered domain" %}</p>
 		{% if form.dns.errors %}<div class="error">{{ form.dns.errors|join:", " }}</div>{% endif %}
 		<p>http:// {{ form.dns }}</p>
-
-		<button type="submit" class="small awesome">{% trans "Add dns" %}</button>
-	
+		
+		<button type="submit" class="small awesome">{% trans "Add Your Domain" %}</button>	
+		
 	</form>
+	</div>
+	{% else %}	
+	<div class="enable_feature"><a class="enable_feature_box" href="{% url enable_feature 'custom_dns' %}">{% trans "Add Your Custom Domain" %} for ${{ shop.dns_feature_price }}</a><img src="{{ MEDIA_URL }}img/help-icon.png" onclick="javascript:show_help_text('htb_container');"/></div>
 	
+	<div class="htb_container">
+		<img id="stick" src="{{ MEDIA_URL }}img/stick.png"/>
+		<div class="help_text_box">
+			{{ shop.dns_feature_help_text }}
+			<div class="close"><img onclick="javascript: close_help_text('htb_container')" src="{{ MEDIA_URL }}img/remove.png"/></div>
+		</div>
+	</div>
+	{% endif %}	
+	
+	<script type="text/javascript">
+	
+	$(document).ready(function(){
+		$('form[id^="edit_form_"]').hide();
+	}); 
+	
+	function edit_dns(id){
+		$("#dns_field_"+id).hide();
+		$("#edit_form_"+id).show();
+	}
+	</script>
+			
 {% endblock %}
 
 {% block menu %}

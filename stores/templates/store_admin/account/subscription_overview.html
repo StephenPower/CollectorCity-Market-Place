@@ -69,9 +69,8 @@ $(document).ready(function(){
 	
 	<div class="clear"></div>
 	<br></br>
-	<br></br>
 	{% if subscription.is_active %}
-		<div id="cancel_subscription" class="awesome small blue">{% trans "Cancel Subscription" %}</div>
+		<div id="cancel_subscription" class="awesome small">{% trans "Cancel Subscription" %}</div>
 	{% endif %}	
 {% else %}
 	<div><h3>{% trans "No subscription found." %}</h3></div>

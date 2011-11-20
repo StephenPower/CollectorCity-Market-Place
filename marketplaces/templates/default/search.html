@@ -2,25 +2,35 @@
 {% load i18n %}
 {% load sell_tags %}
 
+{% block meta_keywords %}marketplace search coins keywords here{% endblock %}
+
 {% block content %}
-<div id="breadcrumbs" class="grid_18">
-	<a href="{% url market_home %}">{% trans "Home" %}</a> {% if current_category %} &raquo; <a href="{% url market_search_category current_category.slug %}"> {{ current_category.name }}</a> {% endif %} {% if current_subcategory %} &raquo; {{ current_subcategory.name }} {% endif %}
-</div>
+<ul class="breadcrumb">
+ <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider"> / </span></li>
+ <li>{% if current_category %}<a href="{% url market_search_category current_category.slug %}">{{ current_category.name }}</a><span class="divider"> / </span></li> {% endif %} {% if current_subcategory %} <span class="divider"> / </span>  {{ current_subcategory.name }}</li> {% endif %}
+</ul>
+
 
 {% block filter_content %}
-<div class="grid_4">
-	<div class="block_filter">
+<div class="sidebar">
+ <div class="well">
 	{% if current_category %}
-		<h4>{{ current_category.name }}</h4>
+		<h5>{{ current_category.name }}</h5>
 		<ul>
 		{% for subcategory in current_category.subcategories.all %}
+			{% ifnotequal subcategory.product_set.count 0 %}
 			<li><a href="{% url market_search_subcategory current_category.slug subcategory.slug %}">{{ subcategory.name }}</a></li>
+			{% endifnotequal %}
 		{% endfor %}
+
 		</ul>
 	{% else %}
-		<h4>{% trans "Categories" %}</h4>
+		<h5>{% trans "Categories" %}</h5>
 		{% for category in marketplace.marketcategory_set.all %}
+			{% ifnotequal category.product_set.count 0 %}
 			<li><a href="{% url market_search_category category.slug %}">{{ category.name }}</a></li>
+			{% endifnotequal %}
+
 		{% endfor %}
 	{% endif %}
 	</div>
@@ -31,22 +41,19 @@
 
 {% with products.object_list as products_list %}
 
-<div class="grid_14 margin_h">
-	<div class="block_main_content">
-	
-	<h2>{{ total }} products found {% if current_category %} in {{ current_category.name }} {% endif %}</h2>
-	
-	<p>Listing {{ products_list|length }} product{{ products_list|length|pluralize }} as {{ view_mode }}</p>
-	
+
+<div class="span12">
+	<div class="content">
+	<h2>{{ total }} Coins found {% if current_category %} in {{ current_category.name }} {% endif %}</h2>
 	{% if products_list %}
-	<div class="grid_10">
-	Sort By:
-		<a href="{% url set_order_mode %}?next={{ request.path }}{% if getvars %}?{{ getvars|urlencode }}{% endif %}&sort={% if sort_mode == 'recent' %}oldest{% else %}recent{% endif %}">{% trans "Published Date" %}</a> | 
+	<div class="sort_by label">
+	<div class="span10">
+	Sort {{ products_list|length }} Coins By:
+		<a href="{% url set_order_mode %}?next={{ request.path }}{% if getvars %}?{{ getvars|urlencode }}{% endif %}&sort={% if sort_mode == 'recent' %}oldest{% else %}recent{% endif %}">{% trans "Date" %}</a> | 
 		<a href="{% url set_order_mode %}?next={{ request.path }}{% if getvars %}?{{ getvars|urlencode }}{% endif %}&sort={% if sort_mode == 'title' %}-title{% else %}title{% endif %}">{% trans "Title" %}</a> | 
 		<a href="{% url set_order_mode %}?next={{ request.path }}{% if getvars %}?{{ getvars|urlencode }}{% endif %}&sort={% if sort_mode == 'price' %}-price{% else %}price{% endif %}">{% trans "Price" %}</a>
 	</div>
-	<div class="grid_3">
-	<span class="view_mode">{% trans "View as" %}: </span> 
+	<div class="span1 view_mode">
 	{% ifequal view_mode "gallery"  %}
 	<a href="{% url set_listing_mode %}?next={{ request.path }}?page%3D{{ products.number }}%26{% if getvars %}{{ getvars|urlencode }}{% endif %}&mode=list"><img src="{{ MEDIA_URL }}img/list-view.jpg" width="20" height="20" title="{% trans 'Switch to List View' %}"></img></a>
 	<img src="{{ MEDIA_URL }}img/gallery-view-sel.jpg" width="20" height="20" title="{% trans 'Switch to Gallery View' %}"></img>
@@ -56,64 +63,81 @@
 	{% endifequal %}
 	
 	</div>
-
+	</div>
 	{# --------- LISTING MODE ----------- #}
 	{% if view_mode == "gallery" %}
 	{% for product in products_list %}
-	<div class="grid_3">
-		<div class="item_box">
-			<a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
-			{% with product.object.child.image.image.url_100x100 as image_url %}
-              {% if image_url %}
-			<img class="item" src="{{ image_url }}" title="{{ product.description|striptags }}"/>
+	<div class="item_box">
+	{% with product.object.child.image.image.url_100x100 as image_url %}
+             {% if image_url %}
+			 <a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
+			<img class="item" src="{{ image_url }}" title="{{ product.description|striptags }}"/></a>
 			{% else %}
-			<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ product.description|striptags }}"/>
+			 <a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
+			<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ product.description|striptags }}"/></a>
 			{% endif %}
 			{% endwith %}
-			<div>{{ product.title|truncatewords:5 }}</div>
-			<div>{{ product.category.name }}</div>
-			<div>{{ product.price|format_price:product.shop_currency }}</div>
-			</a>
-		</div>
+	<a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
+		<div class="title">{{ product.title|truncatewords:4 }}</div>
+	</a>
+	 <a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
+	<div class="dealer">{{ product.shop_name|title }}</div></a>	
+	 <a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
+	<div class="price">{{ product.price|format_price:product.shop_currency }}</div>
+	</a>
+	
 	</div>
 	{% endfor %}
 	{% else %}
 	{# --------- GALLERY MODE ----------- #}
+	<table>
+	<thead>
+	<tr>
+	 <td></td>
+	 <td></td>
+	 <td></td>
+	</tr>
+	</thead>
+	
+
 	{% for product in products_list %}
-	<div class="grid_13">
-		<hr></hr>
-		<div class="grid_2">
-			<a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
+	<tr>
+	<td class="backgroundwhite">
+	<a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
 			{% with product.object.child.image.image.url_100x100 as image_url %}
             {% if image_url %}
-			<img class="item" src="{{ image_url }}" height="55" width="55" title="{{ product.description|striptags }}"/>
+			<img class="item" src="{{ image_url }}"  title="{{ product.description|striptags }}"/>
 			{% else %}
-			<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" height="51" width="56" title="{{ product.description|striptags }}"/>
+			<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ product.description|striptags }}"/>
 			{% endif %}
 			{% endwith %}
 			</a>
-		</div>
-		<div class="grid_7">
-			{{ product.title }}<br></br>
-			<a href="http://{{ product.shop_default_dns }}" target="_blank">{{ product.shop_name }}</a>
-		</div>
-		<div class="grid_3">
-            {{ product.price|format_price:product.shop_currency }}
-		</div>
-	</div>
+		</td>
+	<td>
+		<a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
+{{ product.title }}</a>
+	<p></p>	<p>	<a href="http://{{ product.shop_default_dns }}" target="_blank">Dealer: {{ product.shop_name|title}}</a></p>
+	</td>
+	<td>
+	<a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
+            {{ product.price|format_price:product.shop_currency }}</a>
+	</td>
+	</tr>
 	{% endfor %}
+	</tbody>
+	</table>
+
 	{% endif %}
 	
 	{# --------- PAGINATION------------ #}
 	
-	<div class="clear"></div>
 	<div class="pagination">
 	{% with products as objects %}
 		{% include 'paginator.html'%}
 	{% endwith %}
 	</div>
 	{% else %}
-	{% trans "No products match with current category" %}
+	<p>{% trans "No Coins Found In That Category" %}</p>
 	{% endif %}
 	<div class="clear"></div>	
     </div>

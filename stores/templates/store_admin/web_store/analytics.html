@@ -21,12 +21,26 @@
 {% endblock %}
 
 {% block main %}
+{% if shop.analytics_feature_enabled %}
 	<div class="grid_10 box">
-		<h3>{% trans "Google Analytics Account Number" %}</h3>
+		<h2>{% trans "Website Analytics" %}</h2>
 		<form action="." method="post">
 			{{ form.as_p }}
 			<button type="submit" class="large awesome" value='save'>{% trans "Save" %}</button>
 		</form>
 	</div>
 	<div class="clear"></div>
+{% else %}
+	<div class="enable_feature"><a class="enable_feature_box" href="{% url enable_feature 'google_analytics' %}">{% trans "Enable Google Analytics" %}</a><img src="{{ MEDIA_URL }}img/help-icon.png" onclick="javascript:show_help_text('htb_container');"/></div>
+	
+	<div class="htb_container">
+		<img id="stick" src="{{ MEDIA_URL }}img/stick.png"/>
+		<div class="help_text_box">
+			{{ shop.analytics_feature_help_text }}
+			<div class="close"><img onclick="javascript: close_help_text('htb_container')" src="{{ MEDIA_URL }}img/remove.png"/></div>
+		</div>
+	</div>
+	
+{% endif %}
+
 {% endblock %}

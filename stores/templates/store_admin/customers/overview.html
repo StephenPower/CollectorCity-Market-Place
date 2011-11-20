@@ -4,13 +4,21 @@
 {% block m_overview %}current_sub_menu{% endblock %}
 
 {% block main %}
-	<div class="grid_6 box">
-		<div class="box_header"><h3>{% trans "Sold Items" %}</h3></div>
+	<div class="grid_7 box">
+		<div class="box_header"><h3><a href="{% url customers_sold_items %}"/>Sold Items</h3></a></div>
 		<div class="box_body">
+			<p>Buyer's Name -  Payment Status</p>
 			{% for sell in sells|slice:":7" %}
 				<p><a href='{% url sell_details sell.id %}'>{{ sell.bidder.username }} - {{ sell.payment.state_actual.get_state_display }}</a></p>
 			{% endfor %}
+			</br>
 			<p><a href="{% url customers_sold_items %}"><b>{% trans "See all" %}</b></a></p>
+		</div>
+	</div>
+	<div class="grid_7 box">
+		<div class="box_header"><h3><a href="{% url customers_mailing_list %}"/>Customer Mailing List</h3></a></div>
+		<div class="box_body">
+			<p><a href=''>You Have XXX customers on your mailing list </a></p>
 		</div>
 	</div>
 	{% comment %}
@@ -35,14 +43,18 @@
 		</div>
 	</div>
 	{% endcomment %}
-	<div class="grid_6 box">
-		<div class="box_header"><h3>{% trans "Wish List" %}</h3></div>
+	<div class="grid_14 box">
+		<div class="box_header"><a href="{% url customers_wish_lists %}" /> <h3>{% trans "Wish List" %}</h3></a></div>
 		<div class="box_body">
+		{% if shop.wishlist_feature_enabled %}
 			{% for wish in wishlistitems %}
 				<p>{{ wish }}</p>
 			{% endfor %}
 			<br/>
 			<p><a href="{% url customers_wish_lists %}"><b>{% trans "See more" %}</b></a></p>
+		{% else %}
+			<a title="{{ shop.wishlist_feature_help_text }}" class="enable_feature_box" href="{% url enable_feature 'wishlist' %}">{% trans "Enable Wish List Feature" %} for ${{ shop.wishlist_feature_price }}</a>
+		{% endif %}
 		</div>
 	</div>
 	<div class="clear"></div>

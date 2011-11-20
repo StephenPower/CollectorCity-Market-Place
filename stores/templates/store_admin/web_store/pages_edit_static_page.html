@@ -12,42 +12,69 @@
 
 {% block main_pages %}
 	
-	<form name="form" method="post" action="." enctype="multipart/form-data">
+	<div class="grid_11">
+		<form name="form" method="post" action="." enctype="multipart/form-data">
+		
+			<h4>{% trans "Page Name" %}:</h4>
+			{% if form.name.errors %}<div class="error">{{ form.name.errors|join:", " }}</div>{% endif %}
+			{{ form.name }}
+			<br/>
+			
+			<h4>{% trans "Page Title" %}:</h4>
+			{% if form.title.errors %}<div class="error">{{ form.title.errors|join:", " }}</div>{% endif %}
+			{{ form.title }}	
+			<br/>
 	
-		<h4>{% trans "Name" %}:</h4>
-		{% if form.name.errors %}<div class="error">{{ form.name.errors|join:", " }}</div>{% endif %}
-		{{ form.name }}
-		<br/>
+			<h4>{% trans "Page Link" %}:</h4>
+			{% if form.name_link.errors %}<div class="error">{{ form.name_link.errors|join:", " }}</div>{% endif %}
+			http://{{ shop.name }}.{{ DEFAULT_DNS }}/pages/{{ form.name_link }}	
+			<br/>
+	
+			<h4>{% trans "Write your page" %}:</h4>
+			{% if form.body.errors %}<div class="error">{{ form.body.errors|join:", " }}</div>{% endif %}
+			{{ form.body }}	
+			<br/>
+	
+			<h4>{% trans "Put the Meta-Content here (for SEO purposes)" %}:</h4>
+			{% if form.meta_content.errors %}<div class="error">{{ form.meta_content.errors|join:", " }}</div>{% endif %}
+			{{ form.meta_content }}	
+			<br/>
+			
+			{% if form.visible.errors %}<div class="error">{{ form.visible.errors|join:", " }}</div>{% endif %}
+			<h4>{% trans "Visible" %}:{{ form.visible }}</h4>
+			<br/>
+	
+			<br/>
+			<br/>
+	
+			<button type="submit" class="large awesome">{% trans "Save" %}</button>
+			<a href="{% url web_store_pages %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+		</form>
+	</div>
+	
+	<div class="grid_4">
+		{% if not shop.add_pages_feature_enabled %}
+		<div class="little_right_box">
+			<p><b>Pages</b></p>
+			<p>Add new pages for only ${{ shop.add_pages_feature_price }}</p>
+		</div>
+		{% endif %}
 		
-		<h4>{% trans "Name link" %}:</h4>
-		{% if form.name_link.errors %}<div class="error">{{ form.name_link.errors|join:", " }}</div>{% endif %}
-		http://{{ shop.name }}.{{ DEFAULT_DNS }}/pages/{{ form.name_link }}	
-		<br/>
-
-		<h4>{% trans "Title" %}:</h4>
-		{% if form.title.errors %}<div class="error">{{ form.title.errors|join:", " }}</div>{% endif %}
-		{{ form.title }}	
-		<br/>
-
-		<h4>{% trans "Write your page" %}:</h4>
-		{% if form.body.errors %}<div class="error">{{ form.body.errors|join:", " }}</div>{% endif %}
-		{{ form.body }}	
-		<br/>
-
-		<h4>{% trans "Put the Meta-Content here (for SEO purposes)" %}:</h4>
-		{% if form.meta_content.errors %}<div class="error">{{ form.meta_content.errors|join:", " }}</div>{% endif %}
-		{{ form.meta_content }}	
-		<br/>
-		
-		{% if form.visible.errors %}<div class="error">{{ form.visible.errors|join:", " }}</div>{% endif %}
-		<h4>{% trans "Visible" %}:{{ form.visible }}</h4>
-		<br/>
-
-		<br/>
-		<br/>
-
-		<button type="submit" class="large awesome">{% trans "Save" %}</button>
-		<a href="{% url blog_pages %}" class="link_cancel">{% trans "Or Cancel" %}</a>
-	</form>
+		<div class="little_right_box">
+			<p><b>Previous Versions</b></p>
+			<ul style="margin: 0px; padding: 14px;">
+			{% with page.pageversion_set.all|slice:":5" as page_list %}
+			{% for page_version in page_list %}
+    			<li>
+    				<a onclick="javascript:return confirm('Are you sure you want revert to this version?');" href="{% url page_revert page_version.id %}">{{ page_version }}</a>
+    				<a onclick="javascript: return confirm('Are you sure you want to delete this version? This action could not be rolled back!')" href="{% url page_version_delete page_version.id %}"><img src="{{ MEDIA_URL}}img/remove.png" class="icon"/>	</a>
+    			</li>
+			{% empty %}
+				<li>No versions</li>
+			{% endfor %}
+			{% endwith %} 
+			</ul>
+		</div>		
+	</div>	
 
 {% endblock %}

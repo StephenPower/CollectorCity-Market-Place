@@ -45,6 +45,8 @@ def theme(request, id=None):
         form_template = TemplateForm(request.POST or None, instance=template)
         if form_template.is_valid():
             if text != form_template.cleaned_data['text']:
+                shop.last_date_to_change_layout = datetime.datetime.now()
+                shop.save()
                 form_template.save()
 #            request.flash['message'] = unicode(_("Template successfully saved."))
 #            request.flash['severity'] = "success"
@@ -67,6 +69,8 @@ def theme(request, id=None):
                     asset.file.save(asset.file.name, ContentFile(str(text)))
                     
                     try:
+                        shop.last_date_to_change_layout = datetime.datetime.now()
+                        shop.save()
                         asset.save()
                         asset.render()
                     except Exception,e:
@@ -85,7 +89,11 @@ def theme(request, id=None):
         except:
             logging.exception("MUERE!!!!!!!!!!!!!!!!!")
         
+    
+    add_asset_form = AssetForm()
+    
     param.update({'theme':theme,
+                  'add_asset_form': add_asset_form,
                   'assets': shop.theme.asset_set.all(),
                   'templates': theme.get_templates(),
                  })
@@ -126,6 +134,8 @@ def theme_import(request):
         
             try:
                 theme.theme_import(filename)
+                shop.last_date_to_change_layout = datetime.datetime.now()
+                shop.save()                 
                 request.flash['message'] = unicode(_("Theme successfully applied."))
                 request.flash['severity'] = "success"
             except (Exception), e:
@@ -159,6 +169,8 @@ def template_edit(request, id):
     form = TemplateForm(request.POST or None, instance=template)
     if form.is_valid():
         if text != form.cleaned_data['text']:
+            shop.shop.last_date_to_change_layout = datetime.datetime.now()
+            shop.save()
             form.save()
         request.flash['message'] = unicode(_("Template successfully edited."))
         request.flash['severity'] = "success"
@@ -195,23 +207,16 @@ def asset_add(request):
             asset.save()
             try:
                 asset.render()
+                shop.last_date_to_change_layout = datetime.datetime.now()
+                shop.save()
                 request.flash['message'] = unicode(_("File successfully added."))
                 request.flash['severity'] = "success"
             except Exception, e:
                 request.flash['message'] = "Error in asset. %s" % e
                 request.flash['severity'] = "error"
                 asset.delete()
-            return HttpResponseRedirect(reverse('asset_add'))
-    else:
-        form = AssetForm()
-    return render_to_response('store_admin/web_store/theme_add_asset.html',
-                              {
-                               'form': form,
-                               'theme':theme,
-                               'assets': shop.theme.asset_set.all(),
-                               'templates': theme.get_templates(),                               
-                               },
-                              RequestContext(request))
+            
+    return HttpResponseRedirect(reverse('web_store_theme'))
 
 
 @shop_required

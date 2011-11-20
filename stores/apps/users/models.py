@@ -1,10 +1,8 @@
 from django.db import models
 
 from auth.models import User
-from shops.models import Shop
 from sell.models import Payment, Sell, Cart
 from core.thumbs import ImageWithThumbsField
-
 
 class Profile(models.Model):
     user = models.OneToOneField(User)

@@ -30,12 +30,12 @@ def report_daily_activity():
     day = datetime.datetime.now()
     
     try:
-        t_txt = loader.get_template("mail/daily_activity_report.txt")
-        t_html = loader.get_template("mail/daily_activity_report.html")
+        t_txt = loader.get_template("admin/mail/daily_activity_report.txt")
+        t_html = loader.get_template("admin/mail/daily_activity_report.html")        
         
         c = get_daily_activity_data(day)
          
-        subject, from_email, to = 'Daily Activity Report', "no-reply@greatcoins.com", "martinriva@gmail.com" #admin@greatcoins.com"
+        subject, from_email, to = 'Daily Activity Report', "no-reply@greatcoins.com", "admin@greatcoins.com"
         text_content = t_txt.render(Context(c))
         html_content = t_html.render(Context(c))
         msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
@@ -44,7 +44,8 @@ def report_daily_activity():
                 
     except Exception, e:
         logging.info(e)
-        send_mail('Error when trying to generate Daily Activity Report', e , 'admin@greatcoins.com', [b for (a,b) in settings.ADMINS], fail_silently=True)
+        #send_mail('Error when trying to generate Daily Activity Report', e , settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF], fail_silently=True)
+        send_mail('Error when trying to generate Daily Activity Report', e , settings.EMAIL_FROM, ["martinriva@gmail.com"], fail_silently=True)
         
         
 if __name__ == "__main__":

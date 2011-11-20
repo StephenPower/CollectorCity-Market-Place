@@ -1,0 +1,107 @@
+{% extends 'store_admin/support/base_support.html' %}
+{% load i18n %}
+
+{% block m_email_support %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}Email Support{% endblock %}
+
+{% block main %}
+	<div class="grid_16">
+	Please Enter Your Contact Details and a Support Representative Will Email You Within one Business Day
+	
+	<form action="." method="POST" name="form" id="email_support_form">
+		
+		{% if form.name.errors %}<div class="error">{{ form.name.errors|join:", " }}</div>{% endif %}
+		<p>{{ form.name.label }}</p>
+		{{ form.name }}
+		{% if form.email.errors %}<div class="error">{{ form.email.errors|join:", " }}</div>{% endif %}
+		<p>{{ form.email.label }}</p>
+		{{ form.email }}
+		{% if form.question.errors %}<div class="error">{{ form.question.errors|join:", " }}</div>{% endif %}
+		<p>{{ form.question.label }}</p>
+		{{ form.question }}
+
+		<input type="hidden" name="txn_id" id="txn_id" value="-1"/>
+		<br/><br/>	
+		
+		<div class="clear"></div>
+		
+		<button class="small awesome" onclick="return start_payment('{% url enable_feature 'email_support' %}', support_payment_return);">{% trans "Purchase Email Support Incident" %}</button>
+		<a href="{% url support_overview %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+	
+	</form>
+	
+	</div>
+	<div class="clear"></div>
+	<div><p><b>NOTE</b>: If a support incident is due to a bug or a system problem a refund will be issued.</p></div>			
+
+<script type="text/javascript">
+function start_payment(url, callback) {
+
+	var name = trim($("input[name='name']").val());
+	if (name==null || name == "") {
+		alert("Please put your name");
+		return false;
+	}
+	
+	var error = validateEmail($("input[name='email']").val());
+	if (error != "") {
+		alert(error);
+		return false;	
+	}
+	var text = trim(tinyMCE.activeEditor.getContent());
+	if (text == "" | text == null){
+		alert("Please write your question before continue!");
+		return false;
+	}
+		
+	$.fancybox.payment_callback = callback;
+	$.fancybox({
+			'href': url,
+			'type': 'iframe',
+			'width'				: '6',
+			'height'			: '5',
+			'autoScale'			: false,
+			'transitionIn'		: 'none',
+			'transitionOut'		: 'none',
+			'type'				: 'iframe',					
+			'onClosed'			: function() {	
+				//window.location = window.location;   
+			},
+			'onComplete': function() {
+				$.fancybox.hideActivity(); 
+			}
+	});
+	$.fancybox.showActivity();
+	return false;
+}
+
+function trim(s) {
+ 	return s.replace(/^\s+|\s+$/, '');
+}
+
+function validateEmail(fld) {
+    var error="";
+    var tfld = trim(fld);                        // value of field with whitespace trimmed off
+    var emailFilter = /^[^@]+@[^@.]+\.[^@]*\w\w$/ ;
+    var illegalChars= /[\(\)\<\>\,\;\:\\\"\[\]]/ ;
+   
+    if (fld == "") {
+        error = "You didn't enter an email address.\n";
+    } else if (!emailFilter.test(tfld)) {              //test email for illegal characters
+        error = "Please enter a valid email address.\n";
+    } else if (fld.match(illegalChars)) {
+        error = "The email address contains illegal characters.\n";
+    } 
+    return error;
+}
+
+function support_payment_return(response) {
+    if (response['status'] == 'success') {
+    	$("#txn_id").attr('value', response['txn_id']);
+    	$('#email_support_form').submit();
+    }
+}
+</script>
+
+{% endblock %}

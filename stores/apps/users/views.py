@@ -63,7 +63,6 @@ def register(request):
         code = email_verify.generate_code()
         email_verify.save()
         
-                              
         #send_mail_account_confirmation(user, email_verify.code, request.shop.name_shop(), request.get_host())        
 
         return HttpResponseRedirect(reverse('confirmemail', args=[code]))

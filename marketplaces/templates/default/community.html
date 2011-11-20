@@ -1,28 +1,49 @@
 {% extends "default/base.html" %}
 {% load i18n %}
 
+{% block meta_keywords %}marketplace community keywords here{% endblock %}
+
 {% block content %}
-<div id="breadcrumbs" class="grid_18">
-	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_community %}">{% trans "Community" %}</a>
+
+<ul class="breadcrumb">
+ <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider">/</span>
+ <li class="active">{% trans "Community" %}</li>
+</ul>
+
+<div class="sidebar">
+ <div class="well">
+	<h5>{{ marketplace.name }}</h5>
+	<ul>
+		<li><a href="/">{% trans "Twitter" %}</a></li>
+		<li><a href="/">{% trans "Facebook" %}</a></li>
+	</ul>
+	
+	<h5>{% trans "Newsletter" %}</h5>
+    <form action="." method="POST" class="stacked-form">
+    	
+    	{% if mailing_list_form.email.errors %}<div class="alert-message warning">{{ mailing_list_form.email.errors|join:", " }}</div>{% endif %}
+		{{ mailing_list_form.email.label.title }}
+		{{ mailing_list_form.email }}
+	 	{{ mailing_list_form.email.help_text }}
+		<input class="btn primary" type="submit" value="{% trans 'Subscribe' %}"></input>
+    </form>
+	
+ </div>
 </div>
 
-<div class="grid_18 alpha omega block_main_content margin_h">
-	
-<h1>{{ marketplace.name.upper }} {% trans "COMMUNITY" %}</h1>
-<br/>
-<div id="community_navbar">
-	<ul >
+
+<div class="span12">
+	<h2>{{ marketplace.name }} {% trans "Community" %}</h2>
+	<div id="community_navbar">
+		<ul class="tabs">
 		<li class="{% block overview_selection %}{% endblock %}"><a href="{% url community_overview %}">{% trans "Overview" %}</a></li>
 		<li class="{% block forums_selection %}{% endblock %}"><a href="{% url community_forums %}">{% trans "Forums" %}</a></li>
 		<li class="{% block blogs_selection %}{% endblock %}"><a href="{% url community_blogs %}">{% trans "Member Blogs" %}</a></li>
 		<li class="{% block faq_selection %}{% endblock %}"><a href="{% url community_faq %}">{% trans "FAQ" %}</a></li>
 		<li class="{% block profiles_selection %}{% endblock %}"><a href="{% url community_profiles %}">{% trans "Profiles" %}</a></li>
-	</ul>
-</div>
-
+		</ul>
+	</div>
 {% block community_content %}Aca iria la info{% endblock %}
-
 </div>
-
 {% endblock %}
-
+</div>

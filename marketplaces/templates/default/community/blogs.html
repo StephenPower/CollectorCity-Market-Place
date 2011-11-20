@@ -4,50 +4,73 @@
 {% block blogs_selection %}current_selection{% endblock %}
 
 {% block community_content %}
+<h2>{% trans "Latest Posts" %}</h2>
 
-<div class="grid_14 alpha omega margin_v">
-<h1>{% trans "Latest Posts" %}</h1>
-<br/><br/>
+
+
+<table class="NoBorderTable">
+<thead>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</thead>
+<tbody>
 {% for post in last_posts %}
 
 {% include "default/community/post_render.html" %}
-<div class="clear"></div>
 
 {% empty %}
-<div class="notice">{% trans "There are no posts to show at this moment" %}</div>
+<div class="warning">{% trans "There are no posts to show at this moment" %}</div>
 {% endfor %}
 
+</tbody>
+</table>
 
-<div class="clear"></div>
-<br/><br/>
 
-<h1>{% trans "Recommended Posts" %}</h1>
-<br/><br/>
+<h2>{% trans "Recommended Posts" %}</h2>
+<table class="NoBorderTable">
+<thead>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</thead>
+<tbody>
+
 {% for pick in posts_picks %}
 
 {% with pick.post as post %}
 	{% include "default/community/post_render.html" %}
 {% endwith %}
-<div class="clear"></div>
 
 {% empty %}
-<div class="notice">{% trans "There are no posts to show at this moment" %}</div>
+<div class="warning">{% trans "There are no posts to show at this moment" %}</div>
 {% endfor %}
+</tbody>
+</table>
 
 
-<div class="clear"></div>
-<br/><br/>
 
-<h1>{% trans "Most Visited Posted This Week" %}</h1>
-<br/><br/>
+<h2>{% trans "Most Visited Posted This Week" %}</h2>
+<table class="NoBorderTable">
+<thead>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</thead>
+<tbody>
 
 {% for post in most_visited %}
 
 {% include "default/community/post_render.html" %}
 
 {% empty %}
-<div class="notice">{% trans "There are no posts to show at this moment" %}</div>
+<div class="warning">{% trans "There are no posts to show at this moment" %}</div>
 {% endfor %}
+</tbody>
+</table>
 
 </div>
 {% endblock %}

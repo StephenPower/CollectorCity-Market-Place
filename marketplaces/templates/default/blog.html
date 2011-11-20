@@ -1,10 +1,13 @@
 {% extends "default/base.html" %}
 {% load i18n %}
 
+{% block meta_keywords %}marketplace blog keywords here{% endblock %}
+
 {% block content %}
-<div id="breadcrumbs" class="grid_18">
-	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_blog %}">{% trans "Blog" %}</a>
-</div>
+<ul class="breadcrumb">
+ <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider"> / </span></li>
+ <li><a href="{% url market_blog %}">{% trans "Blog" %}</a></li>
+</ul>
 
 <script type="text/javascript">
 
@@ -33,10 +36,11 @@ $(function() {
 </script>
 
 {% block filter_content %}
-<div class="grid_4 alpha omega block_filter">
+<div class="sidebar">
+ <div class="well">
 
 	<!-- ARCHIVE SECTION -->
-	<h4>{% trans "Blog Archive" %}</h4>
+	<h5>{% trans "Blog Archive" %}</h5>
 	{% regroup archive by month as post_list %}
 	<ul id="tree">
 	{% for post in post_list %}
@@ -52,10 +56,9 @@ $(function() {
 	    </li>
 	{% endfor %}
 	</ul>
-	<br></br>
 
 	<!-- EDITOR POST's PICKS -->
-	<h4>{% trans "Editor Post's Picks" %}</h4>
+	<h5>{% trans "Editor Post's Picks" %}</h5>
 	<ul class="post_summary">
 	{% for pick in picks %}
 		{% if forloop.count == 5 %}
@@ -66,7 +69,7 @@ $(function() {
 	</ul>
 
 	<!-- LATEST POSTS SECTION -->
-	<h4>{% trans "Lastest Post" %}</h4>
+	<h5>{% trans "Lastest Post" %}</h5>
 	<ul class="post_summary">
 	{% for post in latest_posts %}
 		{% if forloop.count == 5 %}
@@ -77,23 +80,23 @@ $(function() {
 	</ul>
 	
 	<!-- LATEST COMMENTS SECTION -->
-	<h4>{% trans "Latest Comments" %}</h4>
+	<h5>{% trans "Latest Comments" %}</h5>
 	<ul class="comment_summary">
 	{% for comment in latest_comments %}
-    	<li><b>{{ comment.user }}</b> says : {{ comment.comment.capitalize|truncatewords:10 }}</li>
+    	<li><b>{{ comment.user }}</b> says : {{ comment.comment.capitalize|truncatewords:10|striptags }}</li>
 	{% endfor %}			
 	</ul>
 </div>
+</div>
 {% endblock %}
 
-<div class="grid_13 alpha omega block_main_content margin_h">
+<div class="span12">
+
 
 {% for post in posts.object_list %}
 	{% include "default/post_render.html" %}
-	<hr></hr>
 {% endfor %}
 
-<div class="clear"></div>
 <div class="pagination">
 {% with posts as objects %}
 	{% include 'paginator.html'%}

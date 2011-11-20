@@ -17,7 +17,6 @@ import decimal
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 from django.core.management import setup_environ
-from django.core.mail import send_mail
 #from django.db import transaction
 
 import settings

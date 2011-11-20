@@ -91,7 +91,9 @@ ul li{
     position: relative;
 }
 
-.table .small .td {width: 125px}
+.table .small .td {
+	width: 140px;
+}
 
 .table .th{
 	width: 125px;
@@ -103,7 +105,9 @@ ul li{
     font-weight: bold;
 }
 
-.table .small .th {width: 125px}
+.table .small .th {
+	width: 140px;
+}
 
 .section .title {
 	-moz-border-radius:4px;	
@@ -116,3 +120,7 @@ ul li{
 
 .ui-dialog-titlebar { display:none; }
 .ui-dialog{border: none;}
+
+.admin_filter {
+	float: right;
+}

@@ -1,0 +1,101 @@
+{% extends 'store_admin/support/base_support.html' %}
+{% load i18n %}
+
+{% block m_phone_support %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}Phone Support{% endblock %}
+
+{% block main %}
+	<div class="grid_16">
+	Please Enter Your Contact Details and a Support Representative Will Call You Within one Business Day
+    
+    <form name="form" method="POST" action="." id="phone_support_form"> 
+		
+		{% if form.name.errors %}<div class="error">{{ form.name.errors|join:", " }}</div>{% endif %}
+		<p>{{ form.name.label }}</p>
+		{{ form.name }}
+		{% if form.phone.errors %}<div class="error">{{ form.phone.errors|join:", " }}</div>{% endif %}
+		<p>{{ form.phone.label }}</p>
+		{{ form.phone }}
+		{% if form.messenger_id.errors %}<div class="error">{{ form.messenger_id.errors|join:", " }}</div>{% endif %}
+		<p>{{ form.messenger_id.label }}</p>
+		{{ form.messenger_id }}
+	
+		<input type="hidden" name="txn_id" id="txn_id" value="-1"/>
+		<br/><br/>
+		
+		<div class="clear"></div>
+		
+		<button class="small awesome" onclick="return start_payment('{% url enable_feature 'voice_support' %}', support_payment_return);">{% trans "Purchase" %}</button>
+		<a href="{% url support_overview %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+	
+	</form>
+	
+	</div>
+	<div class="clear"></div>
+	<div><p><b>NOTE</b>: If a support incident is due to a bug or a system problem a refund will be issued.</p></div>		
+
+<script type="text/javascript">
+function start_payment(url, callback) {
+
+	var name = trim($("input[name='name']").val());
+	if (name==null || name == "") {
+		alert("Please put your name");
+		return false;
+	}
+	
+	var error = validatePhone($("input[name='phone']").val());
+	if (error != "") {
+		alert(error);
+		return false;	
+	}
+	
+	$.fancybox.payment_callback = callback;
+	$.fancybox({
+			'href': url,
+			'type': 'iframe',
+			'width'				: '6',
+			'height'			: '5',
+			'autoScale'			: false,
+			'transitionIn'		: 'none',
+			'transitionOut'		: 'none',
+			'type'				: 'iframe',					
+			'onClosed'			: function() {	
+				//window.location = window.location;   
+			},
+			'onComplete': function() {
+				$.fancybox.hideActivity(); 
+			}
+	});
+	$.fancybox.showActivity();
+	return false;
+}
+
+function trim(s) {
+ 	return s.replace(/^\s+|\s+$/, '');
+}
+
+function validatePhone(fld) {
+    var error = "";
+    var stripped = fld.replace(/[\(\)\.\-\ ]/g, '');   
+
+   if (fld == "") {
+        error = "You didn't enter a phone number.\n";        
+    } else if (isNaN(parseInt(stripped))) {
+        error = "The phone number contains illegal characters.\n";        
+    } else if (!(stripped.length == 10)) {
+        error = "The phone number has wrong length. Make sure you included an area code.\n";        
+    }
+    return error;
+}
+
+function support_payment_return(response) {
+    if (response['status'] == 'success') {
+    	$("#txn_id").attr('value', response['txn_id']);
+    	$('#phone_support_form').submit();
+    }
+}
+</script>
+
+
+{% endblock %}

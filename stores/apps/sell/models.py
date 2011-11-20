@@ -34,9 +34,10 @@ class Cart(models.Model):
         return "%s > %s" % (self.shop, self.bidder)
     
     def close(self, payment_method):
-        from django.template import Context, Template
-        from preferences.models import EmailNotification
+        from django.conf import settings
         from django.core.mail import send_mail
+        from django.template import Context, Template
+        from preferences.models import EmailNotification        
         
         if self.shippingdata is None: raise Exception("Cart Shipping address should never be empty. Something is wrong!")
         sell = Sell.new_sell(self.shop, self.bidder, self.shippingdata, self)
@@ -85,15 +86,14 @@ class Cart(models.Model):
             
             subj_text = subj_template.render(c)
             body_text = body_template.render(c)
-            send_mail(subj_text, body_text, 'no-reply@greatcoins.com',  [self.shop.admin.email], fail_silently=True)
+            send_mail(subj_text, body_text, settings.EMAIL_FROM,  [self.shop.admin.email], fail_silently=True)
             
         except EmailNotification.DoesNotExist:
             msg = "New Order Notification"
-            send_mail("New order has been generated!", msg, 'no-reply@greatcoins.com',  [self.bidder.email], fail_silently=True)
+            send_mail("New order has been generated!", msg, settings.EMAIL_FROM,  [self.bidder.email], fail_silently=True)
             
         except Exception, e:
-            from django.conf import settings
-            send_mail("Fail when trying to send email!", "%s" % e, 'no-reply@greatcoins.com',  [mail for (name, mail) in settings.ADMINS], fail_silently=True)
+            send_mail("Fail when trying to send email!", "%s" % e, settings.EMAIL_FROM,  [mail for (name, mail) in settings.STAFF], fail_silently=True)
         
         # SEND NEW ORDER NOTIFICATION TO CUSTOMER
         try:
@@ -103,15 +103,15 @@ class Cart(models.Model):
             
             subj_text = subj_template.render(c)
             body_text = body_template.render(c)
-            send_mail(subj_text, body_text, 'no-reply@greatcoins.com',  [self.bidder.email], fail_silently=True)
+            send_mail(subj_text, body_text, settings.EMAIL_FROM,  [self.bidder.email], fail_silently=True)
             
         except EmailNotification.DoesNotExist:
             msg = "This mail is to confirm your order on %s" % self.shop
-            send_mail("New order has been generated!", msg, 'no-reply@greatcoins.com',  [self.bidder.email], fail_silently=True)
+            send_mail("New order has been generated!", msg, settings.EMAIL_FROM, [self.bidder.email], fail_silently=True)
             
         except Exception, e:
             from django.conf import settings
-            send_mail("Fail when trying to send email!", "%s" % e, 'no-reply@greatcoins.com',  [mail for (name, mail) in settings.ADMINS], fail_silently=True)
+            send_mail("Fail when trying to send email!", "%s" % e, settings.EMAIL_FROM,  [mail for (name, mail) in settings.STAFF], fail_silently=True)
         
         return sell
     

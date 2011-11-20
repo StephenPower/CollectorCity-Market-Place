@@ -3,18 +3,16 @@
 
 
 {% block content %}
-<div>
-<form action="." method="POST" class="big_form">
-	<fieldset class="register">
-		<p>Username:</p>
+<div class="span8 offset2">
+<form action="." method="POST" class="form-stacked alert-message block-message info">
+	<fieldset>
+		<label>Username</label>
 		<input type="text" name="username"/>
-		<p>Password:</p>
+		<label>Password</label>
 		<input type="password" name="password"/>
-		<div class="buttonHolder">
-			<br/>
-			<button type="submit" class="button_primary">{% trans "Login" %}</button>
+			<br/></br>
+			<button type="submit" class="btn primary">{% trans "Login" %}</button>
 	       	{% if next %}<input type="hidden" name="next" value="{{ next|escape }}" />{% endif %}
-	    </div>
 	</fieldset>
 	<br/><br/>
 </form>

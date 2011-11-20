@@ -72,7 +72,7 @@ def send_daily_invoice_notification():
         msg = invoice.to_text()
         
         logging.info("Sending email to %s. tx=%s, charge=%s, " % (invoice.customer_name, invoice.transaction_id, invoice.charge))        
-        send_mail('%s | Notification Invoice' % invoice.market_place, msg, 'admin@greatcoins.com',  [invoice.customer_email, "admin@greatcoins.com"], fail_silently=True)
+        send_mail('%s | Notification Invoice' % invoice.market_place, msg, settings.EMAIL_FROM, [invoice.customer_email]+[mail for name, mail in settings.STAFF], fail_silently=True)
 
         
 if __name__ == "__main__":

@@ -1,0 +1,75 @@
+{% extends 'store_admin/account/base_account.html' %}
+{% load i18n %}
+
+{% block m_billing %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}Shop Billing Overview{% endblock %}
+
+{% block main %}
+<div class="grid_10">
+
+	<h3><u>{% trans "Update Your Credit Card Info" %}</u></h3>
+	
+	{% if error_message %}
+    <div class="error">{{ error_message }}</div>
+	{% endif %}
+	
+	<form action="." method="POST" name="form" id="credit_card_form">
+
+		{{ form.as_p }}
+		
+		<button class="awesome small" type="submit">{% trans "Add" %}</button>
+		<a href="{% url billing_overview %}">{% trans "Or Cancel" %}</a>
+		
+	</form>		
+	
+	<p><b>NOTE: Your credit card information will NOT be hold on our servers</b></p>
+	
+</div>
+	
+<div class="clear"></div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#id_expiration_date").change(function(){
+		var y;
+		var m;
+		var t = $(this).val();
+		
+		var splited_text = t.split("/");
+		month = splited_text[0];
+		year = splited_text[1];
+		
+		if (splited_text.length != 2){
+			alert("You must fill the expiration date input in the following format: mm/yyyy");
+			$(this).val("--/----");
+			return false;
+		}
+		
+		y = parseInt(year);
+		m = parseInt(month);
+		
+		if (isNaN(y) || isNaN(m)){
+			alert("Only numbers are accepted");
+			$(this).val("--/----");
+			return false;
+		}
+		
+		if (m < 1 || m > 12) {
+			alert("Invalid month value");
+			return false;
+		}
+		
+		today = new Date();
+		expiry = new Date(year, month);
+		if (today.getTime() > expiry.getTime()) { 
+			alert("Your card is expired!");
+			$(this).val("--/----");
+			return false;
+		}		
+	
+	});
+});
+</script>
+
+{% endblock %}

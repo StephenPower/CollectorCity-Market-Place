@@ -99,7 +99,7 @@ class AuctionsTest(TestCase):
         self.assertEqual(auction.actual(), True)
         self.assertEqual(auction.future(), False)
         
-        self.assertEqual(auction.status(), "Actual")
+        self.assertEqual(auction.status(), "In Progress")
         self.assertEqual(auction.count_lots(), 0)
         
         #Save a session that will be in the future

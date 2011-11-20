@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+{% load i18n %}
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/purchase_box.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js" type="text/javascript"></script>
+    
+    <script type="text/javascript">
+    $(document).ready(function(){
+    	var payment_response = null;
+    	$('#spinner').hide();
+    	
+    	var close_btn = $("#close_btn");
+    	close_btn.hide();
+    	
+    	var title = $("#purchase_msg");
+    	
+    	$(document).ajaxStart( function() {
+    			title.empty();
+			    title.html("<h3>Please wait...</h3>");
+				$('#spinner').show();
+		}).ajaxStop( function() {
+				$('#spinner').hide();				
+		});
+			
+    	$("#purchase_btn").click(function(){
+    		var purchase_btn = $(this);
+			purchase_btn.attr("disabled", true);
+			$("#cancel_lnk").hide();
+			$.ajax({
+  				url: "{% url ajax_do_charge feature_id %}",
+  				dataType: "json",
+			  	success: function(data, status, other) {
+			  	    payment_response = data;
+			    	title.empty();
+			    	title.html("<h3>Thank you for your purchase!</h3>");
+			    	purchase_btn.hide();
+			    	close_btn.show();
+			  	},
+			  	error: function(data, status, other) {
+			  	    payment_response = {
+			  	    	status: 'error'			  	    	
+			  	    };
+			    	title.empty();
+			    	title.html("<h3><img src='{{ MEDIA_URL }}img/warning.png' width='30' height='25'/>The purchase couldn't be done! Please contact &lt;admin@greatcoins.com&gt; or try again in a while.</h3>");
+			    	purchase_btn.hide();
+			    	close_btn.show();
+			  	},
+			});
+		});
+		
+		$("#close_btn").click(function(){
+		    if (typeof(parent.jQuery.fancybox.payment_callback) == 'function') {
+		    	parent.jQuery.fancybox.payment_callback(payment_response);
+		    }
+			parent.jQuery.fancybox.close();
+			return false;
+		});
+		
+		$("#cancel_lnk").click(function(){
+		    parent.jQuery.fancybox.close();
+			return false;
+		});
+		
+		parent.jQuery.fancybox.hideActivity();
+	
+	});
+	</script>
+</head>
+<body>
+	<div class="purchase_box">
+		<div id="header">{{ shop.name.upper }}</div>
+		<div id="content">
+			<div id="purchase_msg"><h3>Review what are purchasing:</h3></div>
+			{% if credit_card_info %}
+			<p>We will charge you with your <b>{{ card_type }} - {{ masked_number }}</b> credit card account.</p>
+			{% endif %}
+			
+			{% if expired %}
+    		<div class="error">Your credit card is currently expired. Please go to <a href="{% url billing_update_credit_card %}" target="_parent">here</a> and update your credit card info to continue.</p></div>
+			{% endif %}
+			
+			<div class="left_col"><b>Item</b></div>
+			<div class="right_col"><b>Price</b></div>
+			<div class="clear border"></div>			
+			
+			<div class="left_col">{{ feature_name }} - {{ feature_description }}</div>
+			<div class="right_col">$ {{ feature_price }}</div>
+			<div class="clear"></div>
+			
+			<hr></hr>
+			
+			<div class="left_col">&nbsp;<img id="spinner" src="{{ MEDIA_URL }}img/spinner.gif"/></div>
+			<div id="" class="right_col">			
+				<form action="." method="POST" class="purchase_form">
+					{% if not expired %}
+					<input id="purchase_btn" type="button" value="Complete your purchase" />
+					<a id="cancel_lnk" href="#">or Cancel</a>
+					{% endif %}		
+					<input id="close_btn" type="button" value="Close" />					
+				</form>
+			</div>		
+		</div>
+	</div>	
+</body>
+</html>

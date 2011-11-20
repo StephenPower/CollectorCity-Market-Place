@@ -166,7 +166,7 @@ class Theme(models.Model):
             if match:
                 template_ok = True
         if not (asset_ok and template_ok):
-            raise Exception("The theme does not have the expected structure.")
+            raise Exception("The theme does not have the expected structure. The root of the zip file should only have the assets/ and templates/ folders.")
             
         # load templates of theme from files
         for template_name in TEMPLATES:

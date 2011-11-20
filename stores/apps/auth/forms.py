@@ -5,6 +5,7 @@ from models import User
 from auth import authenticate
 from tokens import default_token_generator
 from django.contrib.sites.models import Site
+from django.conf import settings
 from django.template import Context, loader
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -22,7 +23,7 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ("username",)
+        fields = ("username", "first_name", "last_name",)
 
     def clean_email(self):
         #TODO: check
@@ -157,7 +158,7 @@ class PasswordResetForm(forms.Form):
                 'protocol': use_https and 'https' or 'http',
             }
             send_mail(_("Password reset on %s") % site_name,
-                t.render(Context(c)), None, [user.email])
+                t.render(Context(c)), settings.EMAIL_FROM, [user.email])
 
 class SetPasswordForm(forms.Form):
     """

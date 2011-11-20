@@ -179,6 +179,12 @@ def admin_shop_subscriptions_report(request):
     return render_to_response("admin/shop_subscriptions_report.html", {'shops': shops}, RequestContext(request))
 
 @staff_member_required
+def admin_shop_revenue_report(request):
+    from shops.models import Shop
+    shops = Shop.objects.all()
+    return render_to_response("admin/shop_revenue_report.html", {'shops': shops}, RequestContext(request))
+
+@staff_member_required
 def admin_shop_subscription_details(request, id):
     from shops.models import Shop
     from subscriptions.models import Subscription
@@ -191,3 +197,43 @@ def admin_shop_subscription_details(request, id):
         subscription = None
         
     return render_to_response("admin/shop_subscription.html", {'shop' : shop, 'subscription' : subscription}, RequestContext(request))
+
+@staff_member_required
+def admin_shop_abandonment_report(request):
+    from shops.models import Shop
+    
+    filters = [
+        ('no_filter', '-- No Filter --'),
+        ('post_gt_30', 'Post &gt; 30 days'),
+        ('post_gt_60', 'Post &gt; 60 days'),
+        ('post_gt_90', 'Post &gt; 90 days'),        
+        ('login_gt_30', 'Login &gt; 30 days'),
+        ('login_gt_60', 'Login &gt; 60 days'),        
+        ('login_gt_90', 'Login &gt; 90 days'),
+    ]
+    
+    filter = request.GET.get("filter", None)
+    shops = Shop.objects.all()
+    if filter is not None or filter == '-- No Filter --':
+        if filter == "login_gt_30":
+            d1 = datetime.datetime.now() - datetime.timedelta(days=30)
+            shops = shops.filter(admin__last_login__lt=d1)
+        elif filter == "login_gt_60":
+            d1 = datetime.datetime.now() - datetime.timedelta(days=60)
+            shops = shops.filter(admin__last_login__lt=d1)
+        elif filter == "login_gt_90":
+            d1 = datetime.datetime.now() - datetime.timedelta(days=90)
+            shops = shops.filter(admin__last_login__lt=d1)
+        elif filter == "post_gt_30":
+            d1 = datetime.datetime.now() - datetime.timedelta(days=30)
+            shops = shops.filter(last_date_to_post__lt=d1)
+        elif filter == "post_gt_60":
+            d1 = datetime.datetime.now() - datetime.timedelta(days=60)
+            shops = shops.filter(last_date_to_post__lt=d1)
+        elif filter == "post_gt_90":
+            d1 = datetime.datetime.now() - datetime.timedelta(days=90)
+            shops = shops.filter(last_date_to_post__lt=d1)
+            
+    params = {'shops': shops, 'filters': filters, 'filter': filter}
+    
+    return render_to_response("admin/shop_abandonment_report.html", params, RequestContext(request))

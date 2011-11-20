@@ -36,12 +36,18 @@
 	{% for item in wishlistitems %}
 	<div class="{% cycle 'row_1' 'row_2' %}" title="{{ item.description|striptags }}">
 		<div class="grid_1 alpha omega column">#{{ item.id }}</a></div>
-		<div class="grid_2 alpha omega column"><span>{{ item.posted_by }}</span></div>
+		<div class="grid_2 alpha omega column"><span>{% if shop.wishlist_feature_enabled %}{{ item.posted_by }}{% else %}xxxx{% endif %}</span></div>
 		<div class="grid_3 alpha omega column"><span>{{ item.description|safe }}</span></div>
 		<div class="grid_4 alpha omega column"><span>{{ item.category.name }} | {% if item.subcategory %}{{ item.subcategory.name }}{% else %} --- {% endif %}</span></div>
 		<div class="grid_2 alpha omega column"><span>{{ item.ideal_price }}</span></div>
 		<div class="grid_2 alpha omega column"><span>{% trans "Pending" %}</span></div>
-		<div class="grid_2 alpha omega column"><a href="{% url customers_send_notification item.id %}">{% trans "Send Notification" %}</a></div>
+		<div class="grid_2 alpha omega column">
+		{% if shop.wishlist_feature_enabled %}
+			<a href="{% url customers_send_notification item.id %}">{% trans "Send Notification" %}</a>
+		{% else %}
+			<a class="enable_feature_box" href="{% url enable_feature 'wishlist' %}">{% trans "Enable Wish List Feature" %} for ${{ shop.wishlist_feature_price }}</a>
+		{% endif %}
+		</div>
 		<div class="clear"></div>
 	</div>
 	
@@ -49,5 +55,15 @@
 		<div class="notice">{% trans "There is no wishlist items to show" %}</div>
 	{% endfor %}
 
+	{% if not shop.wishlist_feature_enabled %}
+	<div class="enable_feature"><a class="enable_feature_box" href="{% url enable_feature 'wishlist' %}">{% trans "Enable Wish List Feature" %} for ${{ shop.wishlist_feature_price }}</a><img src="{{ MEDIA_URL }}img/help-icon.png" onclick="javascript:show_help_text('htb_container');"/></div>
 	
+	<div class="htb_container">
+		<img id="stick" src="{{ MEDIA_URL }}img/stick.png"/>
+		<div class="help_text_box">
+			{{ shop.wishlist_feature_help_text }}
+			<div class="close"><img onclick="javascript: close_help_text('htb_container')" src="{{ MEDIA_URL }}img/remove.png"/></div>
+		</div>
+	</div>
+	{% endif %}
 {% endblock %}

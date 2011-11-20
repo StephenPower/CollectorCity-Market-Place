@@ -21,20 +21,21 @@ def profiles_list(request, letter):
     from shops.models import Shop
     
     marketplace = request.marketplace
-    shops = Shop.objects.filter(marketplace=marketplace).filter(Q(name__startswith=letter.lower()) | Q(name__startswith=letter.upper()))
+    shops = Shop.actives.filter(marketplace=marketplace).filter(name__startswith=letter)
     return render_to_response("%s/community/profiles_list.html" % request.marketplace.template_prefix, 
-                              {'shops':shops},
+                              {'shops':shops, 'letter': letter},
                               RequestContext(request))
                               
 def profiles(request):
     from shops.models import Shop
     
-    letters =[]
-    shops = Shop.objects.all()
-    for shop in shops: letters.append(shop.name[0])  
+    letters = []
+    marketplace = request.marketplace
+    shops = Shop.actives.filter(marketplace=marketplace)
     
-    letters = set(letters)
-    return render_to_response("%s/community/profiles.html" % request.marketplace.template_prefix, {'letters' : letters}, RequestContext(request))
+    for shop in shops: letters.append(shop.name[0])  
+    letters = sorted(set(letters))
+    return render_to_response("%s/community/profiles.html" % request.marketplace.template_prefix, {'letters' : letters, 'shops' : shops,}, RequestContext(request))
 
 
 def forums(request):
@@ -52,11 +53,16 @@ def blogs(request):
     monday = today - datetime.timedelta(days=wday)
     sunday = monday + datetime.timedelta(days=6)
     
+    logging.critical(today)
+    logging.critical(wday)
+    logging.critical(monday)
+    logging.critical(sunday)
+    
     marketplace = request.marketplace
-    last_posts = Post.objects.filter(shop__marketplace=marketplace).order_by("-date_time")[:5]
+    last_posts = Post.objects.filter(shop__marketplace=marketplace).filter(draft=False).order_by("-date_time")[:5]
     posts_picks = PostEditorPick.objects.filter(marketplace=marketplace).order_by("order")
-    most_visited = Post.objects.filter(shop__marketplace=marketplace)
-    most_visited = most_visited.filter(date_time__range=(monday, sunday)).order_by("-views")[:5]
+    most_visited = Post.objects.filter(shop__marketplace=marketplace).filter(draft=False).order_by("-views")[:5]
+    #most_visited = posts.filter(date_time__range=(monday, sunday)).order_by("-views")[:5]
     
     return render_to_response("%s/community/blogs.html" % request.marketplace.template_prefix, 
                               {
@@ -69,10 +75,12 @@ def blogs(request):
 def faq(request):
     from market_community.models import FAQCategory
     marketplace = request.marketplace
-    
+ 
     categories = FAQCategory.objects.filter(marketplace=marketplace)
     return render_to_response("%s/community/faq.html" % request.marketplace.template_prefix, 
-                              {'categories': categories},
+                              {
+                        	'categories' : categories,      
+				},
                               RequestContext(request))
 
 def overview(request):
@@ -83,9 +91,8 @@ def overview(request):
     
     marketplace = request.marketplace
     announcements = MarketPlaceAnnouncement.objects.filter(marketplace=marketplace).order_by("-posted_on")[:5]
-    shops = Shop.objects.filter(marketplace=marketplace).order_by("-date_time")[:3]
-    last_posts = Post.objects.filter(shop__marketplace=marketplace).order_by("-date_time")[:5]
-
+    shops = Shop.actives.filter(marketplace=marketplace).order_by("-date_time")[:3]
+    last_posts = Post.objects.filter(shop__marketplace=marketplace).filter(draft=False).order_by("-date_time")[:5]
 
     if request.method == "POST":
         form = MarketMailingListMemberForm(request.POST)
@@ -97,7 +104,7 @@ def overview(request):
             request.flash['severity'] = "success"
             return HttpResponseRedirect(reverse("market_community"))
     else:
-        form = MailingListMemberForm()   
+        form = MarketMailingListMemberForm()   
     
     return render_to_response("%s/community/overview.html" % request.marketplace.template_prefix, 
                               {

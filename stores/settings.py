@@ -19,6 +19,13 @@ sys.path.insert(2, os.path.join(ROOT_DIR, "libs"))
 sys.path.insert(3, os.path.join(ROOT_DIR, 'marketplaces', "apps"))
 
 ADMINS = (
+    ('Sebastian', 'sebastian@devsar.com'),
+    ('Steve', 'stephenpatrickpower@gmail.com'),
+)
+
+STAFF = (
+    ('Steve Admin', 'admin@greatcoins.com'),
+    ('Steve Alias', 'steve@greatcoins.com'),
 )
 
 MANAGERS = ADMINS
@@ -36,8 +43,8 @@ DATABASE_PORT = ''             # Set to empty string for default. Not used with 
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
 
-TIME_ZONE = 'US/Eastern'
-#TIME_ZONE = 'America/Buenos_Aires'
+#TIME_ZONE = 'US/Eastern'
+TIME_ZONE = 'America/Buenos_Aires'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -121,6 +128,7 @@ INSTALLED_APPS = (
     'uni_form',
     'haystack',
     'reversion',
+    'rollyourown.seo',
 
     #POC
     'auth',
@@ -164,11 +172,11 @@ GOOGLE_CHECKOUT_SANDBOX = False
 GOOGLE_KEY = ''
 GOOGLE_MARKETPLACE_KEY = ''
 
-DEFAULT_DNS = ''
+DEFAULT_DNS = 'shop.com'
 
 
 EMAIL_HOST = ""
-EMAIL_PORT = 
+EMAIL_PORT = 587
 EMAIL_HOST_USER = ""
 EMAIL_HOST_PASSWORD = ""
 EMAIL_USE_TLS = True
@@ -194,7 +202,7 @@ SITE_RUNNING_MODE='stores'
 
 import logging
 
-logging.basicConfig(level=logging.DEBUG, format='[=%(levelname)s : %(asctime)s] %(message)s',)
+logging.basicConfig(level=logging.INFO, format='[=%(levelname)s : %(asctime)s] %(message)s',)
 
 #import sys
 #logging.basicConfig(stream=sys.stdout)

@@ -5,6 +5,8 @@
 {% block m_lots %}current_sub_menu{% endblock %}
 
 {% block toolbar %}
-	<a href="{% url lot_add  %}"><img src="{{ MEDIA_URL }}img/add.png" class="icon">{% trans "Add Item" %}</a>  
+{% if shop.auctions_feature_enabled %}
+	<a href="{% url lot_add  %}"><img src="{{ MEDIA_URL }}img/add.png" class="icon">{% trans "Add Item" %}</a>
+{% endif %}  
 {% endblock %}
 

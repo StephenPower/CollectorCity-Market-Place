@@ -2,39 +2,35 @@
 {% load i18n %}
 
 {% block content %}
-<div id="breadcrumbs" class="grid_18">
-	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_buy %}">{% trans "Buy" %}</a> &raquo; {% trans "Shop Local" %}
-</div>
+<ul class="breadcrumb">
+ <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider"> / </span></li>
+ <li><a href="{% url market_buy %}">{% trans "Buy" %}</a><span class="divider"> / </span</li>
+ <li class="active">{% trans "Shop Local" %}</li>
+</ul>
+<div class="span12 offset2">
+<h2>{% trans "Shop Local" %}</h2>
+<p>Search for Dealers Near You</p>
 
-<div class="grid_18 block_main_content">
-
-<h3>{% trans "Shop Local" %}</h3>
-<p>Search for shops and dealers near you!</p>
-
-<div class="notice grid_9">
-<form action="{% url buy_shop_local %}" method="POST" name="form">
-	<div class="grid_4">
-		<label>{% trans "City" %}</label><input type="text" name="city"/>
-		<label>{% trans "State" %}</label>
-		<select name="state">
-		{% for state in states %}
-    		<option>{{ state.1 }}</option>
-		{% endfor %}
-		</select>
-		<div class="margin_v">
-			<input type="submit" class="small awesome" style="border: none"alt="" value="{% trans 'Search' %}"/>
-		</div>
-	</div>
-	<div class="grid_4">
-		<label>Max Distance</label><br/>
+<form action="{% url buy_shop_local %}" method="POST" name="form" class="form-stacked">
+		<label>{% trans "City" %}</label>
+			<input type="text" name="city" value="{{ selected_city }}"/>
+			<label>{% trans "State" %}</label>
+			<select name="state">
+			{% for state in states %}
+	    		<option {% if state.1 == selected_state %}selected="selected"{% endif %}>{{ state.1 }}</option>
+			{% endfor %}
+			</select>
+		<label>Max Distance</label>
 		<select name="max_distance">
 			<option>20</option>
 			<option>75</option>
 			<option>100</option>
-			<option>150</option>
+			<option selected="selected">150</option>
 			<option>300</option>
 			<option>600</option>
-		</select>
+		</select></br></br>
+		<input type="submit" class="btn primary" alt="" value="{% trans 'Search' %}"/>
+	
 		{% comment %}
 		<label>Street</label><input type="text" name="street" value="1600 Pensylvannia"/>
 		<label>Country</label><input type="text" name="country" value="US"/>
@@ -44,36 +40,41 @@
 			<option>Kilometers</option>
 		</select>
 		{% endcomment %}
-	</div>
 </form>
-</div>
 
-<hr></hr>
-{% if shops %}
-<h4>{{ shops|length }} shop{{ shops|length|pluralize }} found near you.</h4>
+{% if do_search %}
+<h3>{{ shops|length }} shop{{ shops|length|pluralize }} found</h3>
+
+<table class="zebra-striped">
+<thead>
+<tr>
+ <th>Shop</th>
+ <th>Shop Distance</th>
+ <th>URL</th>
+<tr>
+</thead>
+<tbody>
 {% for shop in shops %}
-<div class="grid_6">
-	<a href="http://{{ shop.1.default_dns }}" target="_blank">
-	<div class="dealer_box">
+<tr>
+ <td><a href="http://{{ shop.1.default_dns }}" target="_blank">
 		{% if shop.1.owner.get_profile.photo %}
 		<img class="item" alt="{{ shop.1.name }}" src="{{ shop.1.owner.get_profile.photo.url_128x135 }}" height="128" width="135"/>
 		{% else %}
 		<img class="item" alt="{{ shop.1.name }}" src="{{ MEDIA_URL }}img/no-photo-big.jpg" height="128" width="135"/>
 		{% endif %}
-		<div>{{ shop.1.admin.get_full_name }}</div>
-		<div>{{ shop.1.default_dns }}</div>
-		<div>{{ shop.1.description|striptags }}</div>
-		<div>{% trans "Distance" %} : {{ shop.0 }} {{ metric }}</div>
-	</div>
-	</a>
-</div>
+		{{ shop.1.admin.get_full_name }}
+		{{ shop.1.default_dns }}
+		{{ shop.1.description|striptags }}
+	<td>{% trans "Distance" %} : {{ shop.0 }} {{ metric }}</td>
+	<td><a href="http://{{ shop.1.default_dns }}" target="_blank">{{shop.1.name|title }}</a></td>
+</tr>
+
 {% endfor %}
-{% else %}
-{% trans "There is no shops near you" %}
+</tbody>
+</table>
+
+
 {% endif %}
-
-<div class="clear"></div>
-
 </div>
-
+</div>
 {% endblock %}

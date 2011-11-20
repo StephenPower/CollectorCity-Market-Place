@@ -1,14 +1,17 @@
-<div class="grid_2">
-	<a href="http://{{ post.shop.default_dns }}/blog/" target="_blank">
-	{% if post.shop.owner.get_profile.photo %}
-	<img class="item" alt="{{ post.shop.name }}" src="{{ post.shop.owner.get_profile.photo.url_128x135 }}" width="64" height="68">
-	{% else %}
-	<img class="item" alt="{{ post.shop.name }}" src="{{ MEDIA_URL }}img/no-photo-big.jpg" height="64" width="68"/>
-	{% endif %}
-	</a>
-</div>
-<div class="grid_11 post">
-	<span class="post_date">{{ post.date_time|date:'H:m - F j, Y' }}</span>
-	<h4><a href="{#% url bidding_view_post post.id %#}">{{ post.title }}</a></h4>
-	<div class="margin_v">{{ post.body|safe|truncatewords:"40" }}</div>
-</div>
+	 <tr>
+	 <td>
+		<a href="http://{{ post.shop.default_dns }}/blog/" target="_blank">
+		{% if post.shop.owner.get_profile.photo %}
+		<img class="item" alt="{{ post.shop.name }}" src="{{ post.shop.owner.get_profile.photo.url_100x100 }}" >
+		{% else %}
+		<img class="item" alt="{{ post.shop.name }}" src="{{ MEDIA_URL }}img/no-photo-big.jpg" />
+		{% endif %}
+		</a>
+	</td>
+
+	<td>
+		<p><a href="http://{{ post.shop.default_dns }}/blog/view_post/{{post.id}}">{{ post.title }}</a></p>
+		<p>{{ post.date_time|date:'H:m - F j, Y' }}</p>
+		<p>{{ post.body|safe|truncatewords:"40" }}</p>
+       	</td>
+	 </tr>

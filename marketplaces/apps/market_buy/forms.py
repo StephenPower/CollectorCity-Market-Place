@@ -25,17 +25,17 @@ class ShowForm(ModelForm):
     
     class Meta:
         model = Show
-        exclude = ['marketplace']
+        exclude = ['marketplace', 'country', 'contact_info', 'admission', 'location','time_from', 'time_to']
         
 
 class BuyerForm(UserCreationForm):
-    email =  forms.EmailField()
+    email =  forms.EmailField()    
 
 
 SORT_CHOICES = (
+    ("relevance", _("Relevance")),                
     ("price", _("Price")),
     ("-starts_at", _("Age")),
-    ("relevance", _("Relevance")),
     #("dealer", _("Dealer")),
     #("auction", _("Auction")),
     #("forsale", _("For sale")),
@@ -93,8 +93,7 @@ class AdvancedSearchForm(SearchForm):
     from_price = forms.DecimalField(label=_("Filter By Price"), required=False)
     to_price = forms.DecimalField(label=_("to"), required=False)
 
-    view_by = forms.ChoiceField(choices=VIEW_BY_CHOICES, 
-        widget=forms.RadioSelect(), initial="gallery")
+    view_by = forms.ChoiceField(choices=VIEW_BY_CHOICES, widget=forms.RadioSelect(), initial="gallery")
 
     def __init__(self, marketplace, *args, **kwargs):
         super(AdvancedSearchForm, self).__init__(*args, **kwargs)

@@ -1,124 +1,219 @@
 {% load i18n %}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+{% load seo %}
+
+
+<!DOCTYPE html >
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<title>{% block head_title %}Collectorcity MarketPlace{% endblock %}</title>
+	
+	{% get_metadata %}
+	
+<meta name="google-site-verification" content="wMzrYWx7N3YXKsm5Y9N4wqVJxqCYX3oyil7IrtcgNYI" />
+
+
+<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+
 	
 	<link rel="stylesheet" href="{{ MEDIA_URL }}css/jquery.treeview.css" />
-	<link rel="stylesheet" href="{{ MEDIA_URL }}css/style.css" />
+	<link rel="stylesheet" href="{{ MEDIA_URL }}uni_form/uni-form-generic.css" />
+	<link rel="stylesheet" href="{{ MEDIA_URL }}uni_form/uni-form.css" />
+	<link rel="stylesheet" href="{{ MEDIA_URL }}css/jquery-ui-1.8.custom.css" />
+	<link rel="stylesheet" href="{{ MEDIA_URL }}css/bootstrap1114.css" />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="//www.google.com/jsapi?key={{ GOOGLE_KEY }}" type="text/javascript"></script>
 
 	{% if REQUEST_IS_SECURE %}
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js" type="text/javascript"></script>
-	<script src="https://www.google.com/jsapi?key={{ GOOGLE_KEY }}" type="text/javascript"></script>
+	<script type="text/javascript" src="https://use.typekit.com/hzo4jsg.js"></script>
+	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
     {% else %}
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
-	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js" type="text/javascript"></script>
-    <script src="http://www.google.com/jsapi?key={{ GOOGLE_KEY }}" type="text/javascript"></script>
+	<script type="text/javascript" src="http://use.typekit.com/hzo4jsg.js"></script>
+	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
     {% endif %}
+
+
 	<script src="{{ MEDIA_URL }}js/imgpreview.js" type="text/javascript"></script>
 	<script src="{{ MEDIA_URL }}js/jquery.treeview.min.js" type="text/javascript"></script>
+	<script src="{{ MEDIA_URL }}js/bootstrap-twipsy.js" type="text/javascript"></script>
+	<script src="{{ MEDIA_URL }}js/bootstrap-popover.js" type="text/javascript"></script>
+	<script src="{{ MEDIA_URL }}js/bootstrap-modal.js" type="text/javascript"></script>
+	<script src="{{ MEDIA_URL }}js/bootstrap-alerts.js" type="text/javascript"></script>
+	<script src="{{ MEDIA_URL }}js/bootstrap-dropdown.js" type="text/javascript"></script>
+	<script src="{{ MEDIA_URL }}js/bootstrap-tabs.js" type="text/javascript"></script>
 	
 </head>
    
 <body>
-	<div>
-	{% block body %}
-		<div class="block_login">
-			<div class="block_login_options">
-			{% if user.is_authenticated %}
-			<span style="color: maroon; text-shadow: 1px 1px 1px white">Welcome {{ user }}</span> |  
-			{% endif %}
-			<a href="{% url community_faq %}#what-is-greatcoinscom">{% trans "About Us" %}</a> |
-			<a href="{% url market_contact_us %}">{% trans "Contact Us" %}</a> |
-			<a href="{% url community_faq %}">{% trans "Help" %}</a> |
-			{% if user.is_authenticated %}
-			<a href="{% url logout %}">{% trans "Logout" %}</a>
-			{% else %}
-			<a href="{% url market_buy_login %}">{% trans "Login" %}</a> | 
-			<a href="{% url market_buy_signup %}">{% trans "Sign Up" %}</a> 
-			{% endif %}
-			</div>
-		</div>
+  	<div class="topbar">
+ 	 <div class="topbar-inner">
+	  <div class="container">
+		{% block body %}
+	   	<div class="tagline"><a class="brand" href="/"><img src="https://s3.amazonaws.com/market-media.numismatichq.com/media/img/Logo-Great-Coins.png"></a></div>
+		<ul class="nav">
+			<li class="dropdown" data-dropdown="dropdown">
+			<a href="#" class="dropdown-toggle">{% trans "Buy" %}</a>
+			<ul class="dropdown-menu">
+			<li ><a href="{% url market_buy %}">Overview</a></li>
+			<li class="divider"></li>
+			<li><a href="{% url market_for_sale %}">For Sale</a></li>
+			<li><a href="{% url market_auctions %}">For Auction</a></li>
+			<li class="divider"></li>
+			 <li><a href="{% url buy_categories %}">Categories</a></li>
+			 <li><a href="{% url buy_show_listing %}">Show Listing</a></li>
+			 <li><a href="{% url buy_wish_list %}">Wish List</a></li>
+			 <li><a href="{% url buy_editor_pick %}">Rick's Picks</a></li>
+			 <li><a href="{% url buy_shop_local %}">Shop Local</a></li>
+			<li class="divider"></li>
+			 <li><a href="{% url buy_advanced_search %}">Advanced Search</a></li>
+			
+			</ul>
+			</li>
+			<li class="dropdown" data-dropdown="dropdown">
+				<a href="#" class="dropdown-toggle">{% trans "Sell" %}</a>
+				<ul class="dropdown-menu">
+				<li><a href="{% url market_sell %}">Overview</a></li>
+				<li><a href="{% url market_sell_features %}">Features</a></li>
+				<li class="divider"></li>
+				<li><a href="{% url market_sell_plans %}">Plans</a></li>
+				</ul>
+			</li>		
+
+
+
+			<li class="dropdown" data-dropdown="dropdown">
+				<a href="#" class="dropdown-toggle">{% trans "Community" %}</a>
+				<ul class="dropdown-menu">
+				<li><a href="{% url market_community %}">Overview</a></li>
+				<li class="divider"></li>
+				<li><a href="{% url community_blogs %}">Member Blogs</a></li>
+			 	<li><a href="{% url community_faq %}">FAQ</a></li>
+			 	<li><a href="{% url community_profiles %}">Dealer Profiles</a></li>
+				</ul>
+			</li>
+	    		<li><a href="{% url market_blog %}">{% trans "Blog" %}</a></li>
 		
-		<div class="clear"></div>
-		
-		{% block top_header %}
-		
-		<div class="header_marketplace">
-			<div class="container_20">
-				<div class="grid_7">
-					<a href="/"><img class="header_logo" src="{{ MEDIA_URL }}img/gc_logo.png" alt="Logo Here!"/></a>
-				</div>
-				<div class="grid_6 header_options">
-					<ul> 
-						<li><a href="{% url market_buy %}">{% trans "Buy" %}</a></li>
-						<li><a href="{% url market_sell %}">{% trans "Sell" %}</a></li>
-						<li><a href="{% url market_community %}">{% trans "Community" %}</a></li>
-						<li><a href="{% url market_blog %}">{% trans "Blog" %}</a></li>
-					</ul>
-				</div>
-				<div class="header_search">
-				<form action="{% url market_search %}" method="GET" name="search">
-					<select id="category" name="category">
-						<option>All Categories</option>					
-						{% for category in marketplace.marketcategory_set.all %}
-						<option>{{ category.name }}</option>
-						{% endfor %}
-					</select>
-					<input size="12" type="text" id="q" name="q"/>
-					<input type="image" class="img" id="search-icon" style="float: right;" alt=""/>
-				</form>
-				</div>
-			</div>
-		</div>	
-		
-		{% endblock %}
-		<div class="container_20">
-			<div class="grid_20">
-				<div class="grid_19 main_content">
-					<div class="block_notification">
-						{% if flash.message %}
-					        <div class="grid_19" id="flash_message">
-					        <div class="body {{ flash.severity|default:"notice" }}">
-					        	<p>{{ flash.message|safe }}</p>
-					        </div>
-					        </div>
-				    	{% endif %}
-						<div class="clear"></div>
-						{% block header %}{% endblock %}
-					</div>
-					<div class="main_content_header"></div>
-					<div class="main_content_inner">
-						{% block content %}{% endblock %}
-						<div class="clear"></div>
-					</div>
-					<div class="clear"></div>
-					<div class="main_content_footer"></div>
-				</div>
-			</div>
-		</div>
-		<div class="clear"></div>
-		<div class="block_footer">
-			<div class="container_20">
-				<div class="grid_20">
-					<div style="padding: 10px;">
-					{% block footer %}
-					<div class="grid_17">©2010 {{ marketplace.name }} is a registered trademark of CollectorCity.com</div>
-					<div class="grid_2"><a href="{% url market_privacy_policy %}">{% trans "Privacy Policy" %}</a></div> 
-					{% endblock %}
-					</div>
-				</div>
-			</div>
-		</div>
-	{% endblock %}
+
+  </ul>
+               <ul class="nav secondary-nav">
+				{% if user.is_authenticated %}
+			<li class="dropdown" data-dropdown="dropdown">
+			<a href="#" class="dropdown-toggle">Welcome {{ user }}</a>
+				<ul class="dropdown-menu">
+				 <li><a href="{% url logout %}">Logout</a></li>
+				 <li><a href="{% url market_contact_us %}">Contact Us</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown" data-dropdown="dropdown">
+			<a href="#" class="dropdown-toggle">{% trans "About Us" %}</a>
+				<ul class="dropdown-menu">
+				 <li><a href="{% url market_privacy_policy %}">Priavacy Policy</a></li>
+				 <li><a href="{% url market_contact_us %}">Contact Us</a></li>
+				 <li><a href="{% url market_blog %}">Corporate Blog</a></li>
+				</ul>
+			</li>
+
+	
+
+				{% else %}
+			<li class="dropdown" data-dropdown="dropdown">
+			<a href="#" class="dropdown-toggle">{% trans "About Us" %}</a>
+				<ul class="dropdown-menu">
+				 <li><a href="{% url market_privacy_policy %}">Priavacy Policy</a></li>
+				 <li><a href="{% url market_contact_us %}">Contact Us</a></li>
+				 <li><a href="{% url market_blog %}">Corporate Blog</a></li>
+				</ul>
+			</li>
+
+
+			<li><a href="{% url market_buy_login %}">{% trans "Login" %}</a></li>  
+			<li><a href="{% url market_buy_signup %}">{% trans "Sign Up" %}</a></li> 
+				{% endif %}
+	
+
+
+		</ul>
 	</div>
+	</div>
+	</div>
+		
+	{% block top_header %}
+	{% endblock %}
+	
+		
+	{% if flash.message %}
+	
+	<div id="modal-from-dom" class="modal hide fade">
+            <div class="modal-header">
+              <a href="#" class="close">&times;</a>
+              <h3>Message From Great Coins</h3>
+            </div>
+            <div class="modal-body alert-message block-message {{flash.severity|default:"info" }}">
+              <p>{{ flash.message|safe }}</p>
+            </div>
+            <div class="modal-footer">
+              <a href="#" class="close btn primary">Close</a>
+            </div>
+          </div>
+
+	<script type="text/javascript">
+	$('#modal-from-dom').modal('show') 
+	</script>
+
+	{% comment %}
+
+	<div class="alert-message block-message {{ flash.severity|default:"info" }} span16 notification-info">       	
+	{{ flash.message|safe }}
+	</div>
+	{% endcomment %}
+
+    	{% endif %}
+
+		<div class="container">
+			{% block header %}	{% endblock %}
+	
+			<div class="span17 search">
+			<form  action="{% url market_search %}" method="GET" name="search">
+				<select id="category" name="category">
+				<option>All Categories</option>					
+				{% for category in marketplace.marketcategory_set.all %}
+					{% ifnotequal category.product_set.count 0  %}
+					<option>{{ category.name }}</option>
+					{% endifnotequal %}
+				{% endfor %}
+				</select>
+			<input type="text" id="q" name="q" />
+			<input type="submit" class="btn small primary" id="search-icon" value="Search" />
+			</form>
+
+			</div>
+						{% block content %} </div>{% endblock %}
+		</div>	
+		</div>	
+
+			{% block footer %}
+		<div class="span17">	
+		 <ul class="breadcrumb">
+			<li class="active">2011 {{ marketplace.name }} is a registered trademark of CollectorCity.com <span class="divider"> / </span></li>
+			<li><a href="{% url market_privacy_policy %}">{% trans "Privacy Policy" %}</a><span class="divider"> / </span></li> 
+			<li><a href="{% url community_faq %}#what-is-greatcoinscom">{% trans "About Us" %}</a><span class="divider"> / </span></li>
+			<li><a href="{% url market_contact_us %}">{% trans "Contact Us" %}</a><span class="divider"> / </span></li>
+			<li><a href="{% url community_faq %}">{% trans "Help" %}</a><span class="divider"> / </span> </li>
+			<li><a href="{% url logout %}">{% trans "Logout" %}</a><span class="divider"> / </span></li>
+		 </ul>
+
+		{% endblock %}
+
+	{% endblock %}
 
 {% block body_footer %}
 <script type="text/javascript">
   var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-20238336-1']);
+  _gaq.push(['_setAccount', 'UA-13297300-4']);
   _gaq.push(['_trackPageview']);
 
   (function() {
@@ -128,6 +223,20 @@
   })();
 </script>
 {% endblock %}
+
+
+  <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.
+       chromium.org/developers/how-tos/chrome-frame-getting-started -->
+  <!--[if lt IE 7 ]>
+    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+  <![endif]-->
+
+
+
+
+
+
 
 </body>
 </html>

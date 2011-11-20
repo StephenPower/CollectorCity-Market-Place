@@ -137,7 +137,6 @@ class PayPalGateway(object):
         parameters.update(payment_requests)
         parameters.update(kwargs)
         
-        import logging
         logging.info(parameters)
         
         query_string = self.signature + urllib.urlencode(parameters)
@@ -149,7 +148,6 @@ class PayPalGateway(object):
             self.token = self._get_value_from_qs(response_dict, "TOKEN")
             return True
         
-        logging.debug(response_dict)
         self.setexpresscheckouterror = GENERIC_PAYPAL_ERROR
         self.apierror = self._get_value_from_qs(response_dict, "L_LONGMESSAGE0")
         return False
@@ -162,7 +160,7 @@ class PayPalGateway(object):
 
     """
 
-    def GetExpressCheckoutDetails(self, return_url, cancel_url, token = None):
+    def GetExpressCheckoutDetails(self, token = None):
         """
         This method performs the NVP API method that is responsible from getting the payment details.
         This returns True if successfully fetch the checkout details, otherwise returns False.
@@ -177,9 +175,7 @@ class PayPalGateway(object):
 
         parameters = {
             'METHOD' : "GetExpressCheckoutDetails",
-            'RETURNURL' : return_url,
-            'CANCELURL' : cancel_url,
-            'TOKEN' : token,
+            'TOKEN' : token
         }
         query_string = self.signature + urllib.urlencode(parameters)
         response = urllib.urlopen(self.NVP_API_ENDPOINT, query_string).read()
@@ -216,7 +212,7 @@ class PayPalGateway(object):
 
         parameters = {
             'METHOD' : "DoExpressCheckoutPayment",
-            'PAYMENTACTION' : 'Sale',
+            'PAYMENTREQUEST_0_PAYMENTACTION' : 'Sale',
             'TOKEN': token,
             'PAYERID' : payerid,
         }
@@ -237,7 +233,7 @@ class PayPalGateway(object):
         if not state in ["Success", "SuccessWithWarning"]:
             self.doexpresscheckoutpaymenterror = GENERIC_PAYMENT_ERROR
             self.apierror = self._get_value_from_qs(response_tokens, "L_LONGMESSAGE0")
-            import logging
+            
             logging.error(response_tokens)
             return False
         return True
@@ -409,8 +405,6 @@ def success(request):
     
     shop = request.shop   
     paypal_settings = PayPalShopSettings.objects.filter(shop = shop).get()
-    profile = request.user.get_profile()
-    
     
     try:
         paypaltoken = PayPalToken.objects.filter(token=token).get()
@@ -435,6 +429,9 @@ def success(request):
         c = RequestContext(request, {
                                      'payerid': payerid,
                                      'token': token,
+                                     #'api_signature': settings.PAYPAL_SIGNATURE,                                                                   
+                                     #'api_user': settings.PAYPAL_USERNAME,
+                                     #'api_password': settings.PAYPAL_PASSWORD
                                     })
         block = (t.render(c))
         
@@ -457,19 +454,30 @@ def success(request):
                                   sign=settings.PAYPAL_SIGNATURE,
                                   debug=settings.PAYPAL_DEBUG)
        
-        token_data = paypal_gw.GetExpressCheckoutDetails("http://www.google.com", "http://www.google.com", paypaltoken.token)
-        ack = paypal_gw.api_response['ACK'][0]
+        #return_url = request.build_absolute_uri(reverse("paypal_success"))
+        #cancel_url = request.build_absolute_uri(reverse("paypal_cancel"))
+        is_token_data = paypal_gw.GetExpressCheckoutDetails(paypaltoken.token)
         
-        try:
-            amount = decimal.Decimal(paypal_gw.api_response['AMT'][0])
-        except KeyError:
-            logging.critical("Fail when trying to read the payment amount. The API response don't have an AMT key. RESPONSE: %s" % paypal_gw.api_response)    
-            request.flash['message'] = unicode(_("We have found an error when trying to validate your purchase!"))
+        if not is_token_data:
+            logging.critical("Error found when trying to do a GetExpressCheckoutDetails api call on Paypal. RESPONSE: %s" % paypal_gw.api_response)
+            request.flash['message'] = unicode(_("Could not get transaction data from PayPal. Please contact admin to complete your purchase!"))
             request.flash['severity'] = "error"
             return HttpResponseRedirect(reverse('my_shopping'))
         
+        
+        ack = paypal_gw.api_response['ACK'][0]            
+        
         if ack != "Success":
-            request.flash['message'] = unicode(_("Fail when trying to validate your PayPal Token. Please contact admin to complete your purchase!"))
+            logging.critical("Paypal Api Response Failure. RESPONSE: %s" % paypal_gw.api_response)
+            request.flash['message'] = unicode(_("There was an error when trying to get data from PayPal. Please contact admin to complete your purchase!"))
+            request.flash['severity'] = "error"
+            return HttpResponseRedirect(reverse('my_shopping'))
+        
+        try:
+            amount = decimal.Decimal(paypal_gw.api_response['PAYMENTREQUEST_0_AMT'][0])
+        except KeyError:
+            logging.critical("Fail when trying to read the payment amount. The API response don't have an AMT key. RESPONSE: %s" % paypal_gw.api_response)    
+            request.flash['message'] = unicode(_("We have found an error when trying to validate your purchase!"))
             request.flash['severity'] = "error"
             return HttpResponseRedirect(reverse('my_shopping'))
         
@@ -477,6 +485,7 @@ def success(request):
             request.flash['message'] = unicode(_("You have authorized us to charge you just $%s, but you want buy $%s! Please contact admin if you think this is a mistake!" % (amount, cart.total_with_taxes())))
             request.flash['severity'] = "error"
             return HttpResponseRedirect(reverse('my_shopping'))
+        
     
         payment_request = {
             'PAYMENTREQUEST_0_PAYMENTACTION': 'Sale',
@@ -530,8 +539,7 @@ def paynow(request):
     try:   
         paypal_settings = PayPalShopSettings.objects.filter(shop = shop).get()
     except PayPalShopSettings.DoesNotExist:
-        #TODO: erase after demo!!!!
-        request.flash['message'] = unicode(_("Payment failed, try other method."))
+        request.flash['message'] = unicode(_("This shop haven't Paypal as a payment provider, please try other method."))
         request.flash['severity'] = "error"
         return HttpResponseRedirect(reverse('my_shopping'))
     
@@ -548,7 +556,7 @@ def paynow(request):
 
     payment_request = {
         'PAYMENTREQUEST_0_PAYMENTACTION': 'Sale',
-        'PAYMENTREQUEST_0_AMT': "%0.2f" % cart.total_with_taxes(),
+        'PAYMENTREQUEST_0_AMT': total_amount,
         #'PAYMENTREQUEST_0_TAXAMT': "%0.2f" % cart.taxes(),
         #'PAYMENTREQUEST_n_SHIPPINGAMT': "%0.2f" % cart.shipping_charge(),
         #'PAYMENTREQUEST_0_ITEMAMT': "%0.2f" % cart.total(),
@@ -564,15 +572,25 @@ def paynow(request):
 
     success = ppgw.SetExpressCheckout(payment_request, return_url, cancel_url)
     if success:
-        PayPalToken(cart=cart, token=ppgw.token).save()
+        """
+        token = A timestamped token by which you identify to PayPal that you are processing
+        this payment with Express Checkout. The token expires after three hours. 
+        If you set the token in the SetExpressCheckout request, the value of the token in the 
+        response is identical to the value in the request.
+        Character length and limitations: 20 single-byte characters 
+        """
+        token = ppgw.token
+        PayPalToken(cart=cart, token=token).save()
         return HttpResponseRedirect(ppgw.paypal_url())
     
-    request.flash['message'] = unicode(_("Payment failed, try other method."))
-    request.flash['severity'] = "error"
-    return HttpResponseRedirect(reverse('my_shopping'))
+    else:
+        logging.critical("SetExpressCheckout failed. RESPONSE = %s" % ppgw.api_response)
+        request.flash['message'] = unicode(_("Payment failed, try other method."))
+        request.flash['severity'] = "error"
+        return HttpResponseRedirect(reverse('my_shopping'))
 
 def ipn(request):
-    import logging
+    
     logging.info(request.GET)
     logging.info(request.POST)
     return HttpResponse("")

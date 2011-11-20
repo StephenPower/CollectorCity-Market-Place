@@ -20,6 +20,12 @@ from uni_form.helpers import FormHelper, Layout, Fieldset, Row, Submit
 from market_buy.forms import AdvancedSearchForm
 
 
+
+
+
+
+
+
 def advanced_search(request, reset=False):
     marketplace = request.marketplace
 
@@ -80,7 +86,10 @@ def categories(request):
     return render_to_response("%s/buy/categories.html" % request.marketplace.template_prefix, 
                               {} , RequestContext(request))
 
-
+def howtobuy(request):
+    """ Return the how to buy for an specific marketplace """
+    return render_to_response("%s/buy/howtobuy.html" % request.marketplace.template_prefix, 
+                              {} , RequestContext(request))
 def editor_pick(request):
     """ Return a list of items marked as favorites by admins  """
     from models import EditorPick
@@ -105,7 +114,7 @@ def map_pick(request):
     """ Return """
     from shops.models import Shop
     marketplace = request.marketplace
-    shops = Shop.objects.filter(marketplace=marketplace)
+    shops = Shop.actives.filter(marketplace=marketplace)
     return render_to_response("%s/buy/map_pick.html" % request.marketplace.template_prefix, 
                               {'shops' : shops} , RequestContext(request))
 
@@ -176,6 +185,8 @@ def shop_local(request):
     
     in_range = []
     params = {}
+    params['states'] = STATE_CHOICES
+    
     if request.method == "POST":
         max_distance = float(request.POST.get("max_distance"))
         metric = request.POST.get("metric", "miles")
@@ -196,7 +207,7 @@ def shop_local(request):
                               RequestContext(request))
         
         marketplace = request.marketplace
-        shops = Shop.objects.filter(marketplace=marketplace)
+        shops = Shop.actives.filter(marketplace=marketplace)
         
         for shop in shops:
             point2 = [float(x) for x in shop.geo_location()]
@@ -205,9 +216,10 @@ def shop_local(request):
             if distance < max_distance:
                 bisect.insort(in_range, (int(distance), shop))
         
-        params = {'shops' : in_range, 'metric' : metric}
+        params.update({'shops': in_range, 'metric' : metric, 'selected_city': city, 'selected_state': state, 'do_search': True})
     
-    params['states'] = STATE_CHOICES
+    else:
+        params.update({'shops': [], 'do_search': False})
     
     return render_to_response("%s/buy/shop_local.html" % request.marketplace.template_prefix, 
                               params , 
@@ -216,11 +228,24 @@ def shop_local(request):
 
 def top_sellers(request):
     """ Return top seller of the month, and the last 10 top sellers """
-    from lots.models import Lot
+    from shops.models import Shop
     from market_buy.models import BestSeller
     
     marketplace = request.marketplace
     sellers = BestSeller.objects.filter(shop__marketplace=marketplace).order_by("-to_date")[:10]
+    
+    if not sellers:
+        delta = 7
+        date_to = datetime.datetime.now()
+        date_from = date_to - datetime.timedelta(delta)
+    
+        best_seller = BestSeller()
+        best_seller.shop = Shop.objects.all().filter(marketplace=marketplace).order_by('?')[0]
+        best_seller.from_date = date_from
+        best_seller.to_date = date_to
+        best_seller.revenue = 0
+        best_seller.save()
+        sellers = BestSeller.objects.filter(shop__marketplace=marketplace).order_by("-to_date")
     
     return render_to_response("%s/buy/top_sellers.html" % request.marketplace.template_prefix, 
                               {'best_sellers' : sellers} , RequestContext(request))
@@ -232,7 +257,7 @@ def wish_list(request):
     from market_buy.forms import WishListItemForm
     
     marketplace = request.marketplace
-    wihs_list = WishListItem.objects.filter(marketplace=marketplace).order_by("-posted_on")    
+    wihs_list = WishListItem.objects.filter(marketplace=marketplace).order_by("posted_on")    
     form = WishListItemForm()
     
     return render_to_response("%s/buy/wish_list.html" % request.marketplace.template_prefix, 
@@ -244,16 +269,21 @@ def wish_list(request):
 
 
 def ajax_get_subcategories(request):
-    from market.models import MarketSubCategory
-    categories = request.POST.getlist('categories')
+    from market.models import MarketSubCategory, MarketCategory
+    categories = request.REQUEST.get('categories', "")
     try:
+        categories = categories.split(",")
+        logging.info("categories: %s" % categories)
+        categories = MarketCategory.objects.filter(id__in=categories)
+        logging.info("categories: %s" % categories)
         sub_categories = MarketSubCategory.objects.filter(parent__in=categories).order_by("name")
         html = ""
         for sub in sub_categories:
             html += '<option value="%d">%s</option>' % (sub.id, sub.name)
-        logging.info(html)
+        logging.info("subscategories: %s" % html)
         return HttpResponse(html)
     except:
+        logging.exception("error getting subcategories")
         return HttpResponse("")
     
 @login_required
@@ -296,6 +326,7 @@ def item_redirect(request, id):
     
 def product_redirect(request, id):
     from inventory.models import Product
+    
     product = get_object_or_404(Product, id=id)
     
     host_name = product.shop.default_dns
@@ -322,9 +353,9 @@ def signup(request):
         user = User.objects.create_user(form.cleaned_data["username"],
                                         form.cleaned_data["email"], 
                                         form.cleaned_data["password1"])
-
-#        user.first_name = form.cleaned_data["first_name"]
-#        user.last_name = form.cleaned_data["last_name"]
+        
+        user.first_name = form.cleaned_data["first_name"]
+        user.last_name = form.cleaned_data["last_name"]
         user.is_active = False
         user.save()
         
@@ -432,11 +463,13 @@ def send_mail_account_confirmation(user, code, marketplace):
 
 def confirmemail(request, code):
     from users.models import EmailVerify
+    marketplace = request.marketplace
     try:
         verify = EmailVerify.objects.filter(code = code).get()
         if not verify.user_activation:
             request.flash['message'] = _("<h5>Account verification failed</h5>")
             request.flash['severity'] = "error"
+            return HttpResponseRedirect(reverse('market_home'))
             
         else:
             user = verify.user
@@ -460,15 +493,12 @@ def confirmemail(request, code):
                         break
             if hasattr(user, 'backend'):
                 login(request, user)
-            base = request.marketplace.base_domain
-            sell = reverse("market_sell")
-            sell_url = base + sell
-            buy = reverse("market_buy")
-            buy_url = base + buy
-            request.flash['message'] = unicode(_("<h5>Your email has been confirmed</h5><p>To start selling click here: <a href='%s'>http://%s</a><br>To start buying click here: <a href='%s'>http://%s</a></p>" % (sell, sell_url, buy, buy_url)))
-            request.flash['severity'] = "success"
-
-        return HttpResponseRedirect(reverse('market_home'))
+            
+            params = {}
+            
+            return render_to_response(
+                "%s/email_confirmed.html" % marketplace.template_prefix, params, RequestContext(request))
+        
     except EmailVerify.DoesNotExist:
         request.flash['message'] = _("<h5>Account verification failed</h5>")
         request.flash['severity'] = "error"

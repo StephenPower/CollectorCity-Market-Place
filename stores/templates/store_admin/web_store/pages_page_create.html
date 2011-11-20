@@ -3,23 +3,26 @@
 
 
 {% block main_pages %}
-	
+{% if shop.add_pages_feature_enabled %}
+    
+	<div class="grid_11">
 	<form name="form" method="post" action="." enctype="multipart/form-data">
 	
-		<h4>{% trans "Name" %}:</h4>
+		<h4>{% trans "Page Name" %}:</h4>
 		{% if form.name.errors %}<div class="error">{{ form.name.errors|join:", " }}</div>{% endif %}
 		{{ form.name }}
 		<br/>
 		
-		<h4>{% trans "Name link" %}:</h4>
+		<h4>{% trans "Page Title" %}:</h4>
+		{% if form.title.errors %}<div class="error">{{ form.title.errors|join:", " }}</div>{% endif %}
+		{{ form.title }}	
+		<br/>
+
+		<h4>{% trans "Page Link" %}:</h4>
 		{% if form.name_link.errors %}<div class="error">{{ form.name_link.errors|join:", " }}</div>{% endif %}
 		http://{{ shop.name }}.{{ DEFAULT_DNS }}/pages/{{ form.name_link }}	
 		<br/>
 
-		<h4>{% trans "Title" %}:</h4>
-		{% if form.title.errors %}<div class="error">{{ form.title.errors|join:", " }}</div>{% endif %}
-		{{ form.title }}	
-		<br/>
 
 		<h4>{% trans "Write your page" %}:</h4>
 		{% if form.body.errors %}<div class="error">{{ form.body.errors|join:", " }}</div>{% endif %}
@@ -39,7 +42,32 @@
 		<br/>
 
 		<button type="submit" class="large awesome">{% trans "Save" %}</button>
-		<a href="{% url blog_pages %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+		<a href="{% url web_store_pages %}" class="link_cancel">{% trans "Or Cancel" %}</a>
 	</form>
+	</div>
+{% else %}
+	<div class="enable_feature"><a class="enable_feature_box" href="{% url enable_feature 'add_pages' %}">{% trans "Add New Pages" %} for only ${{ shop.add_pages_feature_price }}</a><img src="{{ MEDIA_URL }}img/help-icon.png" onclick="javascript:show_help_text('htb_container');"/></div>
+	
+	<div class="htb_container">
+		<img id="stick" src="{{ MEDIA_URL }}img/stick.png"/>
+		<div class="help_text_box">
+			{{ shop.add_pages_feature_help_text }}
+			<div class="close"><img onclick="javascript: close_help_text('htb_container')" src="{{ MEDIA_URL }}img/remove.png"/></div>
+		</div>
+	</div>	
+{% endif %}
+	
 
+	<script type="text/javascript"> 
+	$("#id_name").keyup(function(e){
+	    var name = $(this).val();
+	   	$("#id_name_link").val(name.toLowerCase().replace(/[^a-z0-9-]/ig, '_'));
+	}); 
+	
+	$("#id_name_link").change(function(){
+		var name = $(this).val();
+		$(this).val(name.toLowerCase().replace(/[^a-z0-9-]/ig, '_'));
+	});	
+	</script> 
+	
 {% endblock %}

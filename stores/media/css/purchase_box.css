@@ -1,0 +1,68 @@
+.purchase_box {
+	font-family: Arial;	
+}
+
+.purchase_box #header {
+	background: #D0DFFF;
+	border-bottom: 3px solid #B0AFFF;
+	font-size: 20px;	
+	color: #000;
+	padding: 10px;
+}
+
+.purchase_box #content {
+	background: #FFF;	
+}
+
+.purchase_box #content .left_col{	
+	float: left;
+	display: inline;
+	width: 340px;
+	padding-right: 10px;
+}
+
+.purchase_box #content .right_col{	
+	float: left;
+	display: inline;
+	width: 200px;
+	padding-left: 10px;
+}
+
+.purchase_box h3 {
+	font-size: 18px;
+}
+
+.purchase_box p {
+	font-size: 12px;
+}
+
+.purchase_form input[type="button"] {	
+    font-size: 16px;
+}
+
+.purchase_box .error {
+    background: none repeat scroll 0 0 #FFF7DF;
+    border: 1px solid #F8F0D9;
+    font-size: 15px;
+    margin: 15px 0;
+    padding: 5px;
+}
+
+.clear {
+	clear: both;
+	display: block;
+	overflow: hidden;
+	visibility: hidden;
+	height: 1px;
+}
+
+.border {
+	border-bottom: 1px dotted #CDCDCD;
+	height: 1px;
+	visibility: visible;
+	margin-bottom: 10px;
+}
+
+.purchase_form a, a:visited, a:hover{
+	color: red;
+}

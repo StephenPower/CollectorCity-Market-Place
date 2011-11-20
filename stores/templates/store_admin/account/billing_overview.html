@@ -1,0 +1,41 @@
+{% extends 'store_admin/account/base_account.html' %}
+{% load i18n %}
+
+{% block m_billing %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}{% endblock %}
+
+{% block main %}
+<h2>{% trans "Billing Summary" %}</h2>
+
+<div class="grid_10">
+
+	<h3><u>{% trans "Credit Card Info" %}</u></h3>
+{% if credit_card %}
+	
+	<div class="grid_4 alpha omega">{% trans "Card Type" %}:</div><div>{{ credit_card.card_type }}</div>
+	<div class="grid_4 alpha omega">{% trans "Credit Card Number" %}:</div><div>{{ credit_card.masked_number }}</div>
+	<div class="grid_4 alpha omega">{% trans "Expires On" %}:</div><div>{{ credit_card.expiration_date }}</div>
+	
+	<div class="clear"></div>
+	
+{% else %}
+	
+	<p>We have no information about your credit card. Please update your data.</p>
+	
+{% endif %}
+	
+	<br></br>
+	<br></br>
+	<a class="awesome small" href="{% url billing_update_credit_card %}">Update Your Credit Card Information</a>
+	
+	<p><b>NOTE: We are not holding in our servers your personal credit card information. This information is retrieved safely from Braintree.</b></p>
+</div>
+	
+<div class="clear"></div>
+
+<script type="text/javascript">
+$(document).ready(function(){});
+</script>
+
+{% endblock %}

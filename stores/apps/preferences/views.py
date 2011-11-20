@@ -22,7 +22,6 @@ from models import Preference, ShippingWeight, ShippingPrice, ShippingItem, TaxS
 from models import TYPE_NOTIFICATION
 
 
-
 @shop_admin_required
 def preferences_general(request):
     shop = request.shop
@@ -265,12 +264,27 @@ def edit_manual_payment(request, payment_id):
                               }, 
                               RequestContext(request))
 
-    
+@shop_admin_required
+def preferences_payments(request):
+    shop = request.shop
+    limit = shop.plan().payment_methods
+#    current = 0
+#    if shop.get_features().paypal: current += 1
+#    if shop.get_features().credit_card: current += 1
+#    if shop.get_features().google_checkout: current += 1
+#    if shop.get_features().manual_payment: current += 1
+#    params = {'available_methods' : limit, 'current_methods': current }
+    params = {}
+    return render_to_response("preferences/preferences_payments.html", params, RequestContext(request))
+  
 @shop_admin_required    
 def preferences_payment_paypal(request):
     from payments.models import PayPalShopSettings
     
     shop = request.shop
+    
+    if not shop.paypal_feature_enabled():
+        raise Http404
     
     try:
         paypal_settings = PayPalShopSettings.objects.filter(shop=shop)[0]
@@ -290,6 +304,9 @@ def preferences_payment_credit_cards(request):
     from payments.models import BraintreeShopSettings
     
     shop = request.shop
+    
+    if not shop.credit_card_feature_enabled():
+        raise Http404
     
     try:
         current_braintree_settings = BraintreeShopSettings.objects.filter(shop=shop)[0]
@@ -313,6 +330,9 @@ def preferences_payment_google_checkout(request):
     
     shop = request.shop
     
+    if not shop.google_checkout_feature_enabled():
+        raise Http404
+    
     try:
         current_google_settings = GoogleCheckoutShopSettings.objects.filter(shop=shop)[0]
     except IndexError:
@@ -334,6 +354,9 @@ def preferences_payment_manual(request):
     from payments.models import ManualPaymentShopSettings
     
     shop = request.shop
+    
+    if not shop.manual_payment_feature_enabled():
+        raise Http404
     
     manual_payment_form = ManualPaymentShopSettingsForm(shop)
     manual_payments = ManualPaymentShopSettings.objects.filter(shop=shop)
@@ -360,12 +383,13 @@ def payment_paypal_setpermissions(request):
         "Name",
         "RefundTransaction",
         "SetExpressCheckout", 
-        "GetExpressCheckoutDetails",
+        "GetExpressCheckoutDetails",        
         "DoExpressCheckoutPayment",
         "DoAuthorization",
         "DoCapture",
         "DoReauthorization"
     ]
+    
     success, response = ppgw.SetAccessPermissions(return_url=request.build_absolute_uri(reverse("preferences_payment_paypal_return", args=["agree"])), 
                                                   cancel_url=request.build_absolute_uri(reverse("preferences_payment_paypal_return", args=["cancel"])), 
                                                   logout_url=request.build_absolute_uri(reverse("preferences_payment_paypal_return", args=["logout"])), 
@@ -393,13 +417,13 @@ def payment_paypal_disable(request):
         paypal_settings = None
         request.flash["message"] = _("Paypal didn't seems to be enable")
         request.flash["severity"] = "error"
-        return HttpResponseRedirect(reverse("preferences_general_paypal"))
+        return HttpResponseRedirect(reverse("preferences_payment_paypal"))
 
     #TODO: call update permissions    
     paypal_settings.delete()
     request.flash["message"] = _("Paypal disabled")
     request.flash["severity"] = "notice"
-    return HttpResponseRedirect(reverse("preferences_general_paypal"))
+    return HttpResponseRedirect(reverse("preferences_payment_paypal"))
 
 @shop_admin_required 
 def payment_paypal_return(request, action):
@@ -442,8 +466,16 @@ def payment_paypal_return(request, action):
         
         request.flash['message'] = unicode(_("Preferences successfully saved."))
         request.flash['severity'] = "success"
-        return HttpResponseRedirect(reverse('preferences_payment_paypal'))
-    return HttpResponse("")
+
+    if action == 'cancel':
+        request.flash['message'] = unicode(_("You have decided not to complete the setup process. Your Paypal payment option is still disabled."))
+        request.flash['severity'] = "error"
+        
+    if action == 'logout':
+        request.flash['message'] = unicode(_("You are logged out from Paypal!"))
+        request.flash['severity'] = "error"
+
+    return HttpResponseRedirect(reverse('preferences_payment_paypal'))
 
 @shop_admin_required
 def preferences_auctions(request):
@@ -689,6 +721,29 @@ def delete_dns(request, id):
     return HttpResponseRedirect(reverse('preferences_dns'))
 
 @shop_admin_required
+def edit_dns(request, id):
+    dns = get_object_or_404(DnsShop, pk=id)
+    shop = request.shop
+    if dns.shop != shop:
+        raise Http404
+    
+    if request.method != "POST":
+        raise Http404
+    
+    domain_name = request.POST.get("dns")
+    try:
+        DnsShop.objects.get(dns=domain_name)
+        request.flash["message"] = "A shop with that dns already exists."
+        request.flash["severity"] = "error"
+    except DnsShop.DoesNotExist:
+        dns.dns = domain_name
+        dns.save()
+        request.flash["message"] = "DNS successfully updated."
+        request.flash["severity"] = "success"
+    
+    return HttpResponseRedirect(reverse('preferences_dns'))
+
+@shop_admin_required
 def set_default_dns(request, id):
     dns = get_object_or_404(DnsShop, pk=id)
     shop = request.shop
@@ -772,7 +827,29 @@ def show_go(request, id):
     
     return HttpResponseRedirect(reverse('web_store_shows'))
 
-
+@shop_admin_required
+def add_show(request):
+    from market_buy.models import Show
+    from market_buy.forms import ShowForm
+    shop = request.shop
+    
+    if request.method == "POST":
+        form = ShowForm(request.POST)
+        if form.is_valid():
+            
+            show = form.save(commit = False)
+            show.marketplace = shop.marketplace
+            show.save()
+            
+            request.flash['message'] = "Show added"
+            request.flash['severity'] = "success"
+            return HttpResponseRedirect(reverse('web_store_shows'))
+    else:
+        form = ShowForm()
+    
+    params = {'form' : form}
+    return render_to_response("store_admin/web_store/show_add.html", params, RequestContext(request))
+    
 
 @shop_admin_required
 def change_username_password(request):
@@ -828,6 +905,7 @@ def change_password(request):
                               RequestContext(request))
     
 def send_template(request):
+    from django.conf import settings
     from django.core.mail import send_mail
     
     try:
@@ -837,7 +915,7 @@ def send_template(request):
         
         notification = EmailNotification.objects.filter(id=id, shop=shop).get()
         
-        send_mail(notification.subject,notification.body, 'admin@greatcoins.com',  [email], fail_silently=True)
+        send_mail(notification.subject,notification.body, settings.EMAIL_FROM, fail_silently=True)
         
         request.flash['message'] = unicode(_("Email sent."))
         request.flash['severity'] = "success"
@@ -847,5 +925,3 @@ def send_template(request):
         request.flash['severity'] = "error"
         
     return HttpResponseRedirect(reverse("preferences_email"))
-
-

@@ -15,7 +15,7 @@ class SubdomainMiddleware:
             dns = match.group('dns')
             try:
                 shop = DnsShop.objects.filter(dns=dns).get().shop
-                if shop.is_active(): request.shop = shop
+                if shop.active: request.shop = shop
                 else: request.shop = None
             except:
                 request.shop = None

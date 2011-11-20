@@ -6,19 +6,26 @@
 {% block m_blog %}current_sub_menu{% endblock %}
 
 {% block menu_options %}
-	{% regroup posts by month as post_list %}
-	<ul id="tree">
-	{% for post in post_list %}
-	    <li>{{ post.grouper }}
-	    <ul>
-	        {% for item in post.list %}
-	        	<li><a href="{% url post_edit item.id %}">{{ item.title }}</a></li>
-	        {% endfor %}
-	    </ul>
-	    </li>
+	
+	<p><b>Blog Posts</b></p>
+	<ul class="posts_tree">
+	{% for post in posts %}
+		<li><a href="{% url post_edit post.id %}">{{ post.title }}</a></li>
+	{% empty %}
+		<li>No published posts</li>
 	{% endfor %}
-	</ul>		
-		
+	</ul>	
+	
+	<form action="{% url post_publish_all %}" method="POST" id="draft_form">
+	<p><b>Draft Posts</b></p>
+	{% for post in drafts %}
+		<input type="checkbox" name="keys" value="{{ post.id }}"><a href="{% url post_edit post.id %}">{{ post.title }}</a><br>
+	{% empty %}
+		<p>No draft posts</p>
+	{% endfor %}
+		<input id="submit_btn" type="submit" value="Publish Drafts">	
+	</form>
+	
 {% endblock %}
 
 {% block toolbar %}
@@ -26,8 +33,8 @@
 {% endblock %}
 
 {% block main %}
-
-	<div class="grid_16 box">
+	
+	<div class="grid_12 box">
 	{% block main_blog %}
 
 	{% endblock %}

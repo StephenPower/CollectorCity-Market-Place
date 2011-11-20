@@ -1,0 +1,65 @@
+{% extends 'admin/reports_base.html' %}
+{% load i18n adminmedia %}
+
+{% block breadcrumbs %}
+	<div class="breadcrumbs">
+		<a href="/admin/">{% trans "Home" %}</a> &gt; 
+		<a href="{% url admin_reports %}">Reports</a> &gt; 
+		Shop Abandonment
+	</div>
+{% endblock %}
+
+{% block report %}
+	
+	<h1>Shop Abandonment</h1>
+		<div class="admin_filter">
+			<form action="." name="filter_form" method="POST">
+				<select name="filter_name">
+				{% for choice in filters %}
+					<option {% if filter == choice.0 %} selected {% endif %} value="{{ choice.0 }}">{{ choice.1|safe }}</option>
+				{% endfor %}
+				</select>
+			</form>
+		</div>			
+	{% if shops %}
+		<div class="grid_20 margin_v">
+			<div class="grid_3 alpha omega"><span><b>{% trans "Shop Name" %}</b></span></div>
+			<div class="grid_3 alpha omega"><span><b>{% trans "Activity Start" %}</b></span></div>
+			<div class="grid_4 alpha omega"><span><b>{% trans "Dns" %}</b></span></div>
+			<div class="grid_3 alpha omega"><span><b>{% trans "Last Date to Post Item" %}</b></span></div>
+			<div class="grid_4 alpha omega"><span><b>{% trans "Last Login" %}</b></span></div>
+			<div class="grid_3 alpha omega"><span><b>{% trans "Last Layout Change" %}</b></span></div>
+		</div>
+		<div class="clear"></div>
+		<hr></hr>
+		{% for shop in shops %}
+		<div class="grid_20 margin_v">
+			<div class="grid_3 alpha omega"><span>{{ shop.name }}</span></div>
+			<div class="grid_3 alpha omega"><span>{{ shop.date_time|date:"Y-m-d H:i" }}</span></div>
+			<div class="grid_4 alpha omega"><span>{{ shop.default_dns }}</span></div>
+			<div class="grid_3 alpha omega">
+				<span>{% if shop.last_date_to_post_item %} {{ shop.last_date_to_post_item|date:"Y-m-d H:i" }} {% else %} Never {% endif %}</span>
+			</div>
+			<div class="grid_4 alpha omega">
+				<span>{% if shop.admin.last_login %} {{ shop.admin.last_login|date:"Y-m-d H:i" }} {% else %} Never {% endif %}</span>
+			</div>
+			<div class="grid_3 alpha omega">
+				<span>{% if shop.last_date_to_change_layout %} {{ shop.last_date_to_change_layout|date:"Y-m-d H:i" }} {% else %} Never {% endif %}</span>
+			</div>			
+		</div>
+		<div class="clear"></div>
+		{% endfor %}
+	{% else %}
+		<h3>{% trans "No shops found." %}</h3>
+	{% endif %}
+	
+	
+	<script type="text/javascript">
+	$("select").change(function(){
+		
+        var name = $(this).val();        
+        window.location = "?filter="+name;
+	});
+	</script>
+	
+{% endblock %}

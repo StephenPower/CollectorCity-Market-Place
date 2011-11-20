@@ -9,13 +9,18 @@ class PayPalShopSettings(models.Model):
     shop = models.ForeignKey(Shop)
     payer_id = models.CharField(max_length=92)
     email = models.EmailField()
-    first_name = models.EmailField()
-    last_name = models.EmailField()
+    first_name = models.CharField(max_length=40)
+    last_name = models.CharField(max_length=40)
     perms = PickledObjectField(default=[])
 
     def __unicode__(self):
         return "Paypal settings: %s" % self.shop.name
-
+    
+    def subject(self):
+        if self.first_name and self.last_name:
+            return "%s %s <%s>" % (self.first_name, self.last_name, self.email)
+        else:
+            return self.email
 
 class PayPalToken(models.Model):
     """

@@ -47,7 +47,6 @@ $(document).ready(function(){
 
 <br/>
 
-<p>
 
 {% if lot.is_active %}
 	{% ifequal lot.count_bids 0 %}
@@ -66,16 +65,14 @@ $(document).ready(function(){
 	{% endif %}
 {% endif %}
 
-</p>
 
 {% if lot.shop.admin != user %}
 	{% if lot.is_active %}
 		<form method="get" action="{% url bidding_view_lot lot.id %}" id="bid_form">
 			{% if form.amount.errors %}<div class="error">{{ form.amount.errors|join:", " }}</div>{% endif %}
-			<p>Your bid:{{ form.amount }} &nbsp;
-				<button id="bidbutton" type="submit" class="small awesome">Place Bid</button>
-			</p>
-			
+			<p>Your bid:{{ form.amount }} &nbsp;</p>
+				<button id="bidbutton" type="submit" class="primary">Place Bid</button>
+				
 			<p>(Enter {{ lot.next_bid_from|money_format:shop }} or more)</p>
 					
 		</form>

@@ -4,14 +4,14 @@
 
 {% block content %}
 <div class="grid_14 prefix_2">
-		<form name="form" method="post" action="." class="big_form">
+		<form name="form" method="post" action="." class="form-stacked">
 			<fieldset class="register">
-			{% if form.name_store.errors %}<div class="error">{{ form.name_store.errors|join:", " }}</div>{% endif %}
+			{% if form.name_store.errors %}<div class="alert-message error">{{ form.name_store.errors|join:", " }}</div>{% endif %}
 			<h4>{{ form.name_store.label }}</h4>
 			{{ form.name_store }}
 			<br/><br/>
 			
-			{% if form.shop_name.errors %}<div class="error">{{ form.shop_name.errors|join:", " }}</div>{% endif %}
+			{% if form.shop_name.errors %}<div class="alert-message error">{{ form.shop_name.errors|join:", " }}</div>{% endif %}
 			<h4>{{ form.shop_name.label }}</h4>
 			<label>http://{{ form.shop_name }}.{{ marketplace.base_domain }}</label>
 			<br/><br/><br/><br/>
@@ -19,27 +19,27 @@
 			<h4>{% trans "Create your administration account" %}</h4>
 			<br/>
 
-			{% if form.first_name.errors %}<div class="error">{{ form.first_name.errors|join:", " }}</div>{% endif %}
+			{% if form.first_name.errors %}<div class="alert-message error">{{ form.first_name.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form.first_name.label }}</h5>
 			{{ form.first_name }}
 
-			{% if form.last_name.errors %}<div class="error">{{ form.last_name.errors|join:", " }}</div>{% endif %}
+			{% if form.last_name.errors %}<div class="alert-message error">{{ form.last_name.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form.last_name.label }}</h5>
 			{{ form.last_name }}
 
-			{% if form.username.errors %}<div class="error">{{ form.username.errors|join:", " }}</div>{% endif %}
+			{% if form.username.errors %}<div class="alert-message error">{{ form.username.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form.username.label }}</h5>
 			{{ form.username }}
 			
-			{% if form.email.errors %}<div class="error">{{ form.email.errors|join:", " }}</div>{% endif %}
+			{% if form.email.errors %}<div class="alert-message error">{{ form.email.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form.email.label }}</h5>
 			{{ form.email }}
 
-			{% if form.password1.errors %}<div class="error">{{ form.password1.errors|join:", " }}</div>{% endif %}
+			{% if form.password1.errors %}<div class="alert-message error">{{ form.password1.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form.password1.label }}</h5>
 			{{ form.password1 }}
 
-			{% if form.password2.errors %}<div class="error">{{ form.password2.errors|join:", " }}</div>{% endif %}
+			{% if form.password2.errors %}<div class="alert-message error">{{ form.password2.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form.password2.label }}</h5>
 			{{ form.password2 }}
 			
@@ -47,30 +47,30 @@
 			
 			<h4>{% trans "Choose your plan" %}</h4>
 			<br/>
-			{% if form.plan_id.errors %}<div class="error">{{ form.plan_id.errors|join:", " }}</div>{% endif %}
+			{% if form.plan_id.errors %}<div class="alert-message error">{{ form.plan_id.errors|join:", " }}</div>{% endif %}
 			{{ form.plan_id }}
 
 			<br/><br/>
 			
 			<h4>{% trans "Your Billing Address" %}</h4>
 			<br/>
-			{% if form.street.errors %}<div class="error">{{ form.street.errors|join:", " }}</div>{% endif %}
+			{% if form.street.errors %}<div class="alert-message error">{{ form.street.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form.street.label }}</h5>
 			{{ form.street }}
 			
-			{% if form.city.errors %}<div class="error">{{ form.city.errors|join:", " }}</div>{% endif %}
+			{% if form.city.errors %}<div class="alert-message error">{{ form.city.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form.city.label }}</h5>
 			{{ form.city }}
 			
-			{% if form.zip.errors %}<div class="error">{{ form.zip.errors|join:", " }}</div>{% endif %}
+			{% if form.zip.errors %}<div class="alert-message error">{{ form.zip.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form.zip.label }}</h5>
 			{{ form.zip }}
 			
-			{% if form.state.errors %}<div class="error">{{ form.state.errors|join:", " }}</div>{% endif %}
+			{% if form.state.errors %}<div class="alert-message error">{{ form.state.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form.state.label }}</h5>
 			{{ form.state }}
 			
-			{% if form.country.errors %}<div class="error">{{ form.country.errors|join:", " }}</div>{% endif %}
+			{% if form.country.errors %}<div class="alert-message error">{{ form.country.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form.country.label }}</h5>
 			{{ form.country }}
 			
@@ -78,18 +78,18 @@
 			
 			<h4>{% trans "Your billing information" %}</h4>
 			<br/>
-			{% if form.cc_number.errors %}<div class="error">{{ form.cc_number.errors|join:", " }}</div>{% endif %}
+			{% if form.cc_number.errors %}<div class="alert-message error">{{ form.cc_number.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form.cc_number.label }}</h5>
 			{{ form.cc_number }}
 			
 			<h5>{% trans "Expiration Date" %}</h5>
-			{% if form.cc_expiration_month.errors %}<div class="error">{{ form.cc_expiration_month.errors|join:", " }}</div>{% endif %}
+			{% if form.cc_expiration_month.errors %}<div class="alert-message error">{{ form.cc_expiration_month.errors|join:", " }}</div>{% endif %}
 			{{ form.cc_expiration_month }}
 			{{ form.cc_expiration_year }}
 			
 			<br/><br/>
 
-			{% if form.card_security_number.errors %}<div class="error">{{ form.card_security_number.errors|join:", " }}</div>{% endif %}
+			{% if form.card_security_number.errors %}<div class="alert-message error">{{ form.card_security_number.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form.card_security_number.label }}</h5>
 			{{ form.card_security_number }}
 			
@@ -102,23 +102,23 @@
 			<label><input type="checkbox" id="id_same_as_billing" {% if address_as_billing %}checked="checked"{% endif %} name="address_same_as_billing" value="1"/> Same as billing address</label>
 			<div id="shop_address_form" {% if address_as_billing %}style="display: none;"{% endif %}>
 			<br/><br/>
-			{% if form_address.street.errors %}<div class="error">{{ form_address.street.errors|join:", " }}</div>{% endif %}
+			{% if form_address.street.errors %}<div class="alert-message error">{{ form_address.street.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form_address.street.label }}</h5>
 			{{ form_address.street }}
 			
-			{% if form_address.city.errors %}<div class="error">{{ form_address.city.errors|join:", " }}</div>{% endif %}
+			{% if form_address.city.errors %}<div class="alert-message error">{{ form_address.city.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form_address.city.label }}</h5>
 			{{ form_address.city }}
 			
-			{% if form_address.zip.errors %}<div class="error">{{ form_address.zip.errors|join:", " }}</div>{% endif %}
+			{% if form_address.zip.errors %}<div class="alert-message error">{{ form_address.zip.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form_address.zip.label }}</h5>
 			{{ form_address.zip }}
 			
-			{% if form_address.state.errors %}<div class="error">{{ form_address.state.errors|join:", " }}</div>{% endif %}
+			{% if form_address.state.errors %}<div class="alert-message error">{{ form_address.state.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form_address.state.label }}</h5>
 			{{ form_address.state }}
 			
-			{% if form_address.country.errors %}<div class="error">{{ form_address.country.errors|join:", " }}</div>{% endif %}
+			{% if form_address.country.errors %}<div class="alert-message error">{{ form_address.country.errors|join:", " }}</div>{% endif %}
 			<h5>{{ form_address.country.label }}</h5>
 			{{ form_address.country }}
 			</div>
@@ -135,12 +135,12 @@
 			
 			<h4>{% trans "Terms and conditions" %}</h4>
 
-			{% if form.terms.errors %}<div class="error">{{ form.terms.errors|join:", " }}</div>{% endif %}
+			{% if form.terms.errors %}<div class="alert-message error">{{ form.terms.errors|join:", " }}</div>{% endif %}
 			<label>{{ form.terms }} {% trans "I have read and agree to the" %} <a href="" class="blue">{% trans "Terms & Conditions" %}</a></label>
 			<br/><br/><br/><br/>
 			<div class="buttonHolder">
 				<br/>
-				<button type="submit" class="button_primary">{% trans "Create Store" %}</button>
+				<button type="submit" class="btn primary">{% trans "Create Store" %}</button>
 		       	<input type="hidden" name="next" value="{{ next|escape }}" />
 		    </div>
 			</fieldset>

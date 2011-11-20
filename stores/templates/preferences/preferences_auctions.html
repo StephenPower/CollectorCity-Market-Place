@@ -9,6 +9,9 @@
 {% endblock %}
 
 {% block main %}
+
+{% if shop.auctions_feature_enabled %}
+
 	<form action="." method="post" name="form">
 		<h3>{% trans "Auction Type" %}</h3>
 		<label>{{ form.allow_sessions }}{% trans "Allow Sessions" %}</label><br/>
@@ -30,6 +33,19 @@
 		<button type="submit" class="small awesome">{% trans "Apply Settings" %}</button>
 		<button type="reset" class="small awesome" class="link_cancel">{% trans "Or Cancel" %}</button>
 	</form>
+{% else %}
+	<div class="enable_feature"><a class="enable_feature_box" href="{% url enable_feature 'auctions' %}">{% trans "Enable Auctions Feature" %} for ${{ shop.auctions_feature_price }}</a><img src="{{ MEDIA_URL }}img/help-icon.png" onclick="javascript:show_help_text('htb_container');"/></div>
+	
+	<div class="htb_container">
+		<img id="stick" src="{{ MEDIA_URL }}img/stick.png"/>
+		<div class="help_text_box">
+			{{ shop.auctions_feature_help_text }}
+			<div class="close"><img onclick="javascript: close_help_text('htb_container')" src="{{ MEDIA_URL }}img/remove.png"/></div>
+		</div>
+	</div>
+	
+{% endif %}
+
 {% endblock %}
 
 {% block menu %}

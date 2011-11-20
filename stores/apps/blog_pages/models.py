@@ -10,6 +10,8 @@ class Post(models.Model):
     meta_content = models.TextField(blank=True, null=True)
     date_time = models.DateTimeField(auto_now_add=True)
     views = models.IntegerField(default=0)
+    draft = models.BooleanField(default=True)
+    
     def __unicode__(self):
         return "%s > %s" % (self.shop, self.title)
     
@@ -19,7 +21,11 @@ class Post(models.Model):
         
     def month(self):
         return self.date_time.strftime("%B %Y")
-            
+    
+    def publish(self, value):
+        self.draft = not(value)
+        self.save()
+        
     @models.permalink
     def get_bidding_url(self):
         return ("bidding.views.bidding_view_post", (self.pk, ))
@@ -68,6 +74,20 @@ class Page(models.Model):
     @models.permalink
     def get_bidding_url(self):
         return ("bidding.views.pages", (self.pk, ))
+    
+class PageVersion(models.Model):
+    page = models.ForeignKey(Page)
+    name = models.CharField(max_length=60) 
+    name_link = models.CharField(max_length=60)
+    title = models.CharField(max_length=60)
+    body = models.TextField()
+    meta_content = models.TextField(blank=True, null=True)
+    save_on = models.DateTimeField(auto_now=True)
+    class Meta:
+        ordering = ["-save_on"]
+        
+    def __unicode__(self):
+        return "%s" % (self.save_on)
     
 class DynamicPageContent(models.Model):
     shop = models.ForeignKey(Shop)

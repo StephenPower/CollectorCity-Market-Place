@@ -17,4 +17,5 @@ urlpatterns = patterns('',
     url('^blog/(?P<post_slug>[a-zA-Z0-9_.-]+)/$', 'market.views.view_post', name='market_blog_view_post'),
     url('^switch_listing/$', 'market.views.set_listing_mode', name='set_listing_mode'),
     url('^switch_order/$', 'market.views.set_order_mode', name='set_order_mode'),
+    url('^survey/$', 'market.views.survey', name='market_survey'),
 )

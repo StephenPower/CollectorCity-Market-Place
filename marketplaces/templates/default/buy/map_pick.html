@@ -2,15 +2,15 @@
 {% load i18n %}
 
 {% block content %}
-<div id="breadcrumbs" class="grid_18">
-	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_buy %}">{% trans "Buy" %}</a> &raquo; {% trans "Map Pick" %}
-</div>
+<ul class="breadcrumb">
+ <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider">/</span></a></li>
+ <li><a href="{% url market_buy %}">{% trans "Buy" %}</a><span class="divider">/</span></a></li>
+ <li class="active">{% trans "Map Pick" %}</li>
+</ul>
 
-<div class="grid_18 block_main_content">
+<h2>{% trans "Map Pick" %}</h2>
 
-<h3>{% trans "Map Pick" %}</h3>
-
-Here you can find our shops!
+<h3>Here You Can Find Our Shops!</h3>
 
 <div>
 	<script type="text/javascript">
@@ -35,7 +35,6 @@ Here you can find our shops!
 		
         
         {% for shop in shops %}
-        		
         var point = new GLatLng({{ shop.geo_location.0 }}, {{ shop.geo_location.1 }});
 	    var marker = new GMarker(point);
 	    
@@ -56,14 +55,14 @@ Here you can find our shops!
     });
 	</script>
 
-	<div class="grid_18">
+	<div class="span12 offset2">
 		<div id="map" style="border: 4px solid gray; width: 845px; height: 500px"></div>
 	</div>
 	
 </div>
 
-<div class="clear"></div>
 
-</div>
+</div>:q
+
 
 {% endblock %}

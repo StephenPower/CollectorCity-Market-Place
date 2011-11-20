@@ -3,39 +3,53 @@
 {% load sell_tags %}
 
 {% block content %}
-<div id="breadcrumbs" class="grid_18">
-	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_for_sale %}">{% trans "Items For Sale" %}</a>
-</div>
+<ul class="breadcrumb">
+ <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider">/</span>
+ <li class="active">{% trans "Items For Sale" %}</li>
+</ul>
 
 {% block filter_content %}
-<div class="grid_4"></div>
 {% endblock %}
 
 {% block main_content %}
-<div class="grid_18 margin_h">
-	<div class="block_main_content">
-	<h2>{{ total }} items for sale found</h2>
+<div class="span12 offset2">
+	<h2>{{ total }} Items For Sale Found</h2>
 	<p>Listing {{ items.object_list.count }} item{{ items.object_list.count|pluralize }}</p>
-	
+<div class="row">	
 	{% if items.object_list.count %}
 	{% for item in items.object_list %}
-	<div class="grid_3 margin_h">
+
+  <div id="{{ item.product_ptr_id }}" class="modal hide fade">
+            <div class="modal-header">
+              <a href="#" class="close">&times;</a>
+              <h3>{{ item.title }}</h3>
+            </div>
+            <div class="modal-body">
+              <p><img src="{{item.child.image.image.url_100x100}}" ></p>
+             <p>{{ item.description|striptags|safe }}</p>
+            <p>
+              </div>
+            <div class="modal-footer">
+              <a href="{% url market_buy_product_redirect item.product_ptr_id %}" target="_blank" class="btn primary">Go To Product Page</a>
+              <a href="#" class="btn secondary">Go Back To Marketplace</a>
+            </div>
+          </div>
+
 		<div class="item_box">
-			<a href="{% url market_buy_product_redirect item.product_ptr_id %}" target="_blank">
-			{% if item.image %}
+			<a data-controls-modal="{{ item.product_ptr_id }}" data-backdrop="true" data-keyboard="true">		{% if item.image %}
 			<img class="item" src="{{ item.image.image.url_100x100 }}" title="{{ item.description|striptags }}"/>
 			{% else %}
 			<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ item.description|striptags }}"/>
 			{% endif %}
-			<div>{{ item.title|truncatewords:5 }}</div>
-			<div>{{ item.category.name }}</div>
-			<div>{{ item.price|money_format:item.shop }}</div>
+			<div class="title">{{ item.title|truncatewords:5 }}</div>
+			<div class="dealer">{{ item.category.name }}</div>
+			<div class="price">{{ item.price|money_format:item.shop }}</div>
 			</a>
 		</div>
-	</div>
 	{% endfor %}
+</div>
+<div class="row">
 	
-	<div class="clear"></div>
 	<div class="pagination">
 	{% with items as objects %}
 		{% include 'paginator.html'%}
@@ -43,11 +57,9 @@
 	</div>
 			
 	{% else %}
-	{% trans "No items for sale found" %}
+<h3>	{% trans "No items for sale found" %}</h3>
 	{% endif %}
-	<div class="clear"></div>	
-	</div>
-	
+</div>	
 </div>
 {% endblock %}
 

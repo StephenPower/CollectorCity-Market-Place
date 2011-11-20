@@ -5,14 +5,12 @@
 
 {% block community_content %}
 
-<div class="grid_18 alpha omega margin_v">
+<div class="grid_15 alpha omega margin_v">
 
-<h1>{% trans "Profiles for all our Dealers" %}</h1>
-<br></br>
-<br></br>
+<h3>{% trans "Profiles for all our Dealers" %}</h3>
 {% for letter in letters %}
-<div class="grid_4 capital_letter">
-	<a href="{% url community_profiles_list letter %}">{{ letter }}</a>
+<div class="grid_1 capital_letter">
+	<h2><a href="{% url community_profiles_list letter %}">{{ letter }}</a></h2>
 </div>
 {% endfor %}
 

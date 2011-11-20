@@ -58,19 +58,29 @@ def items_bulk_delete(request):
         if status == "on": 
             item = get_object_or_404(Item, pk=item_id)
             item.delete()
+    Item.update_latest_item(request.shop)
+    
     request.flash['message'] = unicode(_("Items removed"))
     request.flash['severity'] = "success"
     return HttpResponseRedirect(reverse("inventory_items"))
     
 @shop_admin_required
 def item_add(request):
+    shop = request.shop
+    
+    items_plan_limit = shop.plan().concurrent_store_items
+    if shop.total_items() >= items_plan_limit:
+        request.flash['message'] = "You have reached the limit of items that can hold simultaneously."
+        request.flash['severity'] = "error"
+        return HttpResponseRedirect(reverse('inventory_items'))
+        
     if request.method == 'POST':
         form = ItemForm(request, request.POST, request.FILES, prefix="item")
         if form.is_valid():
             item = form.save(commit=False)
             item.shop = request.shop
             item.save()
-            item.update_latest_item()
+            Item.update_latest_item(shop)
             for img in request.FILES.getlist('file'):
                 image = ImageItem()
                 image.item = item
@@ -84,7 +94,7 @@ def item_add(request):
     form_sub_category = MarketSubCategoryForm(request, prefix="sub_category")
     form_session = AuctionSessionForm(prefix="session")
     sessions = AuctionSession.objects.filter(shop = request.shop)
-    return render_to_response('store_admin/inventory/item_add.html', 
+    return render_to_response('for_sale/item_add.html', 
                               {'form': form,
                                'form_category': form_category,
                                'form_sub_category': form_sub_category,
@@ -135,15 +145,16 @@ def import_inventory(request):
 
 @shop_admin_required
 def item_details(request, item_id):
-    item = get_object_or_404(Item, pk=item_id)
-    if item.shop != request.shop:
-        raise Http404
-    image_form = ImageItemForm()
-    return render_to_response('store_admin/inventory/item_details.html', 
-                              {'item': item,
-                               'image_form': image_form,
-                               },
-                              RequestContext(request))
+    logging.critical("llego")
+    try:
+        item = get_object_or_404(Item, pk=item_id)
+        if item.shop != request.shop:
+            raise Http404
+        image_form = ImageItemForm()
+        params = {'item': item, 'image_form': image_form }
+        return render_to_response('for_sale/item_details.html', params, RequestContext(request))
+    except Exception, e:
+        logging.critical(e)
     
 @shop_admin_required
 def item_delete(request, item_id):
@@ -151,6 +162,8 @@ def item_delete(request, item_id):
     if item.shop != request.shop:
         raise Http404
     item.delete()
+    Item.update_latest_item(request.shop)
+    
     request.flash['message'] = unicode(_("Item successfully deleted."))
     request.flash['severity'] = "success"
     return HttpResponseRedirect(reverse("inventory_items"))
@@ -182,7 +195,7 @@ def item_edit(request, item_id):
     form_category = MarketCategoryForm(prefix="category")
     form_sub_category = MarketSubCategoryForm(request, prefix="sub_category")
     
-    return render_to_response('store_admin/inventory/item_edit.html', 
+    return render_to_response('for_sale/item_edit.html', 
                               {'form': form,
                                'item': item,
                                'form_category': form_category,
@@ -192,21 +205,39 @@ def item_edit(request, item_id):
 
 @shop_admin_required
 def add_item_image(request, item_id):
-    item = get_object_or_404(Item, pk=item_id)
+        
     if request.method == 'POST':
-        form = ImageItemForm(request.POST, request.FILES)
-        if form.is_valid():
-            img = form.save(commit=False)
-            img.item = item
-            img.save()
-        else:
-            logging.error(form.errors)
-            request.flash['message'] = form.errors
+        
+        shop = request.shop
+        item = get_object_or_404(Item, pk=item_id)
+        
+        limit = shop.get_limit('pictures_per_item')
+        total = ImageItem.objects.filter(item=item).count()
+        
+        if total >= limit:
+            logging.info("User reach the pictures per item plan limit")
+            request.flash['message'] = "You have reach the limit of pictures per item allowed by your plan!"
             request.flash['severity'] = "error"
-            return HttpResponseRedirect(reverse('item_details', args=[item_id]))
+        else:
+            form = ImageItemForm(request.POST, request.FILES)
+            if form.is_valid():
+                img = form.save(commit=False)
+                img.item = item
+                img.save()
+                request.flash['message'] = "Image successfully saved!"
+                request.flash['severity'] = "success"
+            
+            else:
+                logging.error(form.errors)
+                request.flash['message'] = form.errors
+                request.flash['severity'] = "error"
+        
+        return HttpResponseRedirect(reverse('item_details', args=[item_id]))
     
-    return HttpResponseRedirect(reverse('item_details', args=[item_id]))
-
+    else:
+        raise Http404
+    
+    
 
 @shop_admin_required
 def del_item_image(request, item_id, image_id):

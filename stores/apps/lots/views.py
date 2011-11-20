@@ -244,6 +244,7 @@ def lot_edit(request, lot_id):
     
 @shop_admin_required
 def lot_add(request):
+    
     if request.method == 'POST':
         form = LotForm(request, request.POST, prefix="lot")
         if form.is_valid():
@@ -264,13 +265,12 @@ def lot_add(request):
     form_category = MarketCategoryForm(prefix="category")
     form_sub_category = MarketSubCategoryForm(request, prefix="sub_category")
     form_session = AuctionSessionForm(prefix="session")
-    sessions = AuctionSession.objects.filter(shop = request.shop)
+    
     return render_to_response('lots/lot_add.html', 
                               {'form': form,
                                'form_category': form_category,
                                'form_sub_category': form_sub_category,
                                'form_session': form_session,
-                               'sessions': sessions,
                                },
                               RequestContext(request))
 
@@ -292,15 +292,33 @@ def set_primary_picture(request, lot_id, image_id):
 
 @shop_admin_required
 def add_image(request, lot_id):
-    lot = get_object_or_404(Lot, pk=lot_id)
+    
     if request.method == 'POST':
-        form = ImageLotForm(request.POST, request.FILES)
-        if form.is_valid():
-            img = form.save(commit=False)
-            img.lot = lot
-            img.save()
-    return HttpResponseRedirect(reverse('lot_details', args=[lot_id]))
-
+        shop = request.shop
+        lot = get_object_or_404(Lot, pk=lot_id)
+    
+        limit = shop.get_limit('pictures_per_lot')
+        total = ImageLot.objects.filter(lot=lot).count()
+            
+        if total >= limit:
+            request.flash['message'] = "You have reach the limit of pictures per lot allowed by your plan!"
+            request.flash['severity'] = "error"
+        
+        else:
+            form = ImageLotForm(request.POST, request.FILES)
+            if form.is_valid():
+                img = form.save(commit=False)
+                img.lot = lot
+                img.save()
+                request.flash['message'] = "Image successfully saved!"
+                request.flash['severity'] = "success"
+            else:
+                request.flash['message'] = "You have reach the limit of pictures per lot allowed by your plan!"
+                request.flash['severity'] = "error"
+        
+        return HttpResponseRedirect(reverse('lot_details', args=[lot_id]))
+    else:
+        raise Http404
 
 @shop_admin_required
 def del_image(request, lot_id, image_id):

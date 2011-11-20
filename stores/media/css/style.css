@@ -380,7 +380,7 @@ h3 { font-size: 13px }
 	border-right:4px solid #C3C3C3;
 	border-bottom:1px solid #737473;
 	padding:0 38px 0 10px;
-	height: 51px;
+	/*height: 51px;*/
 }
 
 .sub_menu ul{
@@ -579,6 +579,8 @@ h3 { font-size: 13px }
 	min-height:115px;
 	padding:10px;
 	overflow:hidden;
+	font-size: 130%;
+	line-height: 1.5em;
 }
 
 .box_body p {
@@ -845,4 +847,103 @@ h3 { font-size: 13px }
 
 .product {
 	background: #cdcdcd;
+}
+
+.enable_feature{
+	margin: 15px;
+	font-size: 18px;	
+}
+
+.enable_feature img {
+    left: 10px;
+    position: relative;
+    top: 7px;
+    max-width: 28px;
+}
+
+.htb_container {
+	margin: 10px 5px;
+	width: 40%;
+	
+}
+
+.htb_container #stick {
+	position: relative;
+	top: -6px;
+	left: 165px;
+	z-index: 1000
+}
+
+.help_text_box {
+	padding: 10px 15px;
+	border: 1px solid #D0CFFF;
+	background: #E0EFFF;
+	font-size: 12px;
+	color: #000;
+	position: relative;
+	left: 120px;
+	top: -10px;
+	-webkit-box-shadow: 2px 2px 5px #999;
+  	-moz-box-shadow: 2px 2px 5px #999;
+  	filter: shadow(color=#999999, direction=135, strength=2);
+}
+
+.help_text_box .close {
+	font-weight: bold;
+	float: right;	
+}
+
+.menu_left .posts_tree {
+	padding-left: 5px;	
+	margin-left: 0px;
+}
+
+.menu_left .posts_tree li {
+	margin-left: 10px;
+	padding-left: 0px;
+	list-style-type: square;
+}
+
+#draft_form input[type="checkbox"] {
+	width: 15px; 
+	margin: 2px 2px 
+}
+
+#submit_btn {
+	margin-top: 20px;
+}
+
+.little_right_box p {
+	margin: 5px 0px;
+}
+
+.little_right_box {
+	background: #ECECEC;
+	padding: 5px;
+	margin-bottom: 10px;
+}
+
+.add_link_form {
+	background: #E6E6E6 url(http://mycoins.greatcoins.com:8080/media/img/ui-bg_glass_75_e6e6e6_1x400.png) repeat-x 50% 50%;
+	border: 1px solid lightGrey;
+	margin: 5px;
+}
+
+#credit_card_form label {
+    display: inline-block;
+    width: 120px;
+}
+
+#credit_card_form input[type="text"] {
+	background: center 0 0 #FFF;
+}
+
+#credit_card_form p {
+	line-height: 30px;
+}
+
+#images .image {
+	margin: 10px;
+	float: left;
+	width: 100px;	
 }

@@ -1,0 +1,43 @@
+{% extends 'preferences/preferences_payment.html' %}
+{% load uni_form_tags %}
+{% load i18n %}
+
+{% block main %}
+
+<div class="grid_16">
+	
+	<h3>Payments Available</h3>
+	<ul>
+		{% if shop.paypal_feature_enabled %}
+		<li><a href="{% url preferences_payment_paypal %}">{% trans "PayPal" %}</a></li>
+		{% endif %}
+		{% if shop.google_checkout_feature_enabled %}
+		<li><a href="{% url preferences_payment_google_checkout %}">{% trans "Google Checkout" %}</a></li>
+		{% endif %}
+		{% if shop.credit_card_feature_enabled %}
+    	<li><a href="{% url preferences_payment_credit_cards %}">{% trans "Credit Cards" %}</a></li>
+		{% endif %}
+		{% if shop.manual_payment_feature_enabled %}
+    	<li><a href="{% url preferences_payment_manual %}">{% trans "Manual Payments" %}</a></li>
+		{% endif %}
+	</ul>
+	
+	<h3>You Can Enable The Following Payments</h3>
+	
+	<ul>
+		{% if not shop.paypal_feature_enabled %}
+		<li><a class="enable_feature_box" href="{% url enable_feature 'paypal' %}">{% trans "PayPal" %}</a></li>
+		{% endif %}
+		{% if not shop.google_checkout_feature_enabled %}
+		<li><a class="enable_feature_box" href="{% url enable_feature 'google_checkout' %}">{% trans "Google Checkout" %}</a></li>
+		{% endif %}
+		{% if not shop.credit_card_feature_enabled %}
+    	<li><a class="enable_feature_box" href="{% url enable_feature 'credit_card' %}">{% trans "Credit Cards" %}</a></li>
+    	{% endif %}
+		{% if not shop.manual_payment_feature_enabled %}
+		<li><a class="enable_feature_box" href="{% url enable_feature 'manual_payment' %}">{% trans "Manual Payments" %}</a></li>
+		{% endif %}
+	</ul>
+</div>
+	
+{% endblock %}

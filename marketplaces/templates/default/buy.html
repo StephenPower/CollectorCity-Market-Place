@@ -2,148 +2,73 @@
 {% load i18n %}
 
 {% block content %}
-<div id="breadcrumbs" class="grid_18">
-	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_buy %}">{% trans "Buy" %}</a>
+	<ul class="breadcrumb">
+		<li><a href="{% url market_home %}">{% trans "Home" %}</a> <span class="divider">/</span></li>
+		<li class="active"><a href="{% url market_buy %}">{% trans "Buy" %}</a></li>
+	</ul>
+<div class="sidebar">
+<div class="well">
+	<h4>Recent Listings</h4>
+	{% for product in recently_products %}
+	{% if product.child.image %}
+	<a href="{% url market_buy_product_redirect product.id %}" target="_blank"><img class="item" title="{{ product.title }}" src="{{ product.child.image.image.url_100x100 }}" height="42" width="46"/></a>
+	{% else %}
+	<a href="{% url market_buy_product_redirect product.id %}" target="_blank"><img class="item" title="{{ product.title }}" src="{{ MEDIA_URL }}img/no-photo-small.jpg" height="42" width="46"/></a>
+	{% endif %}
+	{% endfor %}
+</div>
 </div>
 
-<div class="grid_18 block_main_content">
+<div class="content">
+   <h2>{% trans "Buy On" %} {{ marketplace.name }}</h2>
+	<h5>Find the Coin you've always looked for with our extensive marketplace of dealers. You must sign up to buy. It's free - you can <a href="{% url market_buy_signup %}">sign up here</a>.
+Have a question? <a href="">Click Here</a></h5>
+<div class="span10">
+<table class="NoBorderTable">
+  <thead>
+    <tr>
+   </tr>
+  </thead>
+  <tbody>
+   <tr>
+	<td><a href="{% url buy_categories %}"><img alt="Coins" src="{{ MEDIA_URL }}img/categories.jpg"></img></a></td>
+  	<td><a href="{% url buy_categories %}"><h2>{% trans "Categories" %}</h2></a><a href="{% url buy_categories %}"><p>Steve Look through our categories like you're used to</p></a></td>
+   </tr>
+   <tr>	
+	<td><a href="{% url buy_advanced_search_reset %}"><img alt="Coins" src="{{ MEDIA_URL }}img/advanced-search.jpg"></img></a></td>
+	<td><a href="{% url buy_advanced_search_reset %}"><h2>{% trans "Advanced Search" %}</h2><p>Use this tool to narrow your search results</p></a></td>
+   </tr>
+   <tr>
+	<td><a href="{% url buy_wish_list %}"><img alt="Wish List" src="{{ MEDIA_URL }}img/wish-list.jpg"></img></a></td>
+	<td><a href="{% url buy_wish_list %}"><h2>{% trans "Wish List" %}</h2><p>Submit Your Wish to all Dealers</p></a></td>
+   </tr>
+   <tr>
+	<td><a href="{% url buy_latest_items %}"><img alt="Latest Posts" src="{{ MEDIA_URL }}img/latest-items.jpg"></img></a></td>
+	<td><a href="{% url buy_latest_items %}"><h2>{% trans "Find The Latest Items" %}</h2><p>Find coins from new stores, just recently posted stores</p></a></td>
+   </tr>
+    <tr>
+	<td><a href="{% url buy_shop_local %}">	<img alt="Shop Local" src="{{ MEDIA_URL }}img/shop-local.jpg"></img></a></td>
+	<td><a href="{% url buy_shop_local %}"><h2>{% trans "Shop Local" %}</h2><p>Find a coin dealer near you</p></a></td>
+    </tr>
 
-<h1>{% trans "BUY ON" %} {{ marketplace.name.upper }}</h1>
-<br/>
-<p>
-Find the Coin you've always looked for with our extensive marketplace of dealers. You must sign up to buy. It's free - you can <a href="{% url market_buy_signup %}">sign up here</a>.
-Have a question? <a href="">Click Here</a>
-</p>
-<br/>
-
-<div class="grid_14">
-
-<div>
-	<a href="{% url buy_categories %}">
-		<div class="grid_4 prefix_2">
-			<img alt="Coins" src="{{ MEDIA_URL }}img/categories.jpg"></img>
-		</div>
-		<div class="grid_7">
-			<h5>{% trans "Categories" %}</h5>
-			<p>Look through our categories like you're used to</p>
-		</div>
-	</a>
-	<hr></hr>
+   <tr>
+	<td><a href="{% url buy_editor_pick %}"><img alt="Favorites" src="{{ MEDIA_URL }}img/ricks-picks.jpg"></img></a></td>
+	<td><a href="{% url buy_editor_pick %}"><h2>{% trans "Rick's Pick" %}</h2><p>Rick's Favorite Coins</p></a></td>
+   </tr>
+     <tr>
+	<td><a href="{% url buy_map_pick %}"><img alt="Map Pick" src="{{ MEDIA_URL }}img/map-pick.jpg"></img></a></td>
+	<td><a href="{% url buy_map_pick %}"><h2>{% trans "Map Pick" %}</h2><p>Show a map of all Shops</p></a></td>
+    </tr>	
+     <tr>
+	<td><a href="{% url buy_show_listing %}"><img alt="Show Listing" src="{{ MEDIA_URL }}img/show-listing.jpg"></img></a></td>
+	<td><a href="{% url buy_show_listing %}"><h2>{% trans "Show Listing" %}</h2><p>Shop By Dealers At Your Local Coin Show</p></a></td>
+    </tr>	
+     <tr>
+	<td><a href="{% url buy_top_sellers %}"><img alt="Top Sellers" src="{{ MEDIA_URL }}img/top-sellers.jpg"></img></a></td>
+	<td><a href="{% url buy_top_sellers %}"><h2>{% trans "Top Sellers" %}</h2><p>Browse By Top Sellerss</p></a></td>
+    </tr>	
+</tbody>
+</table>
 </div>
-
-
-<div>
-	<a href="{% url buy_advanced_search_reset %}">
-		<div class="grid_4 prefix_2">
-			<img alt="Coins" src="{{ MEDIA_URL }}img/advanced-search.jpg"></img>
-		</div>
-		<div class="grid_7">
-			<h5>{% trans "Advanced Search" %}</h5>
-			<p>Use this tool to narrow your search results</p>
-		</div>
-	</a>
 </div>
-<hr></hr>
-
-<div>
-	<a href="{% url buy_wish_list %}">
-		<div class="grid_4 prefix_2">
-			<img alt="Wish List" src="{{ MEDIA_URL }}img/wish-list.jpg"></img>
-		</div>
-		<div class="grid_7">
-			<h5>{% trans "Wish List" %}</h5>
-			<p>Request a coin, in the condition you want and what you'll pay.</p>
-		</div>
-	</a>
-</div>
-<hr></hr>
-<div>
-	<a href="{% url buy_latest_items %}">
-		<div class="grid_4 prefix_2">
-			<img alt="Latest Posts" src="{{ MEDIA_URL }}img/latest-items.jpg"></img>
-		</div>
-		<div class="grid_7">
-			<h5>{% trans "Find The Latest Items" %}</h5>
-			<p>Find coins from new stores, just recently posted stores</p>
-		</div>
-	</a>
-</div>
-<hr></hr>
-<div>
-	<a href="{% url buy_shop_local %}">
-		<div class="grid_4 prefix_2">
-			<img alt="Shop Local" src="{{ MEDIA_URL }}img/shop-local.jpg"></img>
-		</div>
-		<div class="grid_7">
-			<h5>{% trans "Shop Local" %}</h5>
-			<p>Find a coin dealer near you</p>
-		</div>
-	</a>
-</div>
-<hr></hr>
-<div>
-	<a href="{% url buy_editor_pick %}">
-		<div class="grid_4 prefix_2">
-			<img alt="Favorites" src="{{ MEDIA_URL }}img/ricks-picks.jpg"></img>
-		</div>
-		<div class="grid_7">
-			<h5>{% trans "Rick's Pick" %}</h5>
-			<p>Rick's Favorite Coins</p>
-		</div>
-	</a>
-</div>
-<hr></hr>
-<div>
-	<a href="{% url buy_map_pick %}">
-		<div class="grid_4 prefix_2">
-			<img alt="Map Pick" src="{{ MEDIA_URL }}img/map-pick.jpg"></img>
-		</div>
-		<div class="grid_7">
-			<h5>{% trans "Map Pick" %}</h5>
-			<p>Show a map of all Shops</p>
-		</div>
-	</a>
-</div>
-<hr></hr>
-<div>
-	<a href="{% url buy_show_listing %}">
-		<div class="grid_4 prefix_2">
-			<img alt="Show Listing" src="{{ MEDIA_URL }}img/show-listing.jpg"></img>
-		</div>
-		<div class="grid_7">
-			<h5>{% trans "Show Listing" %}</h5>
-			<p>Shop by dealers at your local coin show</p>
-		</div>
-	</a>
-</div>
-<hr></hr>
-<div>
-	<a href="{% url buy_top_sellers %}">
-		<div class="grid_4 prefix_2">
-			<img alt="Coins" src="{{ MEDIA_URL }}img/top-sellers.jpg"></img>
-		</div>
-		<div class="grid_7">
-			<h5>{% trans "Top Seller" %}</h5>
-			<p>Browse by Top Sellers</p>
-		</div>
-	</a>
-</div>
-
-</div>
-
-<div class="grid_3">
-{% for product in recently_products %}
-{% if product.child.image %}
-<a href="{% url market_buy_product_redirect product.id %}" target="_blank"><img class="item" title="{{ product.title }}" src="{{ product.child.image.image.url_100x100 }}" height="42" width="46"/></a>
-{% else %}
-<a href="{% url market_buy_product_redirect product.id %}" target="_blank"><img class="item" title="{{ product.title }}" src="{{ MEDIA_URL }}img/no-photo-small.jpg" height="42" width="46"/></a>
-{% endif %}
-
-{% endfor %}
-</div>
-
-<div class="clear"></div>
-
-</div>
-
 {% endblock %}

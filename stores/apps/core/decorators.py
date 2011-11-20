@@ -37,3 +37,20 @@ def shop_admin_required(func):
             return HttpResponseRedirect("/")
     return _decorated
 
+def auctions_feature_required(func):
+    def decorator(request,*args, **kwargs):
+        if not hasattr(request, 'shop') or request.shop is None:
+            raise Http404
+        if not request.shop.auctions_feature_enabled():
+            raise Http404
+        return func(request, *args, **kwargs)
+    return decorator
+
+def add_page_feature_enabled(func):
+    def decorator(request,*args, **kwargs):
+        if not hasattr(request, 'shop') or request.shop is None:
+            raise Http404
+        if not request.shop.add_pages_feature_enabled():
+            raise Http404
+        return func(request, *args, **kwargs)
+    return decorator

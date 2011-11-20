@@ -4,18 +4,11 @@
 {% block faq_selection %}current_selection{% endblock %}
 
 {% block community_content %}
-
-<div class="grid_18 alpha omega margin_v">
-
-<h1>{% trans "FAQ - Frequently Asked Questions" %}</h1>
-<br></br>
-<br></br>
-
-<div>
+<h2>{% trans "FAQ - Frequently Asked Questions" %}</h2>
 {% for category in categories %}
 {% if category.faqentry_set.count %}
-<div class="grid_8 margin_v">
-	<h1>{{ category.name }}</h1><br/>
+<div class="alert-message block-message info span5 FaqCategories">
+	<h5>{{ category.name }}</h5>
 	<ul>
 {% for entry in category.faqentry_set.all %}
 		<li><a href="#{{ entry.anchor }}">{{ entry.question }}</a></li>
@@ -24,29 +17,21 @@
 </div>
 {% endif %}
 {% endfor %}
-</div>
-
-<div class="clear"></div>
 
 {% for category in categories %}
 {% if category.faqentry_set.count %}
-<div class="faq_box">
-	<div class="faq_category">
-		<h1>{{ category.name }}</h1>
-		{% if category.description %}
-		<div class="description"">{{ category.description }}</div>
-		{% endif %}
-	</div>
+	<div class="Faq_Category">
+	<h4>{{ category.name }}</h4>
+	{% if category.description %}
+	 <p>{{ category.description }}</p>
+	{% endif %}
 {% for entry in category.faqentry_set.all %}
 	<div id="{{ entry.anchor }}" class="faq_entry">
-		<h3>{{ entry.question }}</h3>
+		<h4>{{ entry.question }}</h4>
 		<p>{{ entry.answer|safe }}</p>
 	</div>
 {% endfor %}
-</div>
 {% endif %}
 {% endfor %}
 
-
-</div>
 {% endblock %}

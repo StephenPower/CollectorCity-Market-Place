@@ -2,19 +2,19 @@ import logging
 import datetime
 import urllib
 
+from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
+from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
-
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
 from auctions.models import AuctionSession
 from for_sale.models import Item
 from core.decorators import shop_admin_required
-
 from market.models import MarketCategory, MarketSubCategory
+from django.utils import simplejson
 
 PAGE_ITEMS = 10
 
@@ -198,7 +198,6 @@ def customers_wish_lists(request):
 @shop_admin_required
 def customers_send_notification(request, id):
     from market_buy.models import WishListItem
-    from django.core.mail import send_mail
     
     wishitem = get_object_or_404(WishListItem, pk=id)
     
@@ -267,7 +266,7 @@ def web_store_overview(request):
     shop = request.shop    
     static_pages = Page.objects.filter(shop = shop)
     dynamic_pages = DynamicPageContent.objects.filter(shop = shop)
-    posts = Post.objects.filter(shop = shop)
+    posts = Post.objects.filter(shop = shop).filter(draft=False)
     return render_to_response('store_admin/web_store/overview.html', 
                               {'static_pages': static_pages, 'dynamic_pages': dynamic_pages, 'posts': posts},
                               RequestContext(request))
@@ -282,8 +281,6 @@ def inventory_items(request):
     from for_sale.models import Item
 
     shop = request.shop
-    
-    
     
     filter_by = request.GET.get('filter_by','')
     order_by = request.GET.get('order_by','')
@@ -348,10 +345,12 @@ def inventory_items(request):
         products = pager.page(pager.num_pages)
     paged = (pager.num_pages > 1)
 
+    items_plan_limit = shop.plan().concurrent_store_items
     
     return render_to_response('store_admin/inventory/items.html', 
                               {'products': products,
                                'total' : total,
+                               'items_plan_limit': items_plan_limit, 
                                'pages': pager.page_range,
                                'paged': paged,
                                'filter_params': filter_params,
@@ -529,7 +528,7 @@ def inventory_auctions(request):
         all_auctions = all_auctions.filter(title__icontains=q_title)
     elif filter_by == 'finished':
         all_auctions = all_auctions.filter(end__lt=datetime.datetime.now())
-    elif filter_by == 'actual':
+    elif filter_by == 'in_progress':
         all_auctions = all_auctions.filter(end__gt=datetime.datetime.now(), start__lt=datetime.datetime.now())
     elif filter_by == 'future':
         all_auctions = all_auctions.filter(start__gt=datetime.datetime.now())
@@ -584,29 +583,9 @@ def inventory_categorize(request):
     return render_to_response('store_admin/inventory/overview.html', {}, 
                               RequestContext(request))
 
-
-@shop_admin_required
-def inventory_item_detail(request):
-    return render_to_response('store_admin/inventory/item_detail.html', {},
-                              RequestContext(request))
-
 @shop_admin_required
 def preferences_overview(request):
-    from payments.models import PayPalShopSettings, GoogleCheckoutShopSettings, ManualPaymentShopSettings, BraintreeShopSettings
-    shop = request.shop
-    
-    google = GoogleCheckoutShopSettings.objects.filter(shop=shop).count() > 0
-    paypal = PayPalShopSettings.objects.filter(shop=shop).count() > 0
-    braintree = BraintreeShopSettings.objects.filter(shop=shop).count() > 0
-    manual = ManualPaymentShopSettings.objects.filter(shop=shop).count() > 0
-    return render_to_response('store_admin/preferences/overview.html',
-                              {'shop' : shop,
-                               'google' : google,
-                               'paypal' : paypal,
-                               'braintree' : braintree,
-                               'manual' : manual,                               
-                               },
-                              RequestContext(request))
+    return render_to_response('store_admin/preferences/overview.html', {}, RequestContext(request))
 
 @shop_admin_required
 def add_profile_photo(request):
@@ -665,3 +644,229 @@ def ajax_change_price(request):
         return HttpResponse("Fallo", status=500)
     
     return HttpResponse()
+
+def support_overview(request):    
+    return render_to_response('store_admin/support/overview.html',
+                              {},
+                              RequestContext(request))
+    
+def support_email(request):
+    from store_admin.forms import EmailContactForm
+    from django.template.defaultfilters import striptags
+    from subscriptions.models import FeaturePayment
+    shop = request.shop
+            
+    if request.method == "POST":
+        txn_id = request.POST.get('txn_id', None)
+        payment = FeaturePayment.objects.filter(transaction_id=txn_id, shop=shop).count()
+        if not payment:
+            request.flash['message'] = "Your payment is not registered in our system."
+            request.flash['severity'] = "error"
+            return HttpResponseRedirect(reverse("support"))
+        
+        form = EmailContactForm(request.POST)        
+        if form.is_valid():
+            marketplace = request.shop.marketplace
+            logging.critical(form.cleaned_data)
+            to = marketplace.contact_email
+            user_email = form.cleaned_data['email']
+            user_question = form.cleaned_data['question']
+            user_name = form.cleaned_data['name']
+            
+            subject = "Email Support Requested"
+            
+            the_message = "%s has request email support from %s <%s>. \n\nUser Email: %s\n\nUser Question: %s" % (user_name, shop.name_shop(), shop.default_dns, user_email, striptags(user_question))
+            
+            send_mail(subject, the_message, shop.admin.email, [to], fail_silently=True)
+            
+            request.flash['message'] = "Support request sent..."
+            request.flash['severity'] = "success"
+            return HttpResponseRedirect(reverse("support"))                    
+    else:
+        form = EmailContactForm()    
+    return render_to_response('store_admin/support/email.html',
+                              {'form': form},
+                              RequestContext(request))
+
+def support_phone(request):
+    from store_admin.forms import PhoneContactForm
+    from subscriptions.models import FeaturePayment
+
+    shop = request.shop
+    
+    if request.method == "POST":
+        txn_id = request.POST.get('txn_id', None)
+        payment = FeaturePayment.objects.filter(transaction_id=txn_id, shop=shop).count()
+        if not payment:
+            request.flash['message'] = "Your payment is not registered in our system."
+            request.flash['severity'] = "error"
+            return HttpResponseRedirect(reverse("support"))
+                
+        form = PhoneContactForm(request.POST)        
+        if form.is_valid():
+            marketplace = request.shop.marketplace
+            to = marketplace.contact_email
+            user_messenger_id = form.cleaned_data['messenger_id']
+            user_phone = form.cleaned_data['phone']
+            user_name = form.cleaned_data['name']
+            
+            subject = "Phone Support Requested"
+            
+            the_message = "%s has request phone support from %s <%s>. \n\nUser Phone: %s\n\nUser Messenger Id: %s" % (user_name, shop.name_shop(), shop.default_dns, user_phone, user_messenger_id)
+            
+            send_mail(subject, the_message, shop.admin.email, [to], fail_silently=True)
+            
+            request.flash['message'] = "Support request sent..."
+            request.flash['severity'] = "success"
+            return HttpResponseRedirect(reverse("support"))
+                        
+    else:
+        form = PhoneContactForm()
+    
+    return render_to_response('store_admin/support/phone.html',
+                              {'form': form},
+                              RequestContext(request))
+    
+def support_community(request):    
+    return render_to_response('store_admin/support/community_forums.html',
+                              {},
+                              RequestContext(request))
+    
+def enable_feature(request, feature, hook=None):
+    from subscriptions.models import FeaturesManager
+    shop = request.shop
+    
+    (feature_name, feature_description) = FeaturesManager.get_feature_description(feature)
+    feature_price = FeaturesManager.get_feature_price(shop, feature)
+    credit_card_info = True
+    masked_number = "xxx"
+    card_type = "---"
+    expired = False
+    try:
+        billing_info = shop.billing_info()
+        masked_number = billing_info.credit_card()['masked_number']
+        card_type = billing_info.credit_card()['card_type']
+        expired = billing_info.credit_card()['expired']
+    except:
+        credit_card_info = False
+    
+    params = {'credit_card_info': credit_card_info, 
+              'feature_id': feature, 
+              'feature_name': feature_name, 
+              'feature_description': feature_description, 
+              'feature_price': feature_price, 
+              'masked_number': masked_number, 
+              'card_type': card_type,
+              'expired': expired }
+    
+    return render_to_response("store_admin/enable_feature.html", params, RequestContext(request))
+    
+
+def ajax_do_charge(request, feature):
+    from payments.gateways.braintreegw import BraintreeGateway
+    from subscriptions.models import FeaturesManager, FeaturePayment 
+    from django.conf import settings
+    
+    success = False
+    shop = request.shop
+    gw = BraintreeGateway(settings.MERCHANT_ID, settings.PUBLIC_KEY, settings.PRIVATE_KEY)
+    
+    #This is token asociated to the subscription, we will use it to charge the feature
+    token = shop.subscription().extra_data()[7]        
+    #Try to charge the feature against braintree
+    price = FeaturesManager.get_feature_price(shop, feature)
+    result = gw.charge_purchase(token, price)
+    
+    admin_email = shop.marketplace.contact_email
+    if result.is_success:
+        status = result.transaction.status
+        credit_card = "%s - %s******%s" % (result.transaction.credit_card[u'card_type'], result.transaction.credit_card[u'bin'], result.transaction.credit_card[u'last_4'])
+        txn_id = result.transaction.id
+        if status == 'authorized':
+            logging.info("Transaction <id=%s> was successfully authorized!!" % (txn_id))
+            submit = gw.submit_for_settlement(txn_id)
+            message = None
+            if submit.is_success:                
+                message = "Shop: %s\nFeature: %s\nPrice: $ %s\nCredit Card: %s\nTransaction ID: %s\nTransaction Status: %s\n" % (shop, feature, price, credit_card, txn_id, status)
+                logging.info(message)
+            else:
+                message = "WARNING: Transaction<id=%s> was successfully authorized but could not be submited for settlement. Try it manually via braintree admin site" % txn_id
+                logging.critical(message)
+            send_mail("Featured Successfully Purchased!", "\nWe have enabled the %s feature in your %s shop.\n\nWe collected $%s from your %s credit card account.\n\nThanks, %s" % (feature, shop, price, credit_card, shop.marketplace), settings.EMAIL_FROM, [shop.admin.email], True)
+            send_mail("%s purchased the %s feature" % (shop, feature), message, settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF]+[admin_email], True)
+        else:
+            logging.critical("Transaction<id=%s> status is %s. Can't submit for settlement if status != authorized" % (txn_id, status))
+        success = True
+    else:
+        success = False
+        
+    if success:
+        payment = FeaturePayment(shop=shop)
+        payment.transaction_id = txn_id
+        payment.price = price
+        payment.feature = feature
+        payment.save()
+        FeaturesManager.set_feature_enabled(shop, feature)
+        resp = {
+            'status': 'success',
+            'txn_id': txn_id
+        }
+        return HttpResponse(simplejson.dumps(resp), mimetype="application/json")
+    
+    logging.critical("Feature could not be charged :(")
+    
+    for error in result.errors.deep_errors:
+        logging.critical("Gateway Error Found > code=%s, msg=%s" % (error.code, error.message))
+    
+    message = ""
+    if status == "processor_declined":
+        message = "Reason: Processor declined the transaction<id=%s>. Error code %s - %s" % (result.transaction.id, result.transaction.processor_response_code, result.transaction.processor_response_text)
+    elif status == "gateway_rejected":
+        message = "Reason: Gateway rejected the transaction<id=%s>. Error on %s" % (result.transaction.id, result.transaction.gateway_rejection_reason)
+    else:
+        message = "Reason: transaction<id=%s> status is %s!. We have no more info about this status. Please check braintree admin console." % (status, result.transaction.id)
+    
+    logging.critical(message)
+    send_mail("%s tried but failed to purchase the %s feature" % (shop, feature), message, settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF]+[admin_email], True)    
+    return HttpResponseServerError()
+
+    
+"""
+Braintree response
+
+result.transaction.customer
+result.transaction.customer_details
+result.transaction.cvv_response_code
+result.transaction.descriptor
+result.transaction.discounts
+result.transaction.gateway
+result.transaction.gateway_rejection_reason
+result.transaction.id
+result.transaction.merchant_account_id
+result.transaction.order_id
+result.transaction.processor_authorization_code
+result.transaction.processor_response_code
+result.transaction.processor_response_text
+result.transaction.purchase_order_number
+result.transaction.refund
+result.transaction.refund_id
+result.transaction.refund_ids
+result.transaction.refunded_transaction_id
+result.transaction.sale
+result.transaction.search
+result.transaction.settlement_batch_id
+result.transaction.shipping
+result.transaction.shipping_details 
+result.transaction.status 'authorized'
+result.transaction.status_history
+result.transaction.subscription 
+result.transaction.amount '14.99'
+result.transaction.billing {u'company': None, u'country_code_alpha2': u'US', u'country_code_alpha3': u'USA', u'country_code_numeric': u'840', u'country_name': u'United States of America', u'extended_address': u'-', u'first_name': None, u'id': u'4z',u'last_name': None, u'locality': u'La Plata', u'postal_code': u'19000', u'region': u'AS', u'street_address': u'Calle 28 n 2938'}        
+result.transaction.type 'sale'
+result.transaction.updated_at
+result.transaction.created_at
+result.transaction.credit_card  {u'bin': u'411111', u'card_type': u'Visa', u'cardholder_name': None, u'customer_location': u'US', u'expiration_month': u'02', u'expiration_year': u'2014', u'last_4': u'1111', u'token': u'4dbp2'}       
+result.transaction.credit_card_details
+result.transaction.currency_iso_code 'USD'
+result.transaction.custom_fields {u'shop_id': u'5'}
+"""

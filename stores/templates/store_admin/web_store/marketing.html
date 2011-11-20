@@ -10,29 +10,6 @@
 			</li>
 			<li class="tab inner {% block t_shows %}{% endblock %}">
 				<a href="{% url web_store_shows %}">Shows</a>
-			</li>
-			{% comment %}
-			<li class="tab inner {% block t_mailing_list %}{% endblock %}">
-				<a href="{% url web_store_mailing_list %}">Mailing List</a>
-			</li>
-			{% endcomment %}
+			</li>			
 		</ul>
 {% endblock %}
-
-
-		{% comment %}
-{% block menu_options %}
-	<ul id="tree">
-		<li>{% trans "Google Analitycs" %}
-			<ul>
-				<li><a href="{% url web_store_marketing %}">{% trans "Account Number" %}</a></li>
-			</ul>
-		</li>
-		<li>{% trans "Show Attendance" %}
-			<ul>
-				<li><a href="{% url web_store_shows %}">{% trans "View" %}</a></li>
-			</ul>
-		</li>
-	</ul>
-{% endblock %}
-		{% endcomment %}

@@ -1,0 +1,43 @@
+{% extends 'admin/reports_base.html' %}
+{% load i18n adminmedia %}
+
+{% block extrastyle %}
+	{{ block.super }}
+	<style type="text/css">
+	textarea {
+	    width: 220px;
+	}
+	</style>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+	<div class="breadcrumbs">
+		<a href="/admin/">{% trans "Home" %}</a> &gt; 
+		<a href="{% url admin_support %}">Support</a> &gt; 
+		<a href="#">Help Text Features</a>
+	</div>
+{% endblock %}
+
+
+{% block report %}
+
+	<h1>Help Text Features</h1>
+	
+	<form action="." method="POST" name="form">
+		
+		
+		{% for field in form %}
+		<div class="grid_5">
+            <b>{{ field.label_tag }}</b>
+            <div>{{ field }}</div>
+        </div>
+        {% endfor %}
+        <div class="clear"></div>		
+		
+		<button type="submit">{% trans "Update" %}</button>
+		<a href="{% url admin_support %}">{% trans "Or Cancel" %}</a>
+	</form>		
+	
+	
+{% endblock %}

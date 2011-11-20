@@ -9,27 +9,9 @@
 {% block menu_options %}
 {% endblock %}
 
-{% block toolbar %}
-	<a href="{% url preferences_payment_paypal %}">{% trans "PayPal" %}</a> | 
-	<a href="{% url preferences_payment_google_checkout %}">{% trans "Google Checkout" %}</a> | 
-	<a href="{% url preferences_payment_credit_cards %}">{% trans "Credit Cards" %}</a> | 
-	<a href="{% url preferences_payment_manual %}">{% trans "Manual Payments" %}</a>
-{% endblock %}
-
 {% block main %} {% endblock %}
 
 <div class="clear"></div>
-<br/><br/>
-	
-<h3>{% trans "Email Marketing" %}</h3>
-<p><input type="checkbox">{% trans "Collect Email Information" %}</p>
-
-<h3>{% trans "Additional Checkout Instructions" %}</h3>
-<textarea rows="5" cols="60"></textarea>
-
-<br/><br/>
-<a href="" class="small awesome">{% trans "Apply Settings" %}</a>
-<a href="" class="small awesome">{% trans "Cancel" %}</a>
 
 {% block menu %}
 	{% include 'preferences/preferences_menu.html' %}

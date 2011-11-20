@@ -1,0 +1,39 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+{% load sell_tags %}
+
+{% block content %}
+<ul class="breadcrumb" >
+  <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider"> / </span></li>
+  <li class="active">{% trans "Email Confirmation" %}</li>
+</ul>
+
+{% block main_content %}
+<div class="span12 offset2 email_confirmed">
+
+
+
+ <div id="modal-email-confirmed" class="modal hide fade">
+            <div class="modal-header">
+              <a href="#" class="close">&times;</a>
+              <h3>Welcome {{user}} to {{ marketplace.name|title }} </h3>
+            </div>
+            <div class="modal-body">
+              <p class="alert-message block-message success">Your email is confirmed!!</p>
+            <p>You can Buy or Sell on {{ marketplace.name|title }} click below</p>
+              </div>
+            <div class="modal-footer">
+              <a href="{% url market_buy %}" target="_blank" class="btn primary">Buy On Great Coins</a>
+              <a href="{% url market_sell %}" target="_blank" class="btn success">Sell on Great Coins</a>
+            </div>
+          </div>
+ </div>
+
+<script type="text/javascript">
+	$('#modal-email-confirmed').modal('show') 
+	</script>
+
+</div>
+{% endblock %}
+
+{% endblock %}

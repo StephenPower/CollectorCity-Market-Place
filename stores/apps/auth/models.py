@@ -269,6 +269,9 @@ class User(models.Model):
     def email_user(self, subject, message, from_email=None):
         "Sends an e-mail to this User."
         from django.core.mail import send_mail
+        from django.conf import settings
+        if from_email is None:
+            from_email = settings.EMAIL_FROM
         send_mail(subject, message, from_email, [self.email])
 
     def get_profile(self):

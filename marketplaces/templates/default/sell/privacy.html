@@ -2,13 +2,15 @@
 {% load i18n %}
 
 {% block content %}
-<div id="breadcrumbs" class="grid_18">
-	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_sell %}">{% trans "Privacy Policy" %}</a>
-</div>
+<ul class="breadcrumb">
+ <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider"> / </span></li>
+ <li><a href="{% url market_sell %}">{% trans "Privacy Policy" %}</a></li>
+</ul>
 
 {% block filter_content %}
-<div class="grid_3 alpha omega block_filter">
-	<h4>{% trans "Dealer Resources" %}</h4>
+<div class="sidebar">
+ <div class="well">
+	<h5>{% trans "Dealer Resources" %}</h5>
 	<ul class="sell_dealer_resources">
 		<li><a class="sell_dealer_resources" href="/">{% trans "Create an account" %}</a></li>
 		<li><a class="sell_dealer_resources" href="/">{% trans "Naming my Store" %}</a></li>
@@ -18,16 +20,14 @@
 		<li><a class="sell_dealer_resources" href="{% url market_privacy_policy %}">{% trans "Privacy Policy" %}</a></li>
 	</ul>
 </div>
+</div>
+
 {% endblock %}
 
-<div class="grid_14 alpha omega block_main_content margin_h">
+<div class="span12">
 	
-<h1>{% trans "PRIVACY POLICY" %}</h1>
-<br/>
-<p>
-{{ marketplace.privacy_policy|safe }}
-</p>
-
+<h2>{% trans "Privacy Policy" %}</h2>
+{{ marketplace.privacy_policy|removetags:"pre span"|safe }}
 </div>
 
 {% endblock %}

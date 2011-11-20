@@ -2,52 +2,56 @@
 {% load i18n %}
 
 {% block content %}
-<div class="grid_18 block_main_content">
-<br/><br/>
-<form name="form" method="post" action="." class="big_form">
+
+<form name="form" method="post" action="." class="form-stacked span10 offset2 alert-message block-message info">
 	<fieldset class="register">
-		<a id="lip" href=".">Register To Buy And Sell!</a>	
-		{% if form.username.errors %}<div class="error">{{ form.username.errors|join:", " }}</div>{% endif %}
-		<p>{% trans "Username" %} : {{ form.username }}</p>
-		
-		{% if form.password1.errors %}<div class="error">{{ form.password1.errors|join:", " }}</div>{% endif %}
-		<p>{{ form.password1.label }}: {{ form.password1 }}</p>
-		
-		{% if form.password2.errors %}<div class="error">{{ form.password2.errors|join:", " }}</div>{% endif %}
-		<p>{{ form.password2.label }}: {{ form.password2 }}</p>
+		<h2><a id="lip" href=".">Register For Great Coins</a></h2></br>	
+		{% if form.username.errors %}<div class="alert-message error">{{ form.username.errors|join:", " }}</div>{% endif %}
+	        <label>{% trans "User Name" %}</label>{{ form.username }}
+		<span class="help-inline strong">Your user name may be displayed if you sell or buy</span>
 
-		{% if form.email.errors %}<div class="error">{{ form.email.errors|join:", " }}</div>{% endif %}
-		<p>{{ form.email.label }}: {{ form.email }}</p>
 		
-	{% comment %}	
-		{% if form.first_name.errors %}<div class="error">{{ form.first_name.errors|join:", " }}</div>{% endif %}
-		<p>{{ form.first_name.label }}: {{ form.first_name }}</p>
+		{% if form.first_name.errors %}<div class="alert-message error">{{ form.first_name.errors|join:", " }}</div>{% endif %}
+		<label>{{ form.first_name.label }}</label>{{ form.first_name }}
+		<span class="help-inline strong">We will <b>never</b> sell your personal information. <a href="{% url market_privacy_policy %}">See our Privacy Poicy</a></span></b>
+		{% if form.last_name.errors %}<div class="alert-message error">{{ form.last_name.errors|join:", " }}</div>{% endif %}
+		<label>{{ form.last_name.label }}</label> {{ form.last_name }}
+				
+		{% if form.password1.errors %}<div class="alert-message error">{{ form.password1.errors|join:", " }}</div>{% endif %}
+		<label>{{ form.password1.label }}</label> {{ form.password1 }}
+		<span class="help-inline strong"><strong>Strong</strong> passwords: Mix UPPER CASE,lower case, numbers(088093), symbols (*$!).</span>
+		
+		{% if form.password2.errors %}<div class="alert-message error">{{ form.password2.errors|join:", " }}</div>{% endif %}
+		<label>{{ form.password2.label }}</label>{{ form.password2 }}
 
-		{% if form.last_name.errors %}<div class="error">{{ form.last_name.errors|join:", " }}</div>{% endif %}
-		<p>{{ form.last_name.label }}: {{ form.last_name }}</p>
-
-		{% if form.street_address.errors %}<div class="error">{{ form.street_address.errors|join:", " }}</div>{% endif %}
+		<span class="help-inline strong">Again,<b>we will not sell or disclose</b> your personal information.</span></b>
+		{% if form.email.errors %}<div class="alert-message error">{{ form.email.errors|join:", " }}</div>{% endif %}
+		<label>{{ form.email.label }}</label>{{ form.email }}
+		<span class="help-inline strong">Check Your email in a few minutes;<b> click on the link</b> to activate your account. We're here to help if you have any problems <a href="{% url market_contact_us %}">Just ask.</a></b></span>
+			
+	{% comment %}
+		{% if form.street_address.errors %}<div class="alert-message error">{{ form.street_address.errors|join:", " }}</div>{% endif %}
 		<p>{{ form.street_address.label }}: {{ form.street_address }}</p>
 
-		{% if form.city.errors %}<div class="error">{{ form.city.errors|join:", " }}</div>{% endif %}
+		{% if form.city.errors %}<div class="alert-message error">{{ form.city.errors|join:", " }}</div>{% endif %}
 		<p>{{ form.city.label }}: {{ form.city }}</p>
 
-		{% if form.state.errors %}<div class="error">{{ form.state.errors|join:", " }}</div>{% endif %}
+		{% if form.state.errors %}<div class="alert-message error">{{ form.state.errors|join:", " }}</div>{% endif %}
 		<p>{{ form.state.label }}: {{ form.state }}</p>
 
-		{% if form.zip.errors %}<div class="error">{{ form.zip.errors|join:", " }}</div>{% endif %}
+		{% if form.zip.errors %}<div class="alert-message error">{{ form.zip.errors|join:", " }}</div>{% endif %}
 		<p>{{ form.zip.label }}: {{ form.zip }}</p>
 
-		{% if form.country.errors %}<div class="error">{{ form.country.errors|join:", " }}</div>{% endif %}
+		{% if form.country.errors %}<div class="alert-message error">{{ form.country.errors|join:", " }}</div>{% endif %}
 		<p>{{ form.country.label }}: {{ form.country }}</p>
 
-		{% if form.phone.errors %}<div class="error">{{ form.phone.errors|join:", " }}</div>{% endif %}
+		{% if form.phone.errors %}<div class="alert-message error">{{ form.phone.errors|join:", " }}</div>{% endif %}
 		<p>{{ form.phone.label }}: {{ form.phone }}</p>
 
-		{% if form.re_email.errors %}<div class="error">{{ form.re_email.errors|join:", " }}</div>{% endif %}
+		{% if form.re_email.errors %}<div class="alert-message error">{{ form.re_email.errors|join:", " }}</div>{% endif %}
 		<p>{{ form.re_email.label }}: {{ form.re_email }}</p>
 		
-		{% if form.year.errors %}<div class="error">{{ form.year.errors|join:", " }}</div>{% endif %}
+		{% if form.year.errors %}<div class="alert-message error">{{ form.year.errors|join:", " }}</div>{% endif %}
 		<p> 
 			{{ form.month.label }}: {{ form.month }}
 			{{ form.day.label }}: {{ form.day }}
@@ -57,10 +61,9 @@
 	
 		<div class="buttonHolder">			
 			<br/>
-			<button type="submit" class="button_primary">Register</button>
+			<button type="submit" class="btn primary">Register</button>
 		</div>
 	</fieldset>
 </form>
-</div>
 
 {% endblock %}

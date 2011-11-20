@@ -7,6 +7,7 @@ urlpatterns = patterns('',
     url(r'^taxes/delete_tax/([\d]+)/$', 'preferences.views.delete_tax', name='preferences_delete_tax'),
     url(r'^taxes/edit_tax/([\d]+)/$', 'preferences.views.edit_tax', name='preferences_edit_tax'),
     
+    url(r'^payment/overview/$', 'preferences.views.preferences_payments', name='preferences_payments'),
     url(r'^payment/paypal/$', 'preferences.views.preferences_payment_paypal', name='preferences_payment_paypal'),
     url(r'^payment/google_checkout/$', 'preferences.views.preferences_payment_google_checkout', name='preferences_payment_google_checkout'),
     url(r'^payment/credit_cards/$', 'preferences.views.preferences_payment_credit_cards', name='preferences_payment_credit_cards'),
@@ -27,6 +28,7 @@ urlpatterns = patterns('',
 
     url(r'^delete_dns/([\d]+)/$', 'preferences.views.delete_dns', name='delete_dns'),
     url(r'^default_dns/([\d]+)/$', 'preferences.views.set_default_dns', name='set_default_dns'),
+    url(r'^edit_dns/([\d]+)/$', 'preferences.views.edit_dns', name='edit_dns'),
     
     url(r'^ajax_edit_notification/$', 'preferences.views.ajax_edit_notification', name='ajax_edit_notification'),
     url(r'^send_template/$', 'preferences.views.send_template', name='send_template'),

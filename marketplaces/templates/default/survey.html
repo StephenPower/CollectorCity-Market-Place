@@ -1,0 +1,37 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+{% load sell_tags %}
+
+{% block content %}
+
+<ul class="breadcrumb">
+ <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider">/</span></li>
+ <li class="active">{% trans "Contact Us" %}</li>
+</ul>
+
+{% block main_content %}
+<div class="span8 offset2">
+<h3>Survey</h3>
+<div id="FeedBack">
+<script type="text/javascript">var host = (("https:" == document.location.protocol) ? "https://secure." : "http://");document.write(unescape("%3Cscript src='" + host + "wufoo.com/scripts/embed/form.js' type='text/javascript'%3E%3C/script%3E"));</script>
+
+<script type="text/javascript">
+var m7x0w7 = new WufooForm();
+m7x0w7.initialize({
+'userName':'greatcoins', 
+'formHash':'m7x0w7', 
+'autoResize':true,
+'height':'551',
+'header':'show', 
+'ssl':true});
+m7x0w7.display();
+</script>
+
+</div>
+
+<a class="btn" href="{% url market_home %}">Back To The Home Page</a>
+
+</div>
+
+{% endblock %}
+{% endblock %}

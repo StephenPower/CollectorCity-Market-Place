@@ -4,46 +4,86 @@
 
 
 {% block content %}
-<div id="breadcrumbs" class="grid_18">
-	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_buy %}">{% trans "Buy" %}</a> &raquo; {% trans "Latest Items" %}
-</div>
+<ul class="breadcrumb">
+ <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider">/</span></li>
+ <li><a href="{% url market_buy %}">{% trans "Buy" %}</a><span class="divider">/</span></li>
+ <li class="active">{% trans "Latest Items" %}</li>
+</ul>
 
-<div class="grid_18 block_main_content">
+<h2>{% trans "Latest Items" %}</h2>
+<p>Find the most recently posted items before everyone else does.. Don't forget about your <a href="{% url buy_wish_list %}" class="btn primary"/>wish list</a></p>
 
-<h3>{% trans "Latest Items" %}</h3>
-<p>Find the Coin you've always looked for with our marketplace of dealers. Post Your Wish List For all the dealers to see.</p>
 
+
+<table class="span12 offset2">
+<thead>
+<tr>
+ <th>Item</th>
+ <th>More Items</th>
+</tr>
+</thead>
+<tbody>
 {% for product in latest_items %}
-<div class="grid_18">	
-	<div class="grid_4">
-		<a href="{% url market_buy_product_redirect product.id %}" target="_blank">
-		{% if product.child.image %}
-	 	<img class="item" src="{{ product.child.image.image.url_100x100 }}" title="{{ product.description|striptags }}"/>
-	 	{% else %}
-	 	<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ product.description|striptags }}"/>
-	 	{% endif %}
-		<div>{{ product.title|truncatewords:5 }}</div>
-		<div>{{ product.category.name }}</div>
-		<div>{{ product.child.price|money_format:product.shop }}</div>
-		</a>
+ <div id="{{ product.id }}" class="modal hide fade">
+            <div class="modal-header">
+              <a href="#" class="close">&times;</a>
+              <h3>{{ product.title }}</h3>
+            </div>
+            <div class="modal-body">
+              <p><img src="{{product.child.image.image.url_100x100}}" ></p>
+             <p>{{ product.description|striptags|safe }}</p>
+            <p>
+              </div>
+            <div class="modal-footer">
+              <a href="{% url market_buy_product_redirect product.id %}" target="_blank" class="btn primary">Go To Product Page</a>
+              <a href="/" class="btn secondary">Go Back To Marketplace</a>
+            </div>
+          </div>
+   </div>
+
+
+<tr> 
+<td>
+
+	<div class="item_box latest_items">	
+	<a data controls-modal="{{product.id}}" data-backdrop="true" data-keyboard="true">
+	{% if product.child.image %}		
+	<img class="item" src="{{ product.child.image.image.url_100x100 }}" title="{{ product.description|striptags }}"/>	
+	{% else %}			
+	<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ product.description|striptags }}"/>	
+	{% endif %}			
+	<div class="title">{{ product.title|truncatewords:5 }}</div>		
+	<div class="dealer">{{ product.shop|truncatewords:2 }}</div>
+	{% with product.child.price|money_format2:product.shop as price %}
+	<div class="price">{{ product.child.price|money_format:product.shop }}</div>	
+	{% endwith %}	
+	</a>
 	</div>
-	<div class="grid_10">
-		<p>{% trans "More Items from" %} {{ product.shop }}</p>
+
+</td>
+
+
+
+	<td>{% trans "More Items from" %} {{ product.shop }}</p>
 		{% for other_product in product.shop.last_posted_products %}
-		<div class="grid_1">
 			<a href="{% url market_buy_product_redirect other_product.id %}" target="_blank">
 			{% if other_product.child.image %}
-			<img src="{{ other_product.child.image.image.url_100x100 }}" height="42" width="42" title="{{ other_product.description|striptags }}"/></img>
+			<img  src="{{ other_product.child.image.image.url_100x100 }}" width="90px" title="{{ other_product.description|striptags }}"/></img>
 			{% else %}
-			<img src="{{ MEDIA_URL }}img/no-photo-small.jpg" height="42" width="42" title="{{ other_product.description|striptags }}"/></img>
+			<img src="{{ MEDIA_URL }}img/no-photo-small.jpg" width="90px" title="{{ other_product.description|striptags }}"/></img>
 			{% endif %}
 			</a>
-		</div>
 		{% endfor%}
-	</div>
-</div>
-<div class="clear"></div>
+	</td>
+</tr>
 {% endfor %}
+</tbody>
+</table>
+</div>
+
+<h4 class="offset2"><a href="{% url buy_latest_items %}" class="btn primary"/>Back To Latest Items</a></h4>
+<h4 class="offset2"><a href="{% url market_buy %}" class="btn info"/>More Ways to Buy...</a></h2>
+
 
 </div>
 

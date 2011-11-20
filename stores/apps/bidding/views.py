@@ -14,7 +14,7 @@ from django.utils.translation import ugettext as _
 from auctions.models import AuctionSession
 from bidding.forms import BiddingSearchForm, BidForm
 from blog_pages.models import Post, About, Home, Page, DynamicPageContent
-from core.decorators import shop_required
+from core.decorators import shop_required, auctions_feature_required
 from for_sale.models import Item
 from lots.models import Lot
 from shops.models import MailingListMember
@@ -110,11 +110,13 @@ def my_render(request, param, name_page=None):
     menus = request.shop.menu_set.all()
     if menus.count() > 0:
         for link in menus[0].links():
+            if link.to == "/auctions/" and not request.shop.auctions_feature_enabled():
+                continue
             links.append({
-                         'to': link.to,
-                         'name': link.name,
-                         }) 
-    
+                  'to': link.to,
+                  'name': link.name,
+            })
+        
     """ Flash """
     t = loader.get_template('bidding/blocks/flash.html')
     c = RequestContext(request, {})
@@ -186,6 +188,8 @@ def my_render(request, param, name_page=None):
 @shop_required
 def bidding_home(request):
     from shops.forms import MailingListMemberForm
+    
+    logging.critical(request.GET.get("u", None))
     shop = request.shop
     if request.method == "POST":
         
@@ -313,8 +317,11 @@ def bidding_for_sale(request):
     return HttpResponse(my_render(request, param, 'for_sale'))
     
     
+
 @shop_required
+@auctions_feature_required
 def bidding_auctions(request, session_id=None):
+    
     if session_id:
         session = get_object_or_404(AuctionSession, pk=session_id)
         lots = Lot.objects.filter(shop=request.shop, session=session, state='A')
@@ -378,7 +385,7 @@ def bidding_auctions(request, session_id=None):
 
 @shop_required
 def bidding_blog(request):
-    list_posts = Post.objects.filter(shop=request.shop).order_by("-date_time") 
+    list_posts = Post.objects.filter(shop=request.shop).filter(draft=False).order_by("-date_time") 
     last_posts = list_posts[:5]
 
     pager = Paginator(list_posts, PAGE_BLOG)
@@ -515,6 +522,7 @@ def bidding_view_lot(request, id):
                  'session_end': lot.session.end, 
                  'description': lot.description, 
                  },
+              'user_is_logged': request.user.is_authenticated() and not request.shop.is_admin(request.user),
               'form': block_view_lot_form, 
               'images': images,
               'page_title': lot.title,
@@ -600,6 +608,7 @@ def bidding_view_item(request, id):
                  'title': item.title, 
                  'description': item.description, 
                  },
+        'user_is_logged': request.user.is_authenticated() and not request.shop.is_admin(request.user),
         'form': block_view_item_form, 
         'images': images, 
         'page_title': item.title,

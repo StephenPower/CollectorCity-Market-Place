@@ -3,21 +3,18 @@
 {% load i18n %}
 
 {% block step %}
-<form name="form" method="post" action="." class="wizard">
+<form name="form" method="post" action="." class="form-stacked span10 offset2">
 	
 	{% csrf_token %}
 	{% for field in form %}
-	{% if field.errors %}<div class="error">{{ field.errors|join:", " }}</div>{% endif %}
-	<h4>{{ field.label }}</h4>
+	{% if field.errors %}<div class="alert-message block-message error">{{ field.errors|join:", " }}</div>{% endif %}
+	<label>{{ field.label }}</label>
 	{{ field }} {{ field.help_text }}
-	<br/><br/>
 	{% endfor %}
-	
 	<input type="hidden" name="{{ step_field }}" value="{{ step0 }}" />
 	{{ previous_fields|safe }}
 	<div class="buttonHolder">
-		<br/>
-		<button type="submit" class="button_next">{% trans "Next" %}</button>
+		<button type="submit" class="btn primary">{% trans "Next" %}</button>
        	<input type="hidden" name="next" value="{{ next|escape }}" />
     </div>
 	
@@ -40,5 +37,9 @@ $("#id_0-shop_name").change(function(){
 	$(this).val(name.toLowerCase().replace(/[^a-z0-9-]/ig, ''));
 });
 
+$("#id_0-last_name").attr("value", "{{ user.last_name }}");
+$("#id_0-first_name").attr("value", "{{ user.first_name }}");
+
 </script> 
 {% endblock %}
+

@@ -8,50 +8,52 @@
 {% endblock %}
 
 {% block main %}
-	<div class="grid_5 box">
-		<div class="box_header"><h3>{% trans "General Settings" %}</h3></div>
+	<div class="grid_7 box">
+		<div class="box_header"><h3><a href="{% url preferences_general %}" />General Settings</a></h3></div>
 		<div class="box_body">
 			<p>Shop Name: {{ shop.preference.name_store }}</p>
 			<p>Email Address: {{ shop.preference.email }}</p>
 			<p>Phone Number: {{ shop.preference.phone }}</p>
 			<p>Physical Address: {{ shop.admin.get_profile.street_address }}, {{ shop.admin.get_profile.city }}, {{ shop.admin.get_profile.state }}, {{ shop.admin.get_profile.country }}</p>
-			<p>Store Pa	ssword: {{ shop.preference.store_password }}</p>
 		</div>
 	</div>
-	<div class="grid_5 box">
-		<div class="box_header"><h3>{% trans "Taxes" %}</h3></div>
+	<div class="grid_7 box">
+		<div class="box_header"><h3><a href="{% url preferences_taxes %}" />{% trans "Taxes" %}</a></h3></div>
 		<div class="box_body">
-			{% comment %}
-			<p>Apply Taxes to Shipments in the same state as your physical store: {{ shop.preference.taxes_same_state_store }}</p>
-			<p>Apply Taxes to Shipping Fees: {{ shop.preference.taxes_to_shipping_fees }}</p>
-			{% endcomment %}
+			<p>Apply Taxes to Shipments in the same state as your physical store: {{ shop.preference.taxes_same_state_store|yesno:"Yes,No" }}</p>
+			<p>Apply Taxes to Shipping Fees: {{ shop.preference.taxes_to_shipping_fees|yesno:"Yes,No" }}</p>
 			{% for tax in shop.taxstate_set.all %}
 			<p>{{ tax }}</p>
 			{% endfor %}
 		</div>
 	</div>
-	<div class="grid_5 box">
-		<div class="box_header"><h3>{% trans "Payments" %}</h3></div>
-		<div class="box_body">
-			<p>Google Checkout Enabled: {{ google }}</p>
-			<p>PayPal Enabled: {{ paypal }} </p>
-			<p>Braintree Enabled: {{ braintree }}</p>
-			<p>Manual Payment: {{ manual }}</p>
-		</div>
-	</div>
 	<div class="clear"></div>
-	<div class="grid_5 box">
-		<div class="box_header"><h3>{% trans "Auctions" %}</h3></div>
+	<div class="grid_7 box">
+		<div class="box_header"><h3><a href="{% url preferences_payments %}" />{% trans "Payments" %}</a></h3></div>
 		<div class="box_body">
-			<p>Allow Sessions: {{ shop.preference.allow_sessions }}</p> 
-			<p>Allow Open Auctions: {{ shop.preference.allow_open_auctions }}</p>
-			<p>Open Auction Default Days: {{ shop.preference.default_days }}</p>
-			<p>Auto-extend Enabled: {{ shop.preference.open_auto_extend }}</p>
-			<p>Session Auto-extend Enabled: {{ shop.preference.session_auto_extend }}</p>
+			<p>PayPal : {% if shop.paypal_feature_enabled %} Enabled {% else %} <a class="enable_feature_box" href="{% url enable_feature 'paypal' %}">{% trans "Buy Feature" %}</a>{% endif %}</p>
+			<p>Google Checkout : {% if shop.google_checkout_feature_enabled %} Enabled {% else %} <a class="enable_feature_box" href="{% url enable_feature 'google_checkout' %}">{% trans "Buy Feature" %}</a> {% endif %}</p>
+			<p>Credit Cards : {% if shop.credit_card_feature_enabled %} Enabled {% else %} <a class="enable_feature_box" href="{% url enable_feature 'credit_card' %}">{% trans "Buy Feature" %}</a> {% endif %}</p>
+			<p>Manual Payment : {% if shop.manual_payment_feature_enabled %} Enabled {% else %} <a class="enable_feature_box" href="{% url enable_feature 'manual_payment' %}">{% trans "Buy Feature" %}</a>{% endif %}</p>
 		</div>
 	</div>
-	<div class="grid_5 box">
-		<div class="box_header"><h3>{% trans "Shipping" %}</h3></div>
+	<div class="grid_7 box">
+		<div class="box_header"><h3><a href="{% url preferences_auctions %}" />{% trans "Auctions" %}</a></h3></div>
+		<div class="box_body">
+		{% if shop.auctions_feature_enabled %}
+			<p>Allow Sessions: {{ shop.preference.allow_sessions|yesno:"Yes,No" }}</p> 
+			<p>Allow Open Auctions: {{ shop.preference.allow_open_auctions|yesno:"Yes,No" }}</p>
+			<p>Open Auction Default Days: {{ shop.preference.default_days }}</p>
+			<p>Auto-extend Enabled: {{ shop.preference.open_auto_extend|yesno:"Yes,No"  }}</p>
+			<p>Session Auto-extend Enabled: {{ shop.preference.session_auto_extend|yesno:"Yes,No" }}</p>
+		{% else %}
+			<div class="enable_feature"><a class="enable_feature_box" href="{% url enable_feature 'auctions' %}">{% trans "Enable Auctions Feature" %} for ${{ shop.auctions_feature_price }}</a></div>
+		{% endif %}
+		</div>
+	</div>
+	<div class="grid_7 box">
+	<div class="clear"></div>
+		<div class="box_header"><h3><a href="{% url preferences_shipping %}" />{% trans "Shipping" %}</h3></a></div>
 		<div class="box_body">
 			{% for item in shop.shippingitem_set.all %}
 			<p>{{ item }}</p>
@@ -64,13 +66,18 @@
 			{% endfor %}
 		</div>
 	</div>
-	<div class="grid_5 box">
-		<div class="box_header"><h3>{% trans "DNS & Domain" %}</h3></div>
+
+
+	<div class="grid_7 box">
+		<div class="box_header"><h3><a href="{% url preferences_dns %}" />{% trans "You're Domain Name" %}</h3></a></div>
 		<div class="box_body">
+			{% if shop.dns_feature_enabled %}
 			{% for domain in shop.dnsshop_set.all %}
 			<p>{{ domain.dns }}</p>
 			{% endfor %}
+			{% else %}
+			<div class="enable_feature"><a class="enable_feature_box" href="{% url enable_feature 'custom_dns' %}">{% trans "Enable Your Custom Domain" %} for ${{ shop.dns_feature_price }}</a></div>
+			{% endif %}
 		</div>
 	</div>
-	<div class="clear"></div>
 {% endblock %}

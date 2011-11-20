@@ -1,0 +1,19 @@
+{% extends 'store_admin/support/base_support.html' %}
+{% load i18n %}
+
+{% block m_overview %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}Support{% endblock %}
+
+{% block main %}
+	<div class="grid_7 box">
+		<div class="box_header"><h3>{% trans "Your Plan is Entitled to:" %}</h3></div>
+		<div class="box_body">
+		
+			<p><a href="{% url support_phone %}">Phone Support at ${{ shop.voice_support_price }} per incident</a></p>
+			<p><a href="{% url support_email %}">Email Support at ${{ shop.email_support_price }} per incident</a></p>
+			<p><a href="{% url support_community %}">Community Forums</a></p>
+		</div>	
+	</div>		
+	<div class="clear"></div>
+{% endblock %}

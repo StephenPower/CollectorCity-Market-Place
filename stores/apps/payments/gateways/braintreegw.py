@@ -104,6 +104,19 @@ class BraintreeGateway():
         })
         return result
 
+    def new_customer_credit_card(self, customer_id, cardholder_name, cc_number, cc_expiration_date, cc_security_number):
+        result = braintree.CreditCard.create({
+            "customer_id": customer_id,
+            "number": cc_number,
+            "cvv": cc_security_number,
+            "expiration_date": cc_expiration_date,
+            "cardholder_name": cardholder_name,
+            "options": {
+              "make_default": True,
+              "verify_card": True,
+            }
+        })
+        return result
     
     def create_customer(self, first_name, last_name, email, cc_number, cc_expiration_date, cc_security_number, street, city, state, zip, shop_name, shop_id):
         country="US"
@@ -185,7 +198,8 @@ class BraintreeGateway():
         
         
         
-    def charge_purchase(self):
+    def charge_purchase(self, token, amount):
+        """ Full example
         result = braintree.Transaction.sale({
           "amount": "10.00", #REQUIRED
           "order_id": "order id",
@@ -231,6 +245,14 @@ class BraintreeGateway():
             "submit_for_settlement": True, #REQUIRED
           }
         })
+        """
+        result = braintree.Transaction.sale({
+            "payment_method_token": token,
+            "amount": amount,
+            #"credit_card": {"cvv": "100"} optional
+        })
+        
+        return result
 
     def get_customer_details(self, customer_id):
         """ Return a customer Object with ID equals to customer_id """
@@ -349,7 +371,11 @@ class BraintreeGateway():
         result['settled'] = [transaction for transaction in gateway_settled_results.items]
         
         return result
-        
+    
+    def get_expired_credit_cards(self):
+        collection = braintree.CreditCard.expired()
+        return collection
+            
     def refund_transaction(self, tx_id):
         transaction = self.get_transaction_details(tx_id)
         result = braintree.Transaction.refund(transaction.id)

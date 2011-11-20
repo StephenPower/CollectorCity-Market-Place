@@ -1,6 +1,6 @@
 
 {% with shop.menu_set.all.1 as menu %}
 	{% for link in menu.links %}
-		<p><a href="{{ link.to }}">{{ link.name }}</a></p>
+		<a href="{{ link.to }}">{{ link.name }}</a>
 	{% endfor %}
 {% endwith %}

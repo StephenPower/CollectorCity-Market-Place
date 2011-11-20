@@ -19,7 +19,7 @@
 	{% if form.amount.errors %}<div class="error">{{ form.amount.errors|join:", " }}</div>{% endif %}
 	<p>Your bid: {{ form.amount }}</p>
 	<br/>
-	<button type="submit" class="small awesome">Place Bid</button> 
+	<button type="submit" class="primary">Place Bid</button> 
 	<p>(Enter {{ lot.next_bid_from|money_format:shop }} or more)</p>
 </form>
 {% endif %}

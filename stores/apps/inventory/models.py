@@ -1,10 +1,8 @@
+import datetime
 import decimal
 
 from django.db import models
 from django.contrib import admin
-
-#from django.contrib.contenttypes.models import ContentType
-#from django.contrib.contenttypes import generic
 
 from market.models import MarketCategory, MarketSubCategory
 from shops.models import Shop
@@ -14,6 +12,10 @@ class ProductType(models.Model):
     """
     pass
 
+
+class ActiveProductsManager(models.Manager):
+    def get_query_set(self):
+        return super(ActiveProductsManager, self).get_query_set().filter(shop__in=Shop.actives.all())
 
 class Product(models.Model):
     """
@@ -30,25 +32,33 @@ class Product(models.Model):
     latest_item = models.BooleanField(default=False)
     has_image = models.BooleanField(default=False)
     
-    def update_has_image(self):
-        self.has_image = self.child().image() != None
-        self.save()
-        
-    def update_latest_item(self):
+    objects = ActiveProductsManager() # The active products manager.
+    
+    def save(self, *args, **kwargs):
+        super(Product, self).save(*args, **kwargs)
+        shop = self.shop
+        shop.last_date_to_post = datetime.datetime.now()
+        shop.save()        
+    
+    @classmethod
+    def update_latest_item(cls, shop):
         try:
-            older = Product.objects.filter(shop=self.shop, latest_item=True).get()
+            older = Product.objects.filter(shop=shop, latest_item=True).get()
             older.latest_item = False
             older.save()
         except Product.DoesNotExist:
             pass
         
         try:
-            new_latest = Product.objects.filter(shop=self.shop).order_by("-id")[0]
+            new_latest = Product.objects.filter(shop=shop).order_by("-id")[0]
             new_latest.latest_item = True
             new_latest.save()
         except Product.DoesNotExist:
             pass
-        
+            
+    def update_has_image(self):
+        self.has_image = self.child().image() != None
+        self.save()
     
     def child(self):
         #TODO: arreglar esto que es un asco,..
@@ -59,7 +69,7 @@ class Product(models.Model):
         
         
     def __unicode__(self):
-        return "%s>%s" %(self.shop, self.title)
+        return "%s > %s" %(self.shop, self.title)
 
 class ProductAdmin(admin.ModelAdmin):
     list_filter = ('shop', 'date_time', 'category')

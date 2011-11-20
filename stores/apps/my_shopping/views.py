@@ -234,8 +234,6 @@ def checkout_confirm(request):
                              sign=settings.PAYPAL_SIGNATURE,
                              debug=settings.PAYPAL_DEBUG)
         button = paypal_gw.render_button()
-        
-        logging.critical(button)
         payment_buttons.append(button)
         
         

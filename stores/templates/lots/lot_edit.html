@@ -263,8 +263,9 @@
 				    });
                 	$('#dialog_session').dialog('close');
 				}else{
-					$("#dialog_session").empty();
-					$("#dialog_session").append(data);
+					$("#id_lot-session").empty();
+				    $("#id_lot-session").append(data);
+					$('#dialog_session').dialog('close');
 				}
 		    });					
 		} 

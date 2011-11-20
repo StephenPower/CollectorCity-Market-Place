@@ -3,31 +3,48 @@
 {% load sell_tags %}
 
 {% block content %}
-<div id="breadcrumbs" class="grid_18">
-	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_buy %}">{% trans "Buy" %}</a> &raquo; {% trans "Favorites" %}
-</div>
+<ul class="breadcrumb">
+ <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider">/</span></a></li>
+ <li><a href="{% url market_buy %}">{% trans "Buy" %}</a></span class="divider">/</span></a></li>
+ <li class="active">{% trans "Favorites" %}</li>
+</ul>
 
-<div class="grid_18 block_main_content">
 
-<h3>{% trans "Rick's Picks" %}</h3>
+<h2>{% trans "Rick's Picks" %}</h2>
+
+<div class="row span12 offset2">
+
+
 
 {% for pick in picks %}
-<div class="grid_3">
-	
-	<div class="item_box">
-		<a href="{% url market_buy_product_redirect pick.product.id %}" target="_blank">
+
+ <div id="{{ pick.product.id }}" class="modal hide fade">
+            <div class="modal-header">
+              <a href="#" class="close">&times;</a>
+              <h3>{{ pick.product.title }}</h3>
+            </div>
+            <div class="modal-body">
+              <p><img src="{{pick.product.child.image.image.url_100x100}}" ></p>
+             <p>{{ pick.product.description|striptags|safe }}</p>
+            <p>
+              </div>
+            <div class="modal-footer">
+              <a href="{% url market_buy_product_redirect pick.product.id %}" target="_blank" class="btn primary">Go To Product Page</a>
+              <a href="/" class="btn secondary">Go Back To Marketplace</a>
+            </div>
+ </div>
+
+
+<div class="item_box">
+
+<a data-controls-modal="{{pick.product.id }}" data-backdrop="truc" data-keyboard="true">
 		<img class="item" src="{{ pick.product.child.image.image.url_100x100 }}" title="{{ pick.product.description|striptags }}"/>
-		<div>{{ pick.product.title|truncatewords:5 }}</div>
-		<div>{{ pick.product.category.name }}</div>
-		<div>{{ pick.product.child.price|money_format:pick.product.shop }}</div>
+		<div class="title">{{ pick.product.title|truncatewords:2 }}</div>
+		<div class="dealer">{{ pick.product.category.name }}</div>
+		<div class="price">{{ pick.product.child.price|money_format:pick.product.shop }}</div>
 		</a>
-	</div>
-	
 </div>
 {% endfor %}
 
-<div class="clear"></div>
-
 </div>
-
 {% endblock %}

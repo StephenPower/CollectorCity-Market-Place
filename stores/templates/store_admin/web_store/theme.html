@@ -65,9 +65,11 @@
 
 	<script type="text/javascript">
 		function load_text(url){
-			$.post(url, function(data){
-				$("#id_text").val(data);										
-		    });			
+			if (confirm("Are you sure you want to revert to this version?")){
+				$.post(url, function(data){
+					$("#id_text").val(data);										
+			    });			
+			 };
 		}
 
 		$(function() {
@@ -85,6 +87,12 @@
 				collapsed: true,
 				animated: "medium",
 				persist: "location"
+			});
+			
+			$("#add_new_asset").hide();
+			
+			$("#add_asset_btn").click(function(){
+				$("#add_new_asset").toggle();
 			});
 		})
 
@@ -213,20 +221,7 @@
 				<br/>
 				<div id="notify_save_template"></div>
 				
-				<br/><br/>
 				
-				<ul id="tree_old_versions">
-					<li>{% trans "Old versions" %}
-					<ul>				
-					{% for v in version_list %}
-						<li><a href="javascript:load_text('{% url template_get_version v.pk %}')">{{ v.revision.date_created|date:"d F Y H:i" }}
-						{% if forloop.first %}
-							({% trans "current"%})
-						{% endif %}
-						</a></li>
-					{% endfor %}
-					</ul>
-				</ul>
 			{% else %}
 				<h3>{{ asset.name|title }}</h3>
 				<form name="form" method="post" action="javascript:submit_asset();" id="form_asset">
@@ -246,8 +241,10 @@
 	<div class="grid_1">&nbsp;</div>
 	<div class="grid_4">
 		<ul id="tree_themes">
-			<li>Themes
+			<li>
+			{% trans "Themes" %}
 			<ul>
+			{% if shop.theme_change_enabled %}
 				<li><a href="{{ MEDIA_URL }}themes/default.zip">default.zip</a></li>
 				<li><a href="{{ MEDIA_URL }}themes/craft.zip">craft.zip</a></li>
 				<li><a href="{{ MEDIA_URL }}themes/electronics.zip">electronics.zip</a></li>
@@ -256,6 +253,9 @@
 				<li><a href="{{ MEDIA_URL }}themes/spotless.zip">spotless.zip</a></li>
 				<li><a href="{{ MEDIA_URL }}themes/vogue.zip">vogue.zip</a></li>
 				<li><a href="{{ MEDIA_URL }}themes/original.zip">original.zip</a></li>
+			{% else %}
+				<li><a class="enable_feature_box" href="{% url enable_feature 'theme_change' %}">Enable Theme Change</a></li>
+			{% endif %}
 			</ul>
 			</li>
 		</ul>
@@ -282,13 +282,33 @@
 		</ul>
 
 		<br/>
+		
+		<ul id="tree_old_versions">
+			<li>{% trans "Previous Versions" %}
+			<ul>				
+			{% for v in version_list %}
+				<li><a href="javascript:load_text('{% url template_get_version v.pk %}')">{{ v.revision.date_created|date:"d F Y H:i" }}
+				{% if forloop.first %}
+					({% trans "current"%})
+				{% endif %}
+				</a></li>
+			{% endfor %}
+			</ul>
+		</ul>
 
-		<a href="{% url asset_add %}"><img src="{{ MEDIA_URL }}img/add.png" class="icon"/>Add asset</a>
+		<p id="add_asset_btn"><img src="{{ MEDIA_URL }}img/add.png" class="icon"/>Add asset</p>
+		
+		<div id="add_new_asset">
+			<form name="add_asset_form" method="post" action="{% url asset_add %}" enctype="multipart/form-data">
+				{% if add_asset_form.file.errors %}<div class="error">{{ add_asset_form.file.errors|join:", " }}</div>{% endif %}
+				<label>{{ add_asset_form.file }}</label><br/><br/>	
+				<button type="submit" class="small awesome">{% trans "Upload" %}</button>
+			</form>
+		</div>
 		
 		<br></br><br></br>
 		
 		<a href="{% url theme_export %}"><img src="{{ MEDIA_URL}}img/export.png" class="icon"/><b>{% trans "Backup" %}</b></a>
-		
 		
 	</div>
 

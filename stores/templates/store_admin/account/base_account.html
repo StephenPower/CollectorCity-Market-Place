@@ -11,6 +11,8 @@
     <ul>
 		<li class="links_sub_menu {% block m_profile %}{% endblock %}"><a href="{% url account_profile %}">{% trans "Profile" %}</a></li>
 		<li class="links_sub_menu {% block m_subscription %}{% endblock %}"><a href="{% url subscription_overview %}">{% trans "Subscription" %}</a></li>
+		<li class="links_sub_menu {% block m_billing %}{% endblock %}"><a href="{% url billing_overview %}">{% trans "Billing" %}</a></li>
+		<li class="links_sub_menu {% block m_purchases %}{% endblock %}"><a href="{% url purchases_overview %}">{% trans "Purchases" %}</a></li>
 	</ul>
 {% endblock %}
 

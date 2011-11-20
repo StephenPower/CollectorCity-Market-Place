@@ -1,0 +1,23 @@
+{% extends 'base_login.html' %}
+{% load i18n %}
+
+{% block m_support %}current_menu{% endblock %}
+
+{% block title_menu_left %}{% trans "Support" %}{% endblock %}
+
+{% block arrow_left %}{% url web_store %}{% endblock %}
+{% block arrow_right %}{% url home_admin %}{% endblock %}
+
+{% block title_sub_menu %}{% endblock %}
+
+{% block sub_menu %}
+    <ul>
+		<li class="links_sub_menu {% block m_overview %}{% endblock %}"><a href="{% url support_overview %}">{% trans "Overview" %}</a></li>
+		<li class="links_sub_menu {% block m_phone_support %}{% endblock %}"><a href="{% url support_phone %}">{% trans "Phone Support" %}</a></li>
+		<li class="links_sub_menu {% block m_email_support %}{% endblock %}"><a href="{% url support_email %}">{% trans "Email Support" %}</a></li>
+		<li class="links_sub_menu {% block m_community_forums %}{% endblock %}"><a href="{% url support_community %}">{% trans "Community Forums" %}</a></li>
+	</ul>
+{% endblock %}
+
+{% block main %}
+{% endblock %}

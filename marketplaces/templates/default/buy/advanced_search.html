@@ -3,18 +3,20 @@
 
 {% block content %}
 
-<div id="breadcrumbs" class="grid_18">
-    <a href="{% url market_home %}">{% trans "Home" %}</a> 
-    &raquo; <a href="{% url market_buy %}">{% trans "Buy" %}</a> 
-    &raquo; {% trans "Advanced Search" %}
-</div>
-<div class="grid_17 block_main_content margin_h" id="advanced-search">
+<ul class="breadcrumb">
+   <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider"> / </span></li>
+   <li><a href="{% url market_buy %}">{% trans "Buy" %}</a><span class="divider"> / </span></li>
+   <li class="active">{% trans "Advanced Search" %}</li>
+</ul>
+
+
+<div class="span12 offset2" id="advanced-search">
     <h3>{% trans "Advanced Search" %}</h3>
-    <form class="uniForm" method="GET" action="{% url buy_advanced_search %}">
+
+   <form class="form-stacked" method="GET" action="{% url buy_advanced_search %}">
     {% uni_form form helper %}
     </form>
 </div>
-
 
 <script type="text/javascript">
 	$("#id_categories").click(function(){
@@ -24,11 +26,15 @@
 		
 		$("#id_subcategories").empty();
 	    
-	    if (categories.length > 0){
-		      $.post("{% url ajax_get_subcategories %}", { 'categories': categories }, function(data){
-			      	$("#id_subcategories").append(data);
-		      });
-     	}      		
+	    if (categories.length > 0) {
+	      $.ajax({
+	          url: "{% url ajax_get_subcategories %}", 
+	          data: "categories=" + categories, 
+	          success: function(data) {
+		      	  $("#id_subcategories").append(data);
+	          }
+	      });
+     	}
 	});
 
     /* fire categories box's click event on document load event 
@@ -36,6 +42,10 @@
     */
     $(document).ready(function() {
        $("#id_categories").click();
+       $("input[name='include'][value='description']").click();
+       $("input[name='include'][value='title']").click();
+       $("input[name='view_by'][value='gallery']").click();
+       
     });
 </script>
 

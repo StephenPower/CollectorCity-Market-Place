@@ -46,10 +46,10 @@ def send_daily_transactions_notifications():
                 msg += "\t - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
             msg += "\nTOTAL : u$s %s\n" % total     
             msg += "===============================================================\n"
-        send_mail('Daily Transaction Statuses', msg, 'admin@greatcoins.com',  [b for (a,b) in settings.ADMINS], fail_silently=True)
+        send_mail('Daily Transaction Statuses', msg, settings.EMAIL_FROM,  [mail for (name, mail) in settings.STAFF], fail_silently=True)
         logging.debug(msg)
     except Exception, e:
-        send_mail('Error when trying to get daily transaction statuses', e , 'admin@greatcoins.com', [b for (a,b) in settings.ADMINS], fail_silently=True)
+        send_mail('Error when trying to get daily transaction statuses', e , settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF], fail_silently=True)
         
         
 if __name__ == "__main__":

@@ -18,7 +18,7 @@ class MarketCategoryForm(ModelForm):
 class MarketSubCategoryForm(ModelForm):
     class Meta:
         model = MarketSubCategory
-        fields = ['marketplace', 'slug', 'category']
+        fields = ['marketplace', 'slug']
         
 #    def __init__(self, request=None, *args, **kwargs):
 #        super(MarketSubCategoryForm, self).__init__(*args, **kwargs)

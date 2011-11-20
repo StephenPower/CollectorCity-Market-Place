@@ -6,9 +6,7 @@
 {% block m_auctions %}current_sub_menu{% endblock %}
 
 {% block toolbar %}
+{% if shop.auctions_feature_enabled %}
 	<a href="{% url auction_add %}"><img src="{{ MEDIA_URL }}img/add.png" class="icon">{% trans "Add Session" %}</a>
+{% endif %}
 {% endblock %}
-
-
-
-

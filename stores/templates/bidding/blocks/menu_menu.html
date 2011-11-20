@@ -1,8 +1,8 @@
 {% load users_tags sell_tags i18n %}
 
 <ul>
-{% with shop.menu_set.all.0 as menu %}
-{% for link in menu.links %}
+{% with shop.get_main_menu_links as links %}
+{% for link in links %}
 	{% if link.visible %}
 		<li><a href="{{ link.to }}">{{ link.name }}</a></li>
 	{% endif %}

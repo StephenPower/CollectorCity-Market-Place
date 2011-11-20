@@ -3,6 +3,7 @@ import decimal
 import logging
 
 from django.db import models
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
@@ -67,7 +68,7 @@ class Item(Product):
             for sell in sell_items:
                 revenue += (sell.price * sell.qty)
             msg = "There are no more Items for %s.\n\nlink: %s\n\nTotal Items Sold: %s\n\nTotal Revenue: %s\n\n\nTake notice that this last item wasn't sold yet, is currently in a cart and could be removed from it anytime. If customer decides to remove the item from the cart it will be inmediatly restored to the inventory" % (self.title, path, total, revenue)
-            send_mail('Product Out Of Stock', msg, 'admin@greatcoins.com',  [self.shop.admin.email], fail_silently=True)
+            send_mail('Product Out Of Stock', msg, settings.EMAIL_FROM,  [self.shop.admin.email], fail_silently=True)
     
     def increase_qty(self, qty):
         self.qty = self.qty + qty
@@ -156,7 +157,7 @@ class Item(Product):
         item.weight = decimal.Decimal('0.0')
         item.save()
         #TODO: Sacar esto afuera para que se haga una sola vez
-        item.update_latest_item()
+        Item.update_latest_item(shop)
         
         #Queue images to get
         for url in images:

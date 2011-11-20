@@ -2,12 +2,12 @@
 {% load users_tags %}
 
 <form method="get" action="{% url bidding_buy_now item.id %}" name="form" class="buy_now">
-	<h2 style="display: inline; position: relative; top: 5px; margin-right: 20px;">
+	<h2>
 		Price: {{ item.price|money_format:shop  }}
 	</h2>
 	{% if shop|is_bidder:user %}
 		{% if item.has_stock %}
-			<button type="submit" class="small awesome">Add to Cart</button>
+			<button type="submit" class="btn primary">Add to Cart</button>
 		{% else %}
 			<h4>Product out of stock</h4>		
 		{% endif %}

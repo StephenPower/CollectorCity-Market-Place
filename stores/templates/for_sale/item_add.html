@@ -1,32 +1,38 @@
-{% extends 'base_login.html' %}
+{% extends 'store_admin/inventory/base_items.html' %}
 {% load i18n %}
+{% load sell_tags %}
 
-{% block title %}
-	<h2>{% trans "For Sale" %}</h2>
-{% endblock %}
+{% block m_items %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}{% trans "Add Item For Sale" %}{% endblock %}
 
 {% block main %}
-	<h3>{% trans "Item Description" %}</h3>
+<div class="grid_16 box">	
 	
+
 	<form action="." method="post" name="form" enctype="multipart/form-data">
-	
-		{% if form.title.errors %}<div class="error">{{ form.title.errors|join:", " }}</div>{% endif %}
-		<h4 style="padding-bottom: 0px; margin-bottom:0px;">{% trans "Title" %}:</h4>
-		<span style="display: block; color:#AAAAAA;">{% trans "Example: 1942 Walking Liberty Half; 12 Foot garden Hose Kit" %}</span>
-		{{ form.title }}	
-		<br/>
-	
-		{% if form.description.errors %}<div class="error">{{ form.description.errors|join:", " }}</div>{% endif %}
-		<h4>{% trans "Describe the Item" %}:</h4>
-		{{ form.description }}
-			
-		<br/><br/>
+		<div class="grid_9">
+		
+			{% if form.title.errors %}<div class="error">{{ form.title.errors|join:", " }}</div>{% endif %}
+			<h4 style="padding-bottom: 0px; margin-bottom:0px;">{% trans "Title (Short Description)" %}:</h4>
+			<span style="display: block; color:#AAAAAA;">{% trans "Example: 1942 Walking Liberty Half; 12 Foot garden Hose Kit" %}</span>
+			{{ form.title }}	
+			<br/>
+		
+			{% if form.description.errors %}<div class="error">{{ form.description.errors|join:", " }}</div>{% endif %}
+			<h4>{% trans "Description" %}:</h4>
+			{{ form.description }}
+				
+			<br/><br/>
+		</div>	
+		<div class="clear"></div>
+		
 		
 		<div class="grid_8 alpha omega">
-			<h3>{% trans "Item Properties" %}</h3>
-			<div id="select_category" class="grid_4 alpha omega categories_selection">
+			
+			<div id="select_category" class="grid_4 alpha omega">
 				{% if form.category.errors %}<div class="error">{{ form.category.errors|join:", " }}</div>{% endif %}
-				<p>{% trans "Categories" %}:</p>
+				<h4>{% trans "Category" %}:</h4>
 				{{ form.category }}
 				<br/>
 				{% comment %}
@@ -36,7 +42,7 @@
 			</div>
 			<div id="select_sub_category" class="grid_4 alpha omega">
 				{% if form.subcategory.errors %}<div class="error">{{ form.subcategory.errors|join:", " }}</div>{% endif %}
-				<p>{% trans "SubCategory" %}:</p>
+				<h4>{% trans "SubCategory" %}:</h4>
 				{{ form.subcategory }}
 				<br/>
 				{% comment %}
@@ -44,22 +50,21 @@
 				{% endcomment %}
 			</div>
 			<div class="clear"></div>
-			
  			{% if form.price.errors %}<div class="error">{{ form.price.errors|join:", " }}</div>{% endif %}
-     		<p>{% trans "Price" %}:</p>
+     		<h4>{% trans "Price" %}:</h4>
      		{{ form.price }}
 
 			{% if form.weight.errors %}<div class="error">{{ form.weight.errors|join:", " }}</div>{% endif %}
-     		<p>{% trans "Weight" %}:</p>
+     		<h4>{% trans "Weight" %}:</h4>
      		{{ form.weight }} lbs.
      		
  			{% if form.qty.errors %}<div class="error">{{ form.qty.errors|join:", " }}</div>{% endif %}
-			<p>{% trans "Qty" %}:</p>
+			<h4>{% trans "Qty" %}:</h4>
      		{{ form.qty }}
 		</div>
-	
-		<div class="grid_5 margin_h padding_h">
-			<h3>{% trans "Item Images" %}</h3>
+
+		<div class="grid_6">
+			<h3>{% trans "Picture Upload" %}</h3>
 			
 			<!-- for images -->
 			<div class="add_file">
@@ -70,17 +75,22 @@
 			<div class="grid_5">
 				<a href="javascript:add_image();" class="small awesome">{% trans "Add Image" %}</a>
 			</div>
-			<div class="clear"></div>
 		</div>	
-		
 		<div class="clear"></div>
+		
 		<br/><br/>
 	
-		<button type="submit" class="large awesome">{% trans "Add" %}</button>
-		<a href="{% url items_all %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+		<button type="submit" class="small awesome">{% trans "Add" %}</button>
+		<a href="{% url inventory_items %}" class="link_cancel">{% trans "Or Cancel" %}</a>
 				
 	</form>
 
+	<div class="clear"></div>
+	
+	<br/>
+	<br/>
+	<br/>
+	
 	<div id="dialog_session" title="{% trans 'Add Session' %}">
 	</div>
 	<div id="dialog_category" title="{% trans 'Add Category' %}">
@@ -136,9 +146,9 @@
 	        });
 			
 			$("#id_item-category").change(function () {
-				categories= new Array()
-			    $("#id_item-category option:selected").each(function () {
-			    	categories.push($(this).val())
+				categories= []
+			    $("#id_item-category option:selected").each(function (key, obj) {
+			    	categories.push($(obj).val());
 			    });
 		    	$("#id_item-subcategory").empty();
 			    if (categories.length > 0){
@@ -245,8 +255,8 @@
 				
 	</script>
 
-{% endblock %}
-
-{% block menu %}
-	{% include 'for_sale/items_menu.html' %}
+	
+</div>
+	
+	
 {% endblock %}

@@ -27,7 +27,7 @@ class AuctionSession(models.Model):
         if self.end < datetime.datetime.now():
             return _("Finished")
         elif self.end > datetime.datetime.now() and self.start < datetime.datetime.now():
-            return _("Actual")
+            return _("In Progress")
         elif self.start > datetime.datetime.now():
             return _("Future")
 

@@ -16,7 +16,7 @@
 	<ul id="tree">
 		<li>{% trans "State" %}
 			<ul>
-			    <li><a href="{% url inventory_auctions %}?filter_by=actual">Actual</a></li>
+			    <li><a href="{% url inventory_auctions %}?filter_by=in_progress">In Progress</a></li>
 			    <li><a href="{% url inventory_auctions %}?filter_by=finished">Finished</a></li>
 			    <li><a href="{% url inventory_auctions %}?filter_by=future">Future</a></li>
 			</ul>
@@ -25,6 +25,7 @@
 {% endblock %}
 
 {% block super_main %}
+{% if shop.auctions_feature_enabled %}
 	<div class="bar_title">
 		<div class="grid_2 alpha omega bar_column"><span>{% trans "#" %}</span>
 			<a href="./?{{ filter_params|update_filters:'order_by=id' }}"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
@@ -57,7 +58,7 @@
 			<div class="grid_3 alpha omega column"><span>{{ auction.start|date:"d b Y H:i" }}</span></div>
 			<div class="grid_3 alpha omega column"><span>{{ auction.end|date:"d b Y H:i" }}</span></div>
 			<div class="grid_2 alpha omega column"><span>{{ auction.status }}</span></div>
-			<div class="grid_2 alpha omega column"><span>{{ auction.count_lots }}</span></div>
+			<div class="grid_2 alpha omega column"><span>{{ auction.count_lots }}</span></div><div class="clear"></div>
 		</div>
 		<div class="clear"></div>
 	{% endfor %}
@@ -79,7 +80,17 @@
 			{% include 'paginator.html'%}
 		{% endwith %}
 	</div>
+{% else %}
+	<div class="enable_feature"><a class="enable_feature_box" href="{% url enable_feature 'auctions' %}">{% trans "Enable Auctions Feature" %} for ${{ shop.auctions_feature_price }}</a><img src="{{ MEDIA_URL }}img/help-icon.png" onclick="javascript:show_help_text('htb_container');"/></div>
 	
+	<div class="htb_container">
+		<img id="stick" src="{{ MEDIA_URL }}img/stick.png"/>
+		<div class="help_text_box">
+			{{ shop.auctions_feature_help_text }}
+			<div class="close"><img onclick="javascript: close_help_text('htb_container')" src="{{ MEDIA_URL }}img/remove.png"/></div>
+		</div>
+	</div>
+{% endif %}	
 {% endblock %}
 
 {% block menu %}

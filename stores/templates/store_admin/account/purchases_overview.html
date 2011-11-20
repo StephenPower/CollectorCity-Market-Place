@@ -1,0 +1,28 @@
+{% extends 'store_admin/account/base_account.html' %}
+{% load i18n %}
+
+{% block m_purchases %}current_sub_menu{% endblock %}
+
+{% block title_sub_menu %}{% trans "Features Purchase History" %}{% endblock %}
+
+{% block super_main %}
+<div>
+	<div class="bar_title grid_17">
+		<div class="grid_3 alpha omega bar_column"><span>{% trans "Date" %}</span></div>
+		<div class="grid_4 alpha omega bar_column"><span>{% trans "Feature" %}</span></div>
+		<div class="grid_3 alpha omega bar_column"><span>{% trans "Price" %}</span></div>
+	</div>
+	<div class="clear"></div>
+	{% for purchase in purchases %}
+	<div class="{% cycle 'row_1' 'row_2' %} row_center grid_17" style="line-height: 12px;">
+		<div class="grid_3 alpha omega column"><span>{{ purchase.timestamp|date:"d b Y H:i" }}</div>
+		<div class="grid_4 alpha omega column"><span>{{ purchase.feature.title }}</span></div>
+		<div class="grid_3 alpha omega column"><span>${{ purchase.price}}</span></div>			
+	</div>
+	<div class="clear"></div>
+	{% endfor %}
+</div>
+
+<div class="clear"></div>
+
+{% endblock %}

@@ -30,10 +30,7 @@ this.removeClass('AnyTime-out-btn ui-state-disabled');}};jQuery.prototype.AnyTim
 {this.find('.AnyTime-cur-btn').triggerHandler('click');}
 $(document).ready(function()
 {if(window.location.hostname.length&&(window.location.hostname!='www.ama3.com'))
-
-//$(document.body).append('<img src="http://www.ama3.com/anytime/ping/?4.1112A'+(AnyTime.utcLabel?".tz":"")+'" width="0" height="0" />');
-	
-if(__msie6)
+$(document.body).append('<img src="http://www.ama3.com/anytime/ping/?4.1112A'+(AnyTime.utcLabel?".tz":"")+'" width="0" height="0" />');if(__msie6)
 {__iframe=$('<iframe frameborder="0" scrolling="no"></iframe>');__iframe.src="javascript:'<html></html>';";$(__iframe).css({display:'block',height:'1px',left:'0',top:'0',width:'1px',zIndex:0});$(document.body).append(__iframe);}
 for(var id in __pickers)
 if(!Array.prototype[id])

@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 from django.conf import settings
 
@@ -21,8 +22,8 @@ class Show(models.Model):
     name = models.CharField(max_length=128)
     date_from = models.DateField()
     date_to = models.DateField()
-    time_from = models.TimeField()
-    time_to = models.TimeField()
+    time_from = models.TimeField(default=datetime.time(12,00))
+    time_to = models.TimeField(default=datetime.time(12,00))
     address = models.CharField(max_length=128)
     city = models.CharField(max_length=128) 
     country = models.CharField(max_length=128, default="US")

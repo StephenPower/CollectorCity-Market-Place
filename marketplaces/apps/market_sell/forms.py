@@ -43,6 +43,8 @@ class ShopInfoForm(forms.Form):
     name_store = forms.RegexField(max_length=60, label =_("Your shop's name"), regex=r'^[\s\w+-]+$',
             error_messages = {'invalid': _("This value may contain only letters, numbers and - character.")})
     shop_name = forms.CharField(max_length=60, label =_("Your shop's web address"), help_text=".greatcoins.com")
+    first_name = forms.CharField(max_length=50, label =_("Your First Name"))
+    last_name = forms.CharField(max_length=50, label =_("Your Last Name"))
     street = forms.CharField(max_length=100)
     city = forms.CharField(max_length=100)
     state = forms.CharField(widget=USStateSelect)
@@ -57,15 +59,29 @@ class ShopInfoForm(forms.Form):
             return shop_name
         raise forms.ValidationError(_("A shop with that name already exists."))
 
-    
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        try:
+            user = self.initial['user']
+            first_name = cleaned_data.get('first_name', None)
+            last_name = cleaned_data.get('last_name', None)
+            user.first_name = first_name
+            user.last_name = last_name  
+            user.save()
+        except:
+            pass
+        return  cleaned_data
+        
 
 class ShopBillingForm(forms.Form):
     
     #Billing Address
-    billing_street = forms.CharField(max_length=100, required=True)
-    billing_city = forms.CharField(max_length=100, required=True)
-    billing_state = forms.CharField(widget=USStateSelect, required=True)
-    billing_zip = USZipCodeField(required=True)
+    shop_address = forms.BooleanField(required=False, initial=False, label = _("Use shop address"))
+    
+    billing_street = forms.CharField(max_length=100, required=False)
+    billing_city = forms.CharField(max_length=100, required=False)
+    billing_state = forms.CharField(widget=USStateSelect, required=False)
+    billing_zip = USZipCodeField(required=False)
     
     #Billing information
     cc_number = forms.CharField(max_length=60, label =_("Credit Card Number"), initial=INITIAL_CC)
@@ -74,7 +90,7 @@ class ShopBillingForm(forms.Form):
     card_security_number = forms.CharField(max_length=4, label =_("Card Security Number"), required=True)
 
     terms = forms.BooleanField(required=False)
-    
+
     def clean_terms(self):
         terms = self.cleaned_data["terms"]
         if terms:
@@ -113,6 +129,8 @@ class ShopBillingForm(forms.Form):
         
         first_name = init_user.first_name
         last_name = init_user.first_name
+        
+
         email = init_user.email
         cc_number = cleaned_data.get("cc_number", None)
         if cc_number is None: self._errors["cc_number"] = self.error_class(["This field is required!"])
@@ -127,15 +145,25 @@ class ShopBillingForm(forms.Form):
         cc_security_number = cleaned_data.get("card_security_number", None)
         if cc_security_number is None: self._errors["card_security_number"] = self.error_class(["This field is required!"])
         
-        street = cleaned_data.get("billing_street", None)
-        if street is None: self._errors["billing_street"] = self.error_class(["This field is required!"])
-        city = cleaned_data.get("billing_city", None)
-        if city is None: self._errors["billing_city"] = self.error_class(["This field is required!"])
-        state = cleaned_data.get("billing_state", None)
-        if state is None: self._errors["billing_state"] = self.error_class(["This field is required!"])
-        zip = cleaned_data.get("billing_zip", None)
-        if zip is None: forms.ValidationError(_(""))
-                
+        reuse_address = cleaned_data.get("shop_address", None)
+        
+        if reuse_address == False:
+            #Take data filled by user in the form
+            street = cleaned_data.get("billing_street", None)
+            if street is None or street == u'': self._errors["billing_street"] = self.error_class(["This field is required!"])
+            city = cleaned_data.get("billing_city", None)
+            if city is None or city == u'': self._errors["billing_city"] = self.error_class(["This field is required!"])
+            state = cleaned_data.get("billing_state", None)
+            if state is None or state == u'': self._errors["billing_state"] = self.error_class(["This field is required!"])
+            zip = cleaned_data.get("billing_zip", None)
+            if zip is None or zip == u'': self._errors["billing_zip"] = self.error_class(["This field is required!"])
+        else:
+            #Use data filled on first step
+            street = self.initial['street']
+            zip = self.initial['zip']
+            state = self.initial['state']
+            city = self.initial['city']
+            
         shop_name = "thisisafake.shop.com"
         shop_id = "-1"
         
@@ -175,8 +203,14 @@ class ShopSignUpWizard(FormWizard):
     
     def parse_params(self, request, *args, **kwargs):
         current_step = self.determine_step(request, *args, **kwargs)
+        if request.method == 'POST' and current_step == 0:
+            self.initial[0] = {'user' : request.user}
         if request.method == 'POST' and current_step == 2:
-            self.initial[2] = {'user' : request.user }
+            street= request.POST.get("0-street", "Wall Street")
+            state = request.POST.get("0-state", "New York")
+            city = request.POST.get("0-city", "New York")
+            zip = request.POST.get("0-zip", "19000")            
+            self.initial[2] = {'user' : request.user, 'city':city, 'street':street, 'zip':zip, 'state':state  }
 
     def get_template(self, step):
         return 'default/sell/signup_wizard_%s.html' % step
@@ -199,13 +233,19 @@ class ShopSignUpWizard(FormWizard):
         profile.country = 'United States'
         profile.save()
         
-        billing_street = cleaned_data['billing_street'].encode('ascii', 'ignore')
-        billing_city = cleaned_data['billing_city'].encode('ascii', 'ignore')
-        billing_state = cleaned_data['billing_state'].encode('ascii', 'ignore')
-        billing_zip = cleaned_data['billing_zip'].encode('ascii', 'ignore')
+        if cleaned_data.get('shop_address', False):
+            billing_street = cleaned_data['street'].encode('ascii', 'ignore')
+            billing_city = cleaned_data['city'].encode('ascii', 'ignore')
+            billing_state = cleaned_data['state'].encode('ascii', 'ignore')
+            billing_zip = cleaned_data['zip'].encode('ascii', 'ignore')
+        else:
+            billing_street = cleaned_data['billing_street'].encode('ascii', 'ignore')
+            billing_city = cleaned_data['billing_city'].encode('ascii', 'ignore')
+            billing_state = cleaned_data['billing_state'].encode('ascii', 'ignore')
+            billing_zip = cleaned_data['billing_zip'].encode('ascii', 'ignore')
         
         date_str =  "%s-%s" % (cleaned_data['cc_expiration_year'], cleaned_data['cc_expiration_month'])
-        card_expire = datetime.datetime.strptime(date_str,  "%Y-%m")
+        #card_expire = datetime.datetime.strptime(date_str,  "%Y-%m")
         
         
         """ Create shop """
@@ -220,6 +260,7 @@ class ShopSignUpWizard(FormWizard):
         
         result = (form_list[2]).result
 
+        customer_id = 'undefined'
         if result.is_success:
             customer_id = result.customer.id
             update = bt_gw.update_customer_shopname(customer_id, shop.id, shop.default_dns)
@@ -254,8 +295,9 @@ class ShopSignUpWizard(FormWizard):
         #Store billing information
         billing = ShopBillingInfo(
             shop = shop,
-            card_ending = cleaned_data['cc_number'][-4:],
-            card_expire = card_expire, 
+            #card_ending = cleaned_data['cc_number'][-4:],
+            #card_expire = card_expire,
+            customer_id = customer_id,
             street = billing_street,
             city = billing_city,
             state = billing_state,

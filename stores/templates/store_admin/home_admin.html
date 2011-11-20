@@ -6,7 +6,7 @@
 
 {% block m_home %}current_menu{% endblock %}
 
-{% block arrow_left %}{% url web_store %}{% endblock %}
+{% block arrow_left %}{% url support %}{% endblock %}
 {% block arrow_right %}{% url customers %}{% endblock %}
 
 {% block title_menu_left %}{% trans "Customers" %}{% endblock %}
@@ -23,18 +23,20 @@
 {% endblock %}
 
 {% block body_right %}
-<div class="grid_15 home">
+<div class="grid_18 home">
 	<h2>{% trans "Welcome" %}, {{ shop.name.title }}</h2>
-	<div class="grid_4 box">
+	<div class="grid_7 box">
 		<div class="box_header"><h3>{% trans "Set Up Your Web Site" %}</h3></div>
 		<div class="box_body">
+			<p><a href="{% url item_add %}">{% trans "Add An Item To Your Shop" %}</a></p>
+			<p><a href="{% url account_profile %}">{% trans "Add A Picture for The MarketPlace" %}</a></p>
 			<p><a href="{% url page_edit_home %}">{% trans "Update your Home Page" %}</a></p>
 			<p><a href="{% url post_add %}">{% trans "Write a Blog Post" %}</a></p>
 			<p><a href="{% url page_edit_about %}">{% trans "Update About Us" %}</a></p>
 			<p><a href="{% url page_create %}">{% trans "Create a New Page" %}</a></p>
 		</div>
 	</div>
-	<div class="grid_4 box">
+	<div class="grid_7 box">
 		<div class="box_header"><h3>{% trans "Set Up Peferences" %}</h3></div>
 		<div class="box_body">
 			<p><a href="{% url preferences_general %}">{% trans "Configure Your Store" %}</a></p>
@@ -45,15 +47,14 @@
 			<p><a href="{% url preferences_dns %}">{% trans "Domain Names" %}</a></p>
 		</div>
 	</div>
-	<div class="grid_4 box">
+	<div class="grid_7 box">
 		<div class="box_header"><h3>{% trans "Customers" %}</h3></div>
 		<div class="box_body">
 			<p><a href="{% url customers_sold_items %}">{% trans "Sold Items" %}</a></p>
 			<p><a href="{% url customers_wish_lists %}">{% trans "Wish List" %}</a></p>
 		</div>
 	</div>	
-	<div class="clear"></div>
-	<div class="grid_4 box">
+	<div class="grid_7 box">
 		<div class="box_header"><h3>{% trans "Inventory" %}</h3></div>
 		<div class="box_body">
 			<p><a href="{% url inventory_overview %}">{% trans "Overview" %}</a></p>
@@ -62,7 +63,7 @@
 			<p><a href="{% url inventory_categorize %}">{% trans "Categorize" %}</a></p>
 		</div>
 	</div>	
-	<div class="grid_4 box">
+	<div class="grid_7 box">
 		<div class="box_header"><h3>{% trans "Web Store" %}</h3></div>
 		<div class="box_body">
 			<p><a href="{% url web_store_pages%}">{% trans "Pages" %}</a></p>

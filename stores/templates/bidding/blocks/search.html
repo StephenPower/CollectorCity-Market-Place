@@ -5,17 +5,17 @@
 	<div class="search_result_product" id="product_{{ product.object.id }}">
 		<a href="{{ product.object.child.get_bidding_url }}">
 			<div class="product_image">
+			<a href="{{ product.object.child.get_bidding_url }}">
 				{% if product.object.child.image %}
-					<img width="100" src="{{ product.object.child.image.image.url_100x100 }}"/>
+					<img src="{{ product.object.child.image.image.url_100x100 }}"/>
 				{% else %}
 					<img src="{{ MEDIA_URL }}img/no-photo.jpg" alt="No Photo"/>
 				{% endif %}
+			</a>
 			</div>
-		</a>		
         <h4>{{ product.object.title|title }}</h4>
         <h5>{{ product.price|money_format:shop }}</h5>
 	</div>
 {% empty %}
 	<div class="search_no_result">{% trans "No products found" %}</div>
 {% endfor %}
-<div style="clear: both; display: block; overflow: hidden; visibility: hidden; width: 0; height: 0;"></div>

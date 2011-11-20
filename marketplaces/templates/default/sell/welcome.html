@@ -2,44 +2,74 @@
 {% load i18n %}
 
 {% block content %}
-<div class="grid_18 block_main_content">
+<div class="span16 offset2">
 	<div class="announce left">
-		<p><h1>Welcome to {{ marketplace.name }} {{ shop.admin.username }} !!</h1></p>
+		<p><h2>Welcome to {{ marketplace.name }} {{ shop.admin.username }} !!</h2></p>
 		<p>{{ marketplace.name }} is the online Marketplace for buying and selling coins.<br/>
 		A collector and a Dealer wanted to create a market where buyers and sellers to find the very best coins.<br/>
 		We monitor the marketplace for counterfiets and coins that don't match the description.</p> 
+
 	</div>
 	
-	<h1>{% trans "Here is What You Can Do to Get Started" %}</h1>
+	<h2>{% trans "Here is What You Can Do to Get Started" %}</h2>
 	<br/>
 	
-	<div class="grid_18">
-	<div class="grid_3 alpha omega shop_feature_box">
+	<div class="span16">
+	<div class="span3 shop_feature_box">
 		<p>{% trans "Post Coins" %}</p>
 		<img alt="Coins" src="{{ MEDIA_URL }}img/coins.jpg"></img>
 	</div>
 
-	<div class="grid_3 alpha omega shop_feature_box">
-		<p>{% trans "Setup Paymentys" %}</p>
+	<div class="span3 shop_feature_box">
+		<p>{% trans "Setup Payments" %}</p>
 		<img alt="Coins" src="{{ MEDIA_URL }}img/coins.jpg"></img>
 	</div>
 	
-	<div class="grid_3 alpha omega shop_feature_box">
+	<div class="span3 shop_feature_box">
 		<p>{% trans "Choose Your Store Look" %}</p>
 		<img alt="Coins" src="{{ MEDIA_URL }}img/coins.jpg"></img>
 	</div>
 	
-	<div class="grid_3 alpha omega shop_feature_box">
+	<div class="span3 shop_feature_box">
 		<p>{% trans "Auction Coins" %}</p>
 		<img alt="Coins" src="{{ MEDIA_URL }}img/coins.jpg"></img>
 	</div>
 	</div>
 	
 	<br/> 
-	
+<p></p>	
 	<p>** {% trans "The credit card charge will be appear as" %} <b>{{ marketplace.charge_on_card_as }}</b></p>
 	
-	<h3>{% trans "Go to your shop now" %} <a href="http://{{ shop.default_dns }}" class="blue">http://{{ shop.default_dns }}</a></h3>
+	<h3>{% trans "Go To Your Shop Now" %} <a href="http://{{ shop.default_dns }}" class="success">http://{{ shop.default_dns }}</a></h3>
 </div>
 <div class="clear"></div>
+<script type="text/javascript">
+    var _gaq = _gaq || [];
+   _gaq.push(['_setAccount', 'UA-13297300-4']);
+   _gaq.push(['_trackPageview']); 
+   _gaq.push(['_addTrans',
+     '{{ shop.id }}',           // order ID - required 
+     '{{ shop.admin.username }}',  // affiliation or store name 
+     '{{ subscription.plan.price }}',          // total - required 
+     '0.0',           // tax  
+     '{{ shopinfo.city }}',       // city
+     '{{ shopinfo.state }}',     // state or province
+     'USA'             // country   ]);
+
+ubscription
+     // add item might be called for every item in the shopping cart  
+     // where your ecommerce engine loops through each item in the cart and
+    // prints out _addItem for each
+   _gaq.push(['_addItem',
+     '{{ shop.id }}',           // order ID - required
+     '{{ shop.plan }}',           // SKU/code - required
+     '{{ subscription.plan.price }}',          // total - required 
+     'Subscription',   // category or variation 
+     '{{ subscription.plan.price }}',          // unit price - required 
+     '1'               // quantity - required 
+  ]);
+   _gaq.push(['_trackTrans']); //submits transaction to the Analytics servers 
+   (function() {     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);   })();  </script> 
+
+
 {% endblock %}

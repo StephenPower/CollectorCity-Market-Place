@@ -20,81 +20,135 @@
 			draggable: false,
 			overlay: {opacity: 0.9, background: "black"},
 		});	
-				
+		
+                /*		
 		$('#create_item').click(function() {
-					$('#dialog_form').dialog('open');
+			//		$('#dialog_form').dialog('open');
 		});
+                */
 				
 		$("#id_category").change(function () {
-			categories= new Array()
+                    /*
+                    categories= new Array();
 		    $("#id_category option:selected").each(function () {
 		    	categories.push($(this).val())
 		    });
-	    	$("#id_subcategory").empty();
-		    if (categories.length > 0){
-			      $.post("{% url ajax_get_subcategories %}", { 'categories': categories }, function(data){
-				      $("#id_subcategory").append(data);
-			      });
-      		}
+                    */
+                    var categories = $(".form-stacked #id_category option[value!='']:selected").val();
+
+                    $("#id_subcategory").empty();
+                    $.post("{% url ajax_get_subcategories %}", { 'categories': categories }, function(data){
+                         $(".form-stacked #id_subcategory").html(data);
+                    });
 	    })
 	    .trigger('change');
 	});
 </script>
+<ul class="breadcrumb">
+ <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider">/</span></a></li>
+ <li><a href="{% url market_buy %}">{% trans "Buy" %}</a><span class="divider">/</span></a></li>
+ <li class="active">{% trans "Wish List" %}</li>
+</ul>
 
-<div id="breadcrumbs" class="grid_18">
-	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_buy %}">{% trans "Buy" %}</a> &raquo; {% trans "Wish List" %}
+<div class="sidebar">
+ <div class="well">
+  <h5>Post Your Wish List Item</h5>
+{% if user.is_authenticated %}
+   <ul>
+    <li>
+          <button data-controls-modal="modal-from-dom" data-backdrop="true" data-keyboard="true" id="create_item" class="btn primary">Post Wish List Item</button>
+    </li>
+   </ul>
+
+{% else %}
+
+  <ul>
+	<li>
+      	<a href="{% url market_buy_signup %}" class="btn primary">Please Register</a>
+</li>
+</ul>
+
+
+
+{% endif %}
+  </div>
 </div>
+	<form class="form-stacked" id="dialog_form" action="{% url post_wish_list_item %}" method="POST" name="form">
+		{{ form.as_p }}
+		<button type="submit" class="btn primary">{% trans 'Save Item' %}</button> 
+        
+	</form>
 
-<div class="grid_18 block_main_content maring_h">
-<h3>{% trans "Wish List" %}</h3>
-<p>Find the Coin you've always looked for with our marketplace of dealers. Post Your Wish List For all the dealers to see.</p>
+	  <div id="modal-from-dom" class="modal hide fade">
+            <div class="modal-header">
+              <a href="#" class="close">&times;</a>
+              <h3>Post Your Wish Lis Item</h3>
+            </div>
+            <div class="modal-body">
+        	<form class="form-stacked" id="dialog_form" action="{% url post_wish_list_item %}" method="POST" name="form">
+		{{ form.as_p }}
+		<button type="submit" class="btn primary">{% trans 'Save Item' %}</button> 
+            </div>
+            <div class="modal-footer">
+       		<button type="submit" class="btn primary">{% trans 'Save Item' %}</button> 
+	   </div>
+          </div>
+ 
+<div class="span12">
+<h2>{% trans "Wish List" %}</h2>
+
+<p>Find the Coin you've always looked for with our marketplace of dealers. Post Your Wish List For all the dealers to see.
+{% if not user.is_authenticated %}
+{% trans "You must be logged in to post in the wish list. " %}<a href="{% url market_buy_login %}?next={% url buy_wish_list %}">{% trans "Login Here" %}</a>
+{% endif %}
+</p>
 
 {% if wish_list %}
-<div class="grid_17">
-	<div class="grid_5"><b>{% trans "Description" %}</b></div>
-	<div class="grid_2"><b>{% trans "Posted By" %}</b></div>
-	<div class="grid_2"><b>{% trans "Categoty" %}</b></div>
-	<div class="grid_2"><b>{% trans "Subcategory" %}</b></div>
-	<div class="grid_2"><b>{% trans "Ideal Price" %}</b></div>
-	<div class="grid_3"><b>{% trans "Posted On" %}</b></div>
-</div>
-{% for item in wish_list %}
-<div class="grid_17 {% cycle 'row1' 'row2' %} ">
-	<div class="grid_5">{{ item.description.capitalize|safe }}</div>
-	<div class="grid_2">
-	{% if item.public %}
+<table class="zebra-striped">
+<thead>
+<tr>
+	<th><b>{% trans "Posted By" %}</b></th>
+		<th><b>{% trans "Category" %}</b></th>
+		<th><b>{% trans "Subcategory" %}</b></th>
+		<th><b>{% trans "Ideal Price" %}</b></th>
+		<th><b>{% trans "Posted On" %}</b></th>
+		<th><b>{% trans "Description" %}</b></th>
+</tr>
+<tbody>
+{% for item in wish_list %}	
+<tr>
+  <td>	{% if item.public %}
 	{{ item.posted_by }}
 	{% else %}
 	*******
 	{% endif %}
-	</div>
-	<div class="grid_2">{{ item.category.name }}</div>
-	<div class="grid_2">{% if item.subcategory %}{{ item.subcategory.name }}{% else %} --- {% endif %}</div>
-	<div class="grid_2">$ {{ item.ideal_price }}</div>
-	<div class="grid_3">{{ item.posted_on|date:"d F Y H:i" }}</div>
-</div>
-<div class="clear"></div>
+ </td>
+ <td>{{ item.category.name }}
+</td>
+		<td>{% if item.subcategory %}{{ item.subcategory.name }}{% else %} --- {% endif %}</td>
+		<td class="IdealPrice">${{ item.ideal_price }}</td>
+		<td>{{ item.posted_on|date:"d F Y H:i" }}</td>
+		<td>{{ item.description.capitalize|safe }}</td>
+</tr>
 {% endfor %}
+</tbody>
+</table>
+
 {% else %}
-<div class="notice">{% trans "There is no wish list items posted yet..." %}</div>
+<div class="alert-message warning">{% trans "There is no wish list items posted yet..." %}</div>
 {% endif %}
 
-<div class="clear"></div>
-
-<br/><br/><br/>
+{% comment %}
 {% if user.is_authenticated %}
-<div id="create_item" class="awesome small blue">{% trans "Post your item" %}</div>
-{% else %}
-<b>{% trans "You must be logged in to post in the wish list. " %} <a href="{% url market_buy_login %}?next={% url buy_wish_list %}">{% trans "Login Here" %}</a></>
+<div id="create_item" class="btn primary">{% trans "Post your item" %}</div>
 {% endif %}
 
-<div id="dialog_form">
-	<form action="{% url post_wish_list_item %}" method="POST" name="form">
+	<form class="form-stacked" id="dialog_form" action="{% url post_wish_list_item %}" method="POST" name="form">
 		{{ form.as_p }}
-		<button type="submit" class="small awesome">{% trans 'Save Item' %}</button> 
+		<button type="submit" class="btn primary">{% trans 'Save Item' %}</button> 
 	</form>
 </div>
+{% endcomment %}
 </div>
-<div class="clear"></div>
 
 {% endblock %}

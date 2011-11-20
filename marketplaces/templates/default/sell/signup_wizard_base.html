@@ -2,34 +2,34 @@
 {% load i18n %}
 
 {% block content %}
-<div id="breadcrumbs" class="grid_18">
-	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_sell %}">{% trans "Sell" %}</a> &raquo; {% trans "Sign Up" %}
-</div>
+<ul class ="breadcrumb">
+ <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider">/</span></li>
+ <li><a href="{% url market_sell %}">{% trans "Sell" %}</a><span class="divider">/</span></li>
+ <li class="active">{% trans "Sign Up" %}</li>
+</ul>
 
-<div class="grid_14 block_main_content">
+<div class="span12">
 <div class="step_guide">
-	<h3>{% trans "Sign Up for Your Store" %}</h3>
-	<span {% if step == 1 %}class="current"{% endif %}>1. {% trans "Store Info" %}</span>
-	<span {% if step == 2 %}class="current"{% endif %}>2. {% trans "Choose Your Plan" %}</span>
-	<span {% if step == 3 %}class="current"{% endif %}>3. {% trans "Billing" %}</span>
+	<h2>{% trans "Sign Up for Your Store" %}</h2>
+	<span {% if step == 1 %}class="active"{% endif %}>1. {% trans "Store Info" %}</span>
+	<span {% if step == 2 %}class="active"{% endif %}>2. {% trans "Choose Your Plan" %}</span>
+	<span {% if step == 3 %}class="active"{% endif %}>3. {% trans "Billing" %}</span>
 	<span>4.  {% trans "Welcome" %}</span>
 </div>
 
-<div class="clear"></div>
 
 {% block step %}{% endblock %} 
 </div>
-
-<div class="grid_3 block_filter">
-	Already A Seller? <a href="{% url market_buy_login %}">{% trans "Sign In here" %}</a>
-	<br/><br/>
-	<h4>{% trans "Privacy Policy" %}</h4>
-	<p>{% trans "We take your privacy seriouly" %}</p>
-	<ul>
-		<li><a href="{% url market_privacy_policy %}">{% trans "Privacy Policy" %}</a></li>
-	</ul>
+{% comment %}
+<div class="sidebar">
+ <div class="well">
+   <h5>Already A Seller? <a href="{% url market_buy_login %}">{% trans "Sign In here" %}</a></h5>
+    <ul>
+	<li>{% trans "We take your privacy seriouly" %}</li>
+	<li><a href="{% url market_privacy_policy %}">{% trans "Privacy Policy" %}</a></li>
+    </ul>
 </div>
-
-<div class="clear"></div>
+</div>
+{% endcomment %}
 
 {% endblock %}

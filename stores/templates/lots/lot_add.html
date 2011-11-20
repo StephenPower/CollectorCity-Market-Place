@@ -4,7 +4,6 @@
 {% block title_sub_menu %}{% trans "Add Item For Auction" %}{% endblock %}
 
 {% block main %}
-
 	<form action="." method="post" name="form" enctype="multipart/form-data">
 		{% if form.title.errors %}<div class="error">{{ form.title.errors|join:", " }}</div>{% endif %}
 		<h4 style="padding-bottom: 0px; margin-bottom:0px;">{% trans "Title" %}:</h4>

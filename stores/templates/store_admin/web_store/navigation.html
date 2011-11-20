@@ -3,6 +3,16 @@
 
 {% block m_navigation %}current_sub_menu{% endblock %}
 
+{% block menu_options %}	
+<b>Navigation</b>
+<div>
+	<p><a href="javascript:show_all_links()">Show All Links</a></p>
+	{% for menu in menus %}
+	<p><a href="javascript:show_menu('{{ menu.id }}')">Show {{ menu.name|title }} Links</a></p>
+	{% endfor %}
+</div>
+{% endblock %}
+
 {% block toolbar %}
 {% endblock %}
 
@@ -11,8 +21,7 @@
 	<div class="grid_11 box">
 	{% block main_navigation %}
 
-
-		<style type="text/css">
+		<style type="text/css">		
 			#sortable { list-style-type: none; margin: 0; padding: 0;}
 			#sortable li { margin: 0 5px 5px 5px; padding: 5px; font-size: 1.2em; height:15px; }
 			html>body #sortable li { height:15px; line-height: 1.2em; }
@@ -20,7 +29,31 @@
 		</style>
 		
 		<script type="text/javascript">
-		$(function() {
+		
+		function show_all_links(){
+			$('div[id^="menu_"]').show();
+		}
+		
+		function show_menu(menu_id){
+			var id = "menu_" + menu_id;
+			$('div[class="hook4hide"]').hide();
+			$("#"+id).show();
+		}
+		
+		function show_form(menu_id){
+			var id = "form_" + menu_id;
+			$('form[id^="form_"]').hide();
+			$("#"+id).show();
+		}
+		
+		function hide_form(menu_id){
+			var id = "form_" + menu_id;		
+			$("#"+id).hide();
+		}
+		
+		$(function(){
+			$('form[id^="form_"]').hide();
+			
 			{% for menu in menus %}
 				$(".sortable_{{ menu.id }}").sortable({
 					placeholder: 'ui-state-highlight',
@@ -28,8 +61,7 @@
 					update : function () { 
 					    var order = $('.sortable_{{ menu.id }}').sortable('serialize'); 
 					    $.get('{% url link_order %}?name={{ menu.name|slugify }}&'+order);
-					} 
-				    	
+					}
 				});
 				$(".sortable_{{ menu.id }}").disableSelection();
 			{% endfor %}
@@ -37,26 +69,38 @@
 		</script>
 		
 		{% for menu in menus %}
-			<h3>{{ menu.name }}</h3>
-			<br/>
-			<div class="grid_12 alpha omega">
-			<ul id="sortable" class="sortable_{{ menu.id }}">
-				{% for link in menu.links %}
-					<li class="ui-state-default" id="{{ menu.name|slugify }}_{{ link.id }}">
-						<div class="grid_5 alpha omega"><img src="{{ MEDIA_URL }}img/arrow.png"/><a href="{% url link_edit link.id %}">{{ link.name }}</a></div>
-						<div class="grid_5 alpha omega"><a href="{{ link.to }}">{{ link.to }}</a></div>
-						<div class="grid_1 alpha omega"><a href="javascript:delete_object('{% url link_delete link.id %}', 'link')"><img src="{{ MEDIA_URL }}img/remove.png"></a></div>
-						<div class="clear"></div>
-					</li>
-				{% endfor %}
-			</ul>
-			</div>
+		<div id="menu_{{ menu.id }}" class="hook4hide">
+		<h3>{{ menu.name }}</h3>
+		<br/>
+		<div class="grid_12 alpha omega">
+		<ul id="sortable" class="sortable_{{ menu.id }}">
+			{% for link in menu.links %}
+				{% if not shop.auctions_feature_enabled and link.to == '/auctions/' %}
+				{{ pass }}
+				{% else %}
+				<li class="ui-state-default" id="{{ menu.name|slugify }}_{{ link.id }}">
+					<div class="grid_5 alpha omega"><img src="{{ MEDIA_URL }}img/arrow.png"/><a href="{% url link_edit link.id %}">{{ link.name }}</a></div>
+					<div class="grid_5 alpha omega"><a href="{{ link.to }}">{{ link.to }}</a></div>
+					<div class="grid_1 alpha omega"><a href="javascript:delete_object('{% url link_delete link.id %}', 'link')"><img src="{{ MEDIA_URL }}img/remove.png"></a></div>
+					<div class="clear"></div>
+				</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+		<form class="add_link_form" name="form" id="form_{{ menu.id }}" method="post" action="{% url link_add menu.id %}" enctype="multipart/form-data">
+			<div class="grid_4 alpha omega">Name: {{ link_form.name }}</div>
+			<div class="grid_4 alpha omega">Title: {{ link_form.title }}</div>
+			<div class="grid_3 alpha omega">Link: {{ link_form.to }}</div>
 			<div class="clear"></div>
-			<br/>
-			<a href="{% url link_add menu.id %}"><img src="{{ MEDIA_URL }}img/add.png" class="icon"/>{% trans "Add link" %}</a>
-			<br/>
-			<br/>
-			
+			<button type="submit" class="large awesome">{% trans "Save" %}</button>
+			<a href="javascript:hide_form('{{ menu.id }}')" class="link_cancel">{% trans "Or Cancel" %}</a>
+		</form>
+		</div>
+		<div class="clear"></div>
+		<br/>
+		<a href="javascript:show_form('{{ menu.id }}')"><img src="{{ MEDIA_URL }}img/add.png" class="icon"/>{% trans "Add link" %}</a>
+		<br/>
+		</div>
 		{% endfor %}
 
 
@@ -64,11 +108,5 @@
 	</div>
 	<div class="grid_1">&nbsp;</div>
 	
-	{% comment %}
-		<div class="grid_4">
-		</div>
-	{% endcomment %}
-	
-
 	<div class="clear"></div>
 {% endblock %}

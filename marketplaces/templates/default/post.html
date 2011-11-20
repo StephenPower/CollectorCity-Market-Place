@@ -2,9 +2,10 @@
 {% load i18n %}
 
 {% block content %}
-<div id="breadcrumbs" class="grid_18">
-	<a href="{% url market_home %}">{% trans "Home" %}</a> &raquo; <a href="{% url market_blog %}">{% trans "Blog" %}</a> &raquo; {{ post.title }}
-</div>
+<ul class="breadcrumb">
+ <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider"> / </span></li>
+ <li><a href="{% url market_blog %}">{% trans "Blog" %}</a><span class="divider"> {{ post.title }}</span></li>
+</ul>
 
 <script type="text/javascript">
 
@@ -24,10 +25,14 @@ function close_shops_dialog(box_id){
 
 </script>
 
-<div class="grid_13 alpha omega block_main_content margin_h">
+<div class="grid12 offset2">
 
 {% include "default/post_render.html" %}
 
 </div>
+
+<div class="PostLinks">
+<a href="{% url market_blog %}"><h4>Back To Blog</h4></a>
+
 
 {% endblock %}

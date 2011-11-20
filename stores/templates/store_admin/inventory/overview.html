@@ -5,9 +5,30 @@
 {% block m_overview %}current_sub_menu{% endblock %}
 
 {% block main %}
-	<div class="grid_13 box">
-		
+	<div class="grid_7 box">
+		<div class="box_header"><h3>{% trans "Items Allows" %}</h3></div>
+		<div class="box_body">
+			<p>Current Items Listed: {{ total }} </p>
+			<p>Current Items Allowed: {{ items_plan_limit }}</a></p>
+		</div>	
 	</div>
-	
+	<div class="grid_7 box">
+		<div class="box_header"><h3>{% trans "Auctions" %}</h3></div>
+		<div class="box_body">
+			<p>Total Number of Items Auctioned: <p>
+			<p>Total Items Sold In Auction:</p>
+			<P>Total Items Allowed for Auction:</p>
+		</div>
+	</div>
 	<div class="clear"></div>
+
+	<div class="grid_7 box">
+		<div class="box_header"><h3>{% trans "Sessions" %}</h3></div>
+		<div class="box_body">
+			<p>Total Number of Sessions: <p>
+			<P>Total Items Allowed for Auction:</p>
+		</div>
+	</div>
+	<div class="clear"></div>
+
 {% endblock %}

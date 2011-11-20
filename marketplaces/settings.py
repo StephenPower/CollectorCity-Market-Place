@@ -1,7 +1,9 @@
 # Django settings for poc project.
+import logging
 import os.path
-from os.path import abspath, dirname, join
 import sys
+
+from os.path import abspath, dirname, join
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -17,6 +19,13 @@ sys.path.insert(4, ROOT_DIR)
 
 
 ADMINS = (
+    ('Sebastian', 'sebastian@devsar.com'),
+    ('Steve', 'stephenpatrickpower@gmail.com')
+)
+
+STAFF = (
+    ('Steve Admin', 'admin@greatcoins.com'),
+    ('Steve Alias', 'steve@greatcoins.com'),
 )
 
 MANAGERS = ADMINS
@@ -34,8 +43,8 @@ DATABASE_PORT = ''             # Set to empty string for default. Not used with 
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
 
-TIME_ZONE = 'US/Eastern'
-#TIME_ZONE = 'America/Buenos_Aires'
+#TIME_ZONE = 'US/Eastern'
+TIME_ZONE = 'America/Buenos_Aires'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -62,7 +71,7 @@ MEDIA_URL = '/media/'
 ADMIN_MEDIA_PREFIX = '/media/admin/'
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = ''
+SECRET_KEY = 'v9hgn924#r($b!-t&05+4_!w5gu%dmo%o^fh=4wk618ni=3%sy'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -112,6 +121,7 @@ INSTALLED_APPS = (
     'south',
     'uni_form',
     'haystack',
+    'rollyourown.seo',
 
     #POC
     'auth',
@@ -126,6 +136,7 @@ INSTALLED_APPS = (
     'market_community',
     'market_sell',
     'reports',
+    'support',
     'inventory',
     'payments',
     'preferences',
@@ -148,9 +159,9 @@ AUTH_PROFILE_MODULE = 'users.Profile'
 LOGIN_URL = '/buy/login/'
 LOGIN_REDIRECT_URL= '/redirect' 
 
-GOOGLE_KEY = ''
+GOOGLE_KEY = 'ABQIAAAAyzeHb2pW9itVqg6nabu-OxTXCAfJ5xohYoj4xmeFNYA-r64HsxTDZtuI70-4l5S44ZnehIPzKxMNXQ'
 
-DEFAULT_DNS = ''
+DEFAULT_DNS = 'shop.com'
 
 
 EMAIL_HOST = ""
@@ -167,12 +178,8 @@ HAYSTACK_SEARCH_ENGINE = "solr"
 HAYSTACK_SOLR_URL = "http://127.0.0.1:8983/solr/poc"
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 16
 
-import logging
 
-logging.basicConfig(level=logging.DEBUG, format='[=%(levelname)s : %(asctime)s] %(message)s',)
-
-#import sys
-#logging.basicConfig(stream=sys.stdout)
+logging.basicConfig(level=logging.INFO, format='[=%(levelname)s : %(asctime)s] %(message)s',)
 
 THEMES_ROOT = join(ROOT_DIR, "stores", 'media', 'themes') + '/'
 DEFAULT_THEME = 'default.zip'

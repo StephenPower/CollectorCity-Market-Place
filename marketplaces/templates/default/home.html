@@ -5,104 +5,163 @@
 
 {% block content %}
 
-{% comment %}
-<div class="grid_18 margin_h">
-	<h1>Welcome to {{ marketplace.name }}</h1>
-</div>
-<br/><br/>
-{% endcomment %}
-
 {% block filter_content %}
-<div class="grid_4">
-	<div class="block_filter">
-	<h4>{% trans "CATEGORIES" %}</h4>
-	<ul>
-	{% for category in marketplace.marketcategory_set.all %}
-		<li><a href="{% url market_search_category category.slug %}">{{ category.name }}</a></li>
-	{% endfor %}
-	</ul>
-	<h4>{% trans "SHOP" %} {{ marketplace.name.upper }}</h4>
-	<ul>
-		<li><a href="{% url market_auctions %}">{% trans "Auctions" %}</a></li>
-		<li><a href="{% url market_for_sale %}">{% trans "Items For Sale" %}</a></li>
-	</ul>
+
+	<div class="sidebar">
+	<div class="well">
+		<h5>{% trans "Categories" %}</h5>
+		<ul>
+			{% for category in marketplace.marketcategory_set.all %}
+			{% ifnotequal category.product_set.count 0 %}
+			<li><a href="{% url market.views.search category.slug %}">{{ category.name }}</a><span class="label info category">{{ category.product_set.count }}</span></a></li>
+
+			{% endifnotequal %}
+			{% endfor %}
+		</ul>
+		<h5>{% trans "Shop" %} {{ marketplace.name }}</h5>
+		<ul>
+			<li><a href="{% url market_auctions %}">{% trans "Auctions" %}</a></li>
+			<li><a href="{% url market_for_sale %}">{% trans "Items For Sale" %}</a></li>
+		</ul>
+		<h5>{% trans "Newsletter" %}</h5>
+  		 <form action="." method="post" class="form-stacked">
+    	    	{% if newsletter_form.email.errors %}<div data-alert="alert" class="alert-message warning">{{ newsletter_form.email.errors|join:", " }}</div>{% endif %}
+		<label>{{ newsletter_form.email.label.title }}</label>
+		{{ newsletter_form.email }} {{ newsletter_form.email.help_text }}
+		<input class="btn success" type="submit" value="{% trans 'Subscribe' %}"> </input>
+		    </form>
+ 		<h5>Buy On Great Coins</h5>
+		<ul>
+		<li><a href="{% url buy_categories %}">Categories</a></li>
+		<li><a href="{% url buy_show_search %}">Find Local Shows</a></li>
+		<li><a href="{% url buy_latest_items %}">Latest Items</a></li>
+		<li><a href="{% url buy_wish_list %}">Post Your Wish List</a></li>	
+		</ul>
+		<h5>Help Us!</h5>
+		<ul>
+		 <li><a class="btn primary" href="{% url market_survey %}" data-backdrop="true" data-keyboard="true" class="btn primary">Survey</a> </li>
+		</ul>
 	</div>
-</div>
+	</div>
 {% endblock %}
-
 {% block main_content %}
-<div class="grid_14 margin_h">
-
-<div class="block_main_content">
-
-<div class="border-bottom">
-	<h1>{{ marketplace.name.upper }} PICKS</h1>
-	<br/>
+	<div class="span12">
+	<h2>{{ marketplace.name }} Picks</h2>
+	<div class="span12">
 	{% for pick in market_place_picks %}
+	<div id="{{ pick.product.id }}" class="modal hide fade in">
+            <div class="modal-header">
+              <a href="#" class="close">&times;</a>
+              <h3>{{ pick.product.title }}</h3>
+            </div>
+            <div class="modal-body">
+              <p><img src="{{pick.product.child.image.image.url_100x100}}" >
+	     {{ pick.product.description|striptags|safe }}</p>
+	    <p> 
+              </div>
+            <div class="modal-footer">
+              <a href="{% url market_buy_product_redirect pick.product.id %}" target="_blank" class="btn primary">Go To Product Page</a>
+              <a href="#" class="close btn secondary">Close</a>
+            </div>
+          </div>
+ 
+
+		{% if pick.product.child.image %}
 		<div class="item_box">
-			<a href="{% url market_buy_product_redirect pick.product.id %}" target="_blank">
-			{% if pick.product.child.image %}
-			<img class="item" src="{{ pick.product.child.image.image.url_100x100 }}" title="{{ pick.product.description|striptags }}"/>
-			{% else %}
-			<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ pick.product.description|striptags }}"/>
-			{% endif %}
-			</a>
-			<div class="title">{{ pick.product.title|truncatewords:5 }}</div>
-			<div class="dealer">{{ pick.product.child.shop.name|truncatewords:2 }}</div>
-			{% with pick.product.child.price|money_format2:pick.product.shop as price %}
-				<div class="price">{{ price.0 }}.<span class="price_small">{{ price.1 }}</span></div>
-			{% endwith %}
-		</div>
+		<a data-controls-modal="{{pick.product.id }}" data-backdrop="truc" data-keyboard="true">
+		<img class="item" title="{{ pick.product.title|truncatewords:5 }}"  src="{{ pick.product.child.image.image.url_100x100 }}" alt="{{ pick.product.description|striptags }}"/>
+		{% else %}
+		<img  class="item" src="{{ media_url }}img/no-photo-medium.jpg" title="{{ pick.product.description|striptags }}" alt="{{ pick.product.description|striptags }}"/>
+		{% endif %}
+		<div class="title">{{ pick.product.title|truncatewords:5 }}</div>
+		<div class="dealer">{{ pick.product.child.shop.name|truncatewords:2 }}</div>
+		{% with pick.product.child.price|money_format2:pick.product.shop as price %}
+		<div class="price">{{ price.0 }}.<span class="price_small">{{ price.1 }}</span></div>
+		{% endwith %}
+	</a></div>
 	{% endfor %}
-	
-	<div class="clear"></div>
-	<br/>
-	<br/>
-</div>
 
-<div class="border-bottom">
-	<h1>{% trans "FEATURED DEALERS" %}</h1><br/>
-	
+	</div>	
+	<div class="span12">
+	<h2>{% trans "Featured Dealers" %}</h2>
 	{% for pick in featured_dealers %}
-
-		<div class="dealer_box">
-			<a href="http://{{ pick.shop.default_dns }}" target="_blank">
+	
+	<div id="{{ pick.shop.name }}" class="modal hide fade">
+            <div class="modal-header">
+              <a href="#" class="close">&times;</a>
+              <h3>{{ pick.shop.name|title }}</h3>
+            </div>
+            <div class="modal-body">
+              <p><img src="{{pick.shop.owner.get_profile.photo.url_400x400 }}">
+	     {{ pick.description|striptags }}</p>
+              </div>
+            <div class="modal-footer">
+              <a href="http://{{ pick.shop.default_dns }}" target="_blank" class="btn primary">Go Dealer's Site</a>
+              <a href="#" class="close btn secondary">Close</a>
+            </div>
+          </div>
+ 
+		<div class="span5">
+			<div class="dealer_box">
 			{% if pick.shop.owner.get_profile.photo %}
 				<img class="item" alt="{{ pick.shop.name }}" src="{{ pick.shop.owner.get_profile.photo.url_400x400 }}" height="100" width="100"/>
 			{% else %}
 				<img class="item" alt="{{ pick.shop.name }}" src="{{ MEDIA_URL }}img/no-photo-shop.png" height="100" width="100"/>
 			{% endif %}
-			</a>
 			<div class="description">
-				<h2>{{ pick.shop.admin.get_full_name }}</h2>
-				<p>{{ pick.description|safe|truncatewords:30 }}</p>
-			</div>
+				<p>{{ pick.shop.admin.get_full_name }}</p>
+				<p>{{ pick.description|safe|truncatewords:10 }}</p>
+		       </div>
 		</div>
-		
+		<button data-controls-modal="{{ pick.shop.name }}" data-backdrop="true" data-keyboard="true" class="btn success">More Info</button>
+ 		</div>
+	
 	{% endfor %}
 
-	<div class="clear"></div>
-	<br/>
-	<br/>
-</div>
 
-<div>
-	<h1>{% trans "RECENTLY LISTED ITEMS" %}</h1><br/>
+
+	</div>
+	<div class="span12">
+	<h2>{% trans "Recently Listed Items" %}</h2>
+
 	
+
 	{% for product in recently_products %}
+        <div id="{{ product.id }}" class="modal hide fade">
+	  <div class="modal-header">
+              <a href="#" class="close">&times;</a>
+              <h3>{{ product.title }}</h3>
+          </div>
+           <div class="modal-body">
+              <p><img src="{{product.child.image.image.url_100x100}}" >
+	     {{ product.description|striptags|safe }}</p>
+              </div>
+
+            <div class="modal-footer">
+              <a href="{% url market_buy_product_redirect product.id %}" target="_blank" class="btn primary">Go To Product Page</a>
+              <a href="#" class="close btn secondary">Close</a>	
+	    </div>
+ 	</div>
+
+
+
 	{% if product.child.image %}
-		<a href="{% url market_buy_product_redirect product.id %}" target="_blank"><img class="item" title="{{ product.title }}" src="{{ product.child.image.image.url_100x100 }}" height="46" width="46"/></a>
+	 <div class="ImgHolder">
+	<a data-controls-modal="{{ product.id }}" data-backdrop="truc" data-keyboard="true">
+	<img class="item" alt=" {{ product.title }}" title="{{ product.title }}" width="50px" src="{{ product.child.image.image.url_100x100 }}" /></a>
+	</div>
 	{% else %}
-		<a href="{% url market_buy_product_redirect product.id %}" target="_blank"><img class="item" title="{{ product.title }}" src="{{ MEDIA_URL }}img/no-photo-small.jpg" height="46" width="46"/></a>
+	
+	 <div class="ImgHolder">
+	<a data-controls-modal="{{ product.id }}" data-backdrop="truc" data-keyboard="true">
+	<img class="item" alt=" {{ product.title }}" title="{{ product.title }}" width="50px" src="{{ product.child.image.image.url_100x100 }}" /></a>
+	</div>
+
+
 	{% endif %}
 	
 	{% endfor %}
-	
-	<div class="clear"></div>
-	</div>
 </div>
-
 </div>
 {% endblock %}
-
 {% endblock %}

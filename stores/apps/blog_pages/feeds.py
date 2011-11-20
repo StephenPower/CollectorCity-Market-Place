@@ -16,7 +16,7 @@ class LatestPostFeed(Feed):
         return "http://%s/blog/" % obj.default_dns
 
     def items(self, obj):
-        return Post.objects.filter(shop = obj).order_by('-date_time')[:100]
+        return Post.objects.filter(shop = obj).filter(draft=False).order_by('-date_time')[:100]
 
     def item_title(self, item):
         return item.title

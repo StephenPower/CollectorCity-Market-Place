@@ -24,17 +24,31 @@ def home(request):
     from shops.models import Shop
     from inventory.models import Product
     from market_buy.models import MarketPlacePick, DealerPick
-
+    from market.forms import MarketMailingListMemberForm
+    
     marketplace = request.marketplace
     market_place_picks = MarketPlacePick.objects.filter(marketplace=marketplace).order_by("order")
     featured_dealers = DealerPick.objects.filter(marketplace=marketplace).order_by("order")[:2]
     recently_products = Product.objects.filter(shop__marketplace=marketplace, has_image=True).order_by("-date_time")[:20]
     
+    if request.method == "POST":
+        form = MarketMailingListMemberForm(request.POST)
+        if form.is_valid():
+            member = form.save(commit=False)
+            member.marketplace = request.marketplace
+            member.save()
+            request.flash['message'] = unicode(_("Email successfully registered."))
+            request.flash['severity'] = "success"
+            return HttpResponseRedirect(reverse("market_home"))
+    else:
+        form = MarketMailingListMemberForm()
+        
     return render_to_response("%s/home.html" % request.marketplace.template_prefix, 
                               {
                                'market_place_picks' : market_place_picks,
                                'featured_dealers' : featured_dealers,
                                'recently_products' : recently_products,
+                               'newsletter_form': form
                                }, 
                               RequestContext(request))
 
@@ -105,7 +119,7 @@ def search(request, category_slug=None, subcategory_slug=None):
         raise Http404
 
     paged = (pager.num_pages > 1)
-
+    
     return render_to_response("%s/search.html" % request.marketplace.template_prefix, 
         {'current_category' : current_category, 'current_subcategory': current_subcategory,
         'products' : paginator, 'pager':pager,
@@ -285,11 +299,22 @@ def contact_us(request):
         phone = request.POST.get('phone', 'unknown')
         email = request.POST.get('email', 'unknown')
         message = request.POST.get('message', '- no message -')
-        
+    
+        market_admin = request.marketplace.contact_email    
         msg = "Message from %s (email %s, phone %s).\n%s" % (name, email, phone, message)
-        send_mail('Contact Form From %s' % request.marketplace, msg, 'admin@greatcoins.com',  [request.marketplace.contact_email], fail_silently=True)
+        send_mail('Contact Form From %s' % request.marketplace, msg, settings.EMAIL_FROM,  [mail for (name, mail) in settings.STAFF]+[market_admin], fail_silently=True)
         
         return HttpResponseRedirect(reverse("market_home"))
     
     return render_to_response("%s/contact_us.html" % request.marketplace.template_prefix, 
+                              {} , RequestContext(request))
+
+def survey(request):
+    return render_to_response("%s/survey.html" % request.marketplace.template_prefix, 
+                              {} , RequestContext(request))
+def sitemap(request):
+    return render_to_response("%s/sitemap.xml" % request.marketplace.template_prefix, 
+                              {} , RequestContext(request))
+def robot(request):
+    return render_to_response("%s/robots.txt" % request.marketplace.template_prefix, 
                               {} , RequestContext(request))

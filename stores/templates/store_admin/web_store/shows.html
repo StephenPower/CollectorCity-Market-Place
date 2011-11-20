@@ -6,7 +6,8 @@
 
 {% block title_sub_menu %}Shows{% endblock %}
 
-{% block super_main %}
+{% block main %}
+{% if shop.shows_feature_enabled %}
 	<div class="bar_title">
 		<div class="grid_2 alpha omega bar_column"><b>{% trans "Date"%}</b>
 			<a href="./?sort_by=-date"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
@@ -37,4 +38,20 @@
 			<div class="clear"></div>
 		</div>
 	{% endfor %}
+	
+	<p>
+	<a class="awesome small" href="{% url web_store_add_show %}">Add Your Own Show</a>
+	</p>
+{% else %}
+	<div class="enable_feature"><a class="enable_feature_box" href="{% url enable_feature 'show_attendance' %}">{% trans "Enable Show Listing Feature" %}</a><img src="{{ MEDIA_URL }}img/help-icon.png" onclick="javascript:show_help_text('htb_container');"/></div>
+	
+	<div class="htb_container">
+		<img id="stick" src="{{ MEDIA_URL }}img/stick.png"/>
+		<div class="help_text_box">
+			{{ shop.shows_feature_help_text }}
+			<div class="close"><img onclick="javascript: close_help_text('htb_container')" src="{{ MEDIA_URL }}img/remove.png"/></div>
+		</div>
+	</div>
+{% endif %}
+
 {% endblock %}
