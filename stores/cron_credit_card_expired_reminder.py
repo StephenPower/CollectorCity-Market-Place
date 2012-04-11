@@ -7,7 +7,7 @@ import datetime
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 from django.core.management import setup_environ
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 #from django.db import transaction
 
 import settings
@@ -48,12 +48,24 @@ def send_credit_card_expired_reminder():
             
             if expired:
                 msg = "\nWe have detected that your credit card - %s (%s) -  is expired. Please go to your Shop Admin Console and update your credit card information." % (cc_type, cc_masked)
-                send_mail('Credit Card Expired', msg, settings.EMAIL_FROM, [shop.owner().email], fail_silently=True)
+                mail = EmailMessage(subject='Credit Card Expired',
+                                    body=msg,
+                                    from_email=settings.EMAIL_FROM,
+                                    to=[shop.owner().email],
+                                    headers={'X-SMTPAPI': '{\"category\": \"Credit Card Expired\"}'})
+                mail.send(fail_silently=True)
+#                send_mail('Credit Card Expired', msg, settings.EMAIL_FROM, [shop.owner().email], fail_silently=True)
                 
         except Exception, e:
             logging.critical(e)
-            send_mail('Error when trying to send email notifying that customer have card expired!', e , settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF], fail_silently=True)
-        
-        
+            mail = EmailMessage(subject='Error when trying to send email notifying that customer have card expired!',
+                                body=e,
+                                from_email=settings.EMAIL_FROM,
+                                to=[mail for (name, mail) in settings.STAFF],
+                                headers={'X-SMTPAPI': '{\"category\": \"Error\"}'})
+            mail.send(fail_silently=True)
+#            send_mail('Error when trying to send email notifying that customer have card expired!', e , settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF], fail_silently=True)
+
+
 if __name__ == "__main__":
     send_credit_card_expired_reminder()

@@ -4,7 +4,7 @@
 {% block content %}
 <ul class="breadcrumb">
  <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider"> / </span></li>
- <li><a href="{% url market_buy %}">{% trans "Buy" %}</a><span class="divider"> / </span</li>
+ <li><a href="{% url market_buy %}">{% trans "Buy" %}</a><span class="divider"> / </span></li>
  <li class="active">{% trans "Shop Local" %}</li>
 </ul>
 <div class="span12 offset2">
@@ -28,8 +28,8 @@
 			<option selected="selected">150</option>
 			<option>300</option>
 			<option>600</option>
-		</select></br></br>
-		<input type="submit" class="btn primary" alt="" value="{% trans 'Search' %}"/>
+		</select>
+		<input type="submit" class="btn primary" value="{% trans 'Search' %}"/>
 	
 		{% comment %}
 		<label>Street</label><input type="text" name="street" value="1600 Pensylvannia"/>
@@ -60,7 +60,7 @@
 		{% if shop.1.owner.get_profile.photo %}
 		<img class="item" alt="{{ shop.1.name }}" src="{{ shop.1.owner.get_profile.photo.url_128x135 }}" height="128" width="135"/>
 		{% else %}
-		<img class="item" alt="{{ shop.1.name }}" src="{{ MEDIA_URL }}img/no-photo-big.jpg" height="128" width="135"/>
+		<img class="item" alt="{{ shop.1.name }}" src="{{ STATIC_URL }}img/no-photo-big.jpg" height="128" width="135"/>
 		{% endif %}
 		{{ shop.1.admin.get_full_name }}
 		{{ shop.1.default_dns }}
@@ -75,6 +75,6 @@
 
 
 {% endif %}
-</div>
+
 </div>
 {% endblock %}

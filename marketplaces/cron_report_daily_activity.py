@@ -23,7 +23,7 @@ Total Cancelations This Today
 """
 
 def report_daily_activity():
-    from django.core.mail import EmailMultiAlternatives
+    from django.core.mail import EmailMultiAlternatives, EmailMessage
     from django.template import Context, loader
     from reports.views import get_daily_activity_data
     
@@ -44,7 +44,13 @@ def report_daily_activity():
                 
     except Exception, e:
         logging.info(e)
-        send_mail('Error when trying to generate Daily Activity Report', e , settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF], fail_silently=True)
+        mail = EmailMessage(subject='Error when trying to generate Daily Activity Report',
+                            body=e,
+                            from_email=settings.EMAIL_FROM,
+                            to=[mail for (name, mail) in settings.STAFF],
+                            headers={'X-SMTPAPI': '{\"category\": \"Error\"}'})
+        mail.send(fail_silently=True)
+#        send_mail('Error when trying to generate Daily Activity Report', e , settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF], fail_silently=True)
         
         
 if __name__ == "__main__":

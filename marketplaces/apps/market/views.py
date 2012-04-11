@@ -1,25 +1,30 @@
+import datetime
 import logging
 import random
 
 from django.conf import settings
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
+from django.core.cache import cache
 from django.db import transaction
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
+from django.views.decorators.cache import cache_page
 
 from haystack.query import SearchQuerySet
-from market.models import MarketSubCategory, MarketCategory
-
+from market.models import MarketSubCategory, MarketCategory, ContactFormInfo
+from market.forms import ContactForm
 from auth.decorators import login_required
 
 PRODUCTS_PER_PAGE = 16
 ITEMS_PER_PAGE = 20
 LOTS_PER_PAGE = 20
 
+
+@cache_page(60 * 5)
 def home(request):
     from shops.models import Shop
     from inventory.models import Product
@@ -27,7 +32,7 @@ def home(request):
     from market.forms import MarketMailingListMemberForm
     
     marketplace = request.marketplace
-    market_place_picks = MarketPlacePick.objects.filter(marketplace=marketplace).order_by("order")
+    market_place_picks = MarketPlacePick.get_available_picks(marketplace)
     featured_dealers = DealerPick.objects.filter(marketplace=marketplace).order_by("order")[:2]
     recently_products = Product.objects.filter(shop__marketplace=marketplace, has_image=True).order_by("-date_time")[:20]
     
@@ -52,13 +57,16 @@ def home(request):
                                }, 
                               RequestContext(request))
 
-def search(request, category_slug=None, subcategory_slug=None):
+def search(request, category_slug=None, subcategory_slug=None, shop_id=None):
     from inventory.models import Product
     
     marketplace = request.marketplace
     
     sqs = SearchQuerySet().models(Product).load_all()
-    sqs = sqs.filter(marketplace_id=marketplace.id)
+    if shop_id:
+        sqs = sqs.filter(marketplace_id=marketplace.id, shop_id=shop_id)
+    else:
+        sqs = sqs.filter(marketplace_id=marketplace.id)
 
     current_category = None
     current_subcategory = None
@@ -84,8 +92,12 @@ def search(request, category_slug=None, subcategory_slug=None):
             # only search for a category when there's a valid category name       
             current_category = get_object_or_404(
                 MarketCategory, name=category_name, marketplace=marketplace)
-            
-    
+
+    if current_category and current_category.slug == 'small-cents':
+        small_cents_dealers = current_category.related_shops()
+    else:
+        small_cents_dealers = None
+
     getvars = encodevars(request)
 
     search_text = request.GET.get("q", None)
@@ -125,9 +137,39 @@ def search(request, category_slug=None, subcategory_slug=None):
         'products' : paginator, 'pager':pager,
         'paged': paged, 'total': pager.count, 'getvars': getvars,
         'sort_mode' : sort_mode,
-        'view_mode' : request.session.get("view_mode", "list")},        
+        'view_mode' : request.session.get("view_mode", "list"),
+        'small_cents_dealers': small_cents_dealers},
         RequestContext(request))
+
+def view_item(request, product_id):
+    from inventory.models import Product
+
+    marketplace = request.marketplace
+    product = get_object_or_404(Product, shop__marketplace=marketplace, id=product_id)
+    shop_categories = product.shop.categories_list()
+    related_shops = product.category.related_shops()
+#    related_shops.remove(product.shop)
+    shop_transactions = product.shop.total_transactions()
     
+    images = []
+    if hasattr(product, 'item'):
+        for image in product.item.imageitem_set.all():
+            images.append(image)
+        price = product.item.price
+    elif hasattr(product, 'lot'):
+        for image in product.lot.imagelot_set.all():
+            images.append(image)
+        price = product.lot.price()
+
+    return render_to_response("%s/view_item.html" % marketplace.template_prefix,
+        { 'product': product,
+          'images': images,
+          'price': price,
+          'shop_categories': shop_categories,
+          'related_shops': related_shops,
+          'shop_transactions': shop_transactions },
+        RequestContext(request))
+
 def encodevars(request):
     from django.http import QueryDict
     dic = (request.GET).copy()
@@ -178,7 +220,7 @@ def auctions(request):
 def for_sale(request):
     from for_sale.models import Item
     marketplace = request.marketplace
-    item_list = Item.objects.filter(shop__marketplace=marketplace)
+    item_list = Item.objects.filter(shop__marketplace=marketplace, qty__gte=1)
     
     pager = Paginator(item_list, ITEMS_PER_PAGE)
     try:
@@ -291,30 +333,77 @@ def blog(request):
                                'total': pager.count,
                                } , RequestContext(request))
 
-
 def contact_us(request):
-    
     if request.method == "POST":
-        name = request.POST.get('name', 'unknown')
-        phone = request.POST.get('phone', 'unknown')
-        email = request.POST.get('email', 'unknown')
-        message = request.POST.get('message', '- no message -')
-    
-        market_admin = request.marketplace.contact_email    
-        msg = "Message from %s (email %s, phone %s).\n%s" % (name, email, phone, message)
-        send_mail('Contact Form From %s' % request.marketplace, msg, settings.EMAIL_FROM,  [mail for (name, mail) in settings.STAFF]+[market_admin], fail_silently=True)
-        
-        return HttpResponseRedirect(reverse("market_home"))
-    
+        form = ContactForm(request.POST)
+        market_admin = request.marketplace.contact_email
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            email = form.cleaned_data['email']
+            phone = form.cleaned_data['phone']
+            message = form.cleaned_data['message']
+
+            msg = "Message from %s (email %s, phone %s).\n%s" % (name, email, phone, message)
+            mail = EmailMessage(subject='Contact Form From %s' % request.marketplace,
+                                body=msg,
+                                from_email=settings.EMAIL_FROM,
+                                to=[mail for (name, mail) in settings.STAFF]+[market_admin],
+                                headers={'X-SMTPAPI': '{\"category\": \"Contact Form\"}'})
+            mail.send(fail_silently=True)
+
+            return HttpResponseRedirect(reverse("market_home"))
+        else:
+            if form['captcha'].errors:
+                email = form.data.get('email', None)
+                ip = request.META['REMOTE_ADDR']
+                contact_form_info, created = ContactFormInfo.objects.get_or_create(marketplace=request.marketplace, email=email, ip=ip)
+                some_time = datetime.datetime.now() - datetime.timedelta(seconds=120)
+                if not created and contact_form_info.datetime < some_time:
+                    msg = 'Bad captcha posted from %s\nUser email: %s\n\nForm info\nName: %s\nPhone: %s\nMessage: %s' \
+                         %(ip, \
+                           form.data['email'] or 'unknown', \
+                           form.data['name'] or 'unknown', \
+                           form.data['phone'] or 'unknown', \
+                           form.data['message'] or 'unknown')
+
+                    mail = EmailMessage(subject='Contact Form, bad captcha',
+                                        body=msg,
+                                        from_email=settings.EMAIL_FROM,
+                                        to=[market_admin],
+                                        headers={'X-SMTPAPI': '{\"category\": \"Error\"}'})
+                    mail.send(fail_silently=True)
+    else:
+        form = ContactForm()
+
     return render_to_response("%s/contact_us.html" % request.marketplace.template_prefix, 
-                              {} , RequestContext(request))
+                              {'form': form} , RequestContext(request))
 
 def survey(request):
     return render_to_response("%s/survey.html" % request.marketplace.template_prefix, 
                               {} , RequestContext(request))
-def sitemap(request):
-    return render_to_response("%s/sitemap.xml" % request.marketplace.template_prefix, 
-                              {} , RequestContext(request))
+
+def sitemap(request, sitemap_id=None):
+    if sitemap_id:
+        sitemap_template = "%s/sitemap%s.xml" % (request.marketplace.template_prefix, sitemap_id) 
+    else:
+        sitemap_template = "%s/sitemap.xml" % request.marketplace.template_prefix
+    
+    return render_to_response(sitemap_template, { 'base_url': request.build_absolute_uri(reverse("market_home")) },
+                              RequestContext(request))
+
+def sitemap_index(request):
+    return render_to_response("%s/sitemap_index.xml" % request.marketplace.template_prefix, { 'base_url': request.build_absolute_uri(reverse("market_home")) },
+                              RequestContext(request))
+
+def sitemap_products(request):
+    from inventory.models import Product
+
+    products = Product.objects.filter(shop__marketplace=request.marketplace)
+    return render_to_response("%s/sitemap_products.xml" % request.marketplace.template_prefix,
+                              { 'base_url': request.build_absolute_uri(reverse("market_home")).rstrip('/'),
+                                'products':  products },
+                              RequestContext(request))
+
 def robot(request):
     return render_to_response("%s/robots.txt" % request.marketplace.template_prefix, 
                               {} , RequestContext(request))

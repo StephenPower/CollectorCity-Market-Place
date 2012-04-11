@@ -6,32 +6,35 @@
 {% block community_content %}
 <h2>{% trans "FAQ - Frequently Asked Questions" %}</h2>
 {% for category in categories %}
-{% if category.faqentry_set.count %}
-<div class="alert-message block-message info span5 FaqCategories">
-	<h5>{{ category.name }}</h5>
-	<ul>
-{% for entry in category.faqentry_set.all %}
-		<li><a href="#{{ entry.anchor }}">{{ entry.question }}</a></li>
-{% endfor %}
-	</ul>
-</div>
-{% endif %}
+	{% if category.faqentry_set.count %}
+		<div class="alert-message block-message info span5 FaqCategories">
+			<h3>{{ category.name }}</h3>
+			<ul>
+			{% for entry in category.faqentry_set.all %}
+				<li><a href="#{{ entry.anchor }}">{{ entry.question }}</a></li>
+			{% endfor %}
+			</ul>
+		</div>
+	{% endif %}
 {% endfor %}
 
 {% for category in categories %}
-{% if category.faqentry_set.count %}
-	<div class="Faq_Category">
-	<h4>{{ category.name }}</h4>
-	{% if category.description %}
-	 <p>{{ category.description }}</p>
+	{% if category.faqentry_set.count %}
+		<div class="Faq_Category">
+		<h3>{{ category.name }}</h3>
+			{% if category.description %}
+	 			<p>{{ category.description }}</p>
+			{% endif %}
+			
+			{% for entry in category.faqentry_set.all %}
+			<div id="{{ entry.anchor }}" class="faq_entry">
+				<h5>{{ entry.question }}</h5>
+				<p>{{ entry.answer|safe }}</p>
+			</div>
+			{% endfor %}
+		</div>
 	{% endif %}
-{% for entry in category.faqentry_set.all %}
-	<div id="{{ entry.anchor }}" class="faq_entry">
-		<h4>{{ entry.question }}</h4>
-		<p>{{ entry.answer|safe }}</p>
-	</div>
-{% endfor %}
-{% endif %}
+
 {% endfor %}
 
 {% endblock %}

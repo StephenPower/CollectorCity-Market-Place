@@ -42,10 +42,12 @@ def welcome(request, shop_id):
     except Subscription.DoesNotExist:
         subscription = None
 
-    return render_to_response("%s/sell/welcome.html" % request.marketplace.template_prefix, 
-                              {'shop': shop, 'subscription': subscription, 'shopinfo': shopinfo},
-                              RequestContext(request))
-    
+#    return render_to_response("%s/sell/welcome.html" % request.marketplace.template_prefix, 
+#                              {'shop': shop, 'subscription': subscription, 'shopinfo': shopinfo},
+#                              RequestContext(request))
+
+    return HttpResponseRedirect("http://%s" % shop.default_dns)
+
 def privacy_policy(request):
     
     return render_to_response("%s/sell/privacy.html" % request.marketplace.template_prefix, 

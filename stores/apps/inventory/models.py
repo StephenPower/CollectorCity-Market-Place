@@ -53,7 +53,7 @@ class Product(models.Model):
             new_latest = Product.objects.filter(shop=shop).order_by("-id")[0]
             new_latest.latest_item = True
             new_latest.save()
-        except Product.DoesNotExist:
+        except (Product.DoesNotExist, IndexError):
             pass
             
     def update_has_image(self):

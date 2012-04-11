@@ -7,7 +7,7 @@ import datetime
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 from django.core.management import setup_environ
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 #from django.db import transaction
 
 import settings
@@ -44,8 +44,14 @@ def report_daily_activity():
                 
     except Exception, e:
         logging.info(e)
-        #send_mail('Error when trying to generate Daily Activity Report', e , settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF], fail_silently=True)
-        send_mail('Error when trying to generate Daily Activity Report', e , settings.EMAIL_FROM, ["martinriva@gmail.com"], fail_silently=True)
+        mail = EmailMessage(subject='Error when trying to generate Daily Activity Report',
+                            body=e,
+                            from_email=settings.EMAIL_FROM,
+                            to=[mail for (name, mail) in settings.STAFF],
+                            headers={'X-SMTPAPI': '{\"category\": \"Error\"}'})
+        mail.send(fail_silently=True)
+#        send_mail('Error when trying to generate Daily Activity Report', e , settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF], fail_silently=True)
+#        send_mail('Error when trying to generate Daily Activity Report', e , settings.EMAIL_FROM, ["martinriva@gmail.com"], fail_silently=True)
         
         
 if __name__ == "__main__":

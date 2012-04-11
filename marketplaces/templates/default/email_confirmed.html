@@ -16,11 +16,11 @@
  <div id="modal-email-confirmed" class="modal hide fade">
             <div class="modal-header">
               <a href="#" class="close">&times;</a>
-              <h3>Welcome {{user}} to {{ marketplace.name|title }} </h3>
+              <h3>Welcome {{user}} to {{ marketplace.title|title }} </h3>
             </div>
             <div class="modal-body">
               <p class="alert-message block-message success">Your email is confirmed!!</p>
-            <p>You can Buy or Sell on {{ marketplace.name|title }} click below</p>
+            <p>You can Buy or Sell on {{ marketplace.title|title }} click below</p>
               </div>
             <div class="modal-footer">
               <a href="{% url market_buy %}" target="_blank" class="btn primary">Buy On Great Coins</a>

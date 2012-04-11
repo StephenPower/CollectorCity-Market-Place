@@ -11,7 +11,7 @@
 </ul>
 
 <h2>{% trans "Latest Items" %}</h2>
-<p>Find the most recently posted items before everyone else does.. Don't forget about your <a href="{% url buy_wish_list %}" class="btn primary"/>wish list</a></p>
+<p>Find the most recently posted items before everyone else does. Don't forget about your <a href="{% url buy_wish_list %}" />wish list.</a></p>
 
 
 
@@ -36,7 +36,7 @@
               </div>
             <div class="modal-footer">
               <a href="{% url market_buy_product_redirect product.id %}" target="_blank" class="btn primary">Go To Product Page</a>
-              <a href="/" class="btn secondary">Go Back To Marketplace</a>
+              <a href="/">Go Back To Marketplace</a>
             </div>
           </div>
    </div>
@@ -50,7 +50,7 @@
 	{% if product.child.image %}		
 	<img class="item" src="{{ product.child.image.image.url_100x100 }}" title="{{ product.description|striptags }}"/>	
 	{% else %}			
-	<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ product.description|striptags }}"/>	
+	<img class="item" src="{{ STATIC_URL }}img/no-photo-medium.jpg" title="{{ product.description|striptags }}"/>	
 	{% endif %}			
 	<div class="title">{{ product.title|truncatewords:5 }}</div>		
 	<div class="dealer">{{ product.shop|truncatewords:2 }}</div>
@@ -70,7 +70,7 @@
 			{% if other_product.child.image %}
 			<img  src="{{ other_product.child.image.image.url_100x100 }}" width="90px" title="{{ other_product.description|striptags }}"/></img>
 			{% else %}
-			<img src="{{ MEDIA_URL }}img/no-photo-small.jpg" width="90px" title="{{ other_product.description|striptags }}"/></img>
+			<img src="{{ STATIC_URL }}img/no-photo-small.jpg" width="90px" title="{{ other_product.description|striptags }}"/></img>
 			{% endif %}
 			</a>
 		{% endfor%}
@@ -81,8 +81,7 @@
 </table>
 </div>
 
-<h4 class="offset2"><a href="{% url buy_latest_items %}" class="btn primary"/>Back To Latest Items</a></h4>
-<h4 class="offset2"><a href="{% url market_buy %}" class="btn info"/>More Ways to Buy...</a></h2>
+<h4 class="offset2"><a href="{% url market_buy %}" />More Ways to Buy...</a></h2>
 
 
 </div>

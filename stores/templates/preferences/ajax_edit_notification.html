@@ -53,6 +53,7 @@
     	<ul>
     		<li>buyer_name</li>
 			<li>buyer_email</li>
+			<li>buyer_phone</li>
 			<li>gateway</li>
 			<li>shop</li>
 			<li>shipping_street_address</li>
@@ -65,7 +66,7 @@
 			<li>sell_without_taxes</li>
 			<li>sell_total_taxes</li>
 			<li>sell_total_shipping</li>
-			<li>items (item: qty, title, total)</li>
+			<li>items (item: id, qty, title, total, link)</li>
 		</ul>
 		{% endif %}
 		
@@ -89,7 +90,15 @@
 		    <li>lot_description</li>
 		</ul>
 		{% endif %}
-		
+		{% if key == 'BCN' %}
+			<ul>
+				<li>shop</li>
+				<li>bidder_name</li>
+				<li>cart_date</li>
+				<li>cart_total</li>
+				<li>items (qty, title, price, total)</li>
+			</ul>
+		{% endif %}
 	</div>
 	<div class="clear"></div>	
 </form>

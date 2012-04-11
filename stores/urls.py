@@ -66,10 +66,16 @@ urlpatterns = patterns('',
     url(r'^blog/$', 'bidding.views.bidding_blog', name='bidding_blog'),
     url(r'^blog/latest/feed/$', LatestPostFeed()),
     url(r'^home/$', 'bidding.views.bidding_home', name='bidding_home'),
-    url(r'^pages/sitemap\.xml$', 'bidding.views.pages_sitemap', name='bidding_sitemap'),
+    url(r'^sitemap\.xml$', 'bidding.views.pages_sitemap', name='bidding_sitemap'),
     url(r'^pages/([^/]+)/$', 'bidding.views.pages', name='bidding_page'),
-
+    url(r'^robots\.txt$', 'bidding.views.pages_robots', name='bidding_robots'),
+    url(r'^privacy_policy/$', 'bidding.views.privacy_policy', name='bidding_privacy_policy'),
     url(r'^blog/view_post/([\d]+)/$', 'bidding.views.bidding_view_post', name='bidding_view_post'),
+    
+    
+    url(r'^refund/', 'bidding.views.bidding_refund', name='bidding_refund'),
+    url(r'^privacy_policy/', 'bidding.views.privacy_policy', name='bidding_privacy_policy'),
+    url(r'^terms_of_service/', 'bidding.views.terms_of_service', name='bidding_terms_of_service'),
     
     #Search
     url(r'^search/$', 'bidding.views.bidding_search', name='bidding_search'),
@@ -79,10 +85,20 @@ urlpatterns = patterns('',
     url(r'^logout/$', 'auth.views.logout', name='logout'),
     url(r'^register/$', 'users.views.register', name='user_register'),
     url(r'^login_admin/$', 'auth.views.login', {'template_name': 'core/login.html'}, name='login_admin'),
-
+    
+    #Tinymce
+    (r'^tinymce/', include('tinymce.urls')),
+    
     #Other
     url(r'^map/([\d]+)/$', 'bidding.views.bidding_map', name='bidding_map'),        
-    (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
+    
+    (r'^media/(?P<path>.*)$', 'django.views.static.serve', 
+        {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
+                           
+    (r'^public/(?P<path>.*)$', 'django.views.static.serve', 
+        {'document_root': settings.STATIC_ROOT, 'show_indexes': True}),
+    
+    (r'^media_out_s3/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT_OUT_S3, 'show_indexes': True}),
 
 )
 

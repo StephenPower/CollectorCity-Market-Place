@@ -16,8 +16,9 @@
 		<div class="grid_4 alpha omega bar_column"><b>{% trans "Show Name"%}</b>
 			<a href="./?sort_by=name"><img src="{{ MEDIA_URL }}img/icon_down.gif"/></a>
 		</div>
-		<div class="grid_6 alpha omega bar_column"><b>{% trans "Address"%}</b></div>
+		<div class="grid_5 alpha omega bar_column"><b>{% trans "Address"%}</b></div>
 		<div class="grid_4 alpha omega bar_column"><b>{% trans "Response"%}</b></div>
+		<div class="grid_1 alpha omega bar_column"><b>{% trans "Edit"%}</b></div>
 		<div class="clear"></div>
 	</div>
 
@@ -25,7 +26,7 @@
 		<div class="{% cycle 'row_1' 'row_2' %}">
 			<div class="grid_2 alpha omega column">{{ show.date_from }}</div>
 			<div class="grid_4 alpha omega column">{{ show.name }}</div>
-			<div class="grid_6 alpha omega column">
+			<div class="grid_5 alpha omega column">
 			{{ show.address }}, 
 			{{ show.city }}, 
 			{{ show.state }} ({{ show.zip }})
@@ -35,6 +36,13 @@
 			{% else %}
 				<div class="grid_4 alpha omega column">I will not go (<a href="{% url web_store_show_go show.id %}">{% trans "change to going" %}</a>)</div>
 			{% endif %}
+			
+			{% if show|my_show:shop %}
+				<div class="grid_1 alpha omega column">
+					<a href="{% url web_store_edit_show show.id %}"><img src="{{ MEDIA_URL }}img/edit.png"></a>
+				</div>
+			{% endif %}
+			
 			<div class="clear"></div>
 		</div>
 	{% endfor %}

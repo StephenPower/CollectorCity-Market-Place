@@ -1,0 +1,20 @@
+{% extends 'store_admin/inventory/base_carts.html' %}
+{% load i18n %}	
+
+{% block super_main %}
+	<div class="main">
+		<div class="grid_16 box">
+			<div class="grid_8 margin_h">
+				<h3>{% trans "Buyer Name" %}: {{ first_name }}, {{ last_name }}</h3>
+				<p><b>{% trans "Email" %}:</b> {{ email }}</p>
+				<p><b>{% trans "Phone" %}:</b> {{ phone }}</p>
+				<br>
+				<p><b>{% trans "Street Address" %}:</b> {{ street_address }}</p>
+				<p><b>{% trans "City" %}:</b> {{ city }}</p>
+				<p><b>{% trans "State" %}:</b> {{ state }}</p>
+				<p><b>{% trans "Zip" %}:</b> {{ zip }}</p>
+				<p><b>{% trans "Country" %}:</b> {{ country }}</p>
+			</div>
+		</div>
+	</div>
+{% endblock %}

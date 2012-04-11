@@ -7,7 +7,7 @@ import logging
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseForbidden
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
@@ -587,8 +587,11 @@ def ajax_edit_notification(request):
         except:
             if key == "NON":
                 subject = "[{{shop}}]  {{ buyer_name }} place a new order"
-                body = """
-{{ buyer_name }} placed a new order with you today ({{ sell_date }}).
+                body = """{{ buyer_name }} placed a new order with you today ({{ sell_date }}).
+
+Buyer Info:
+    email: {{buyer_email}}
+    phone: {{ buyer_phone }}
 
 Paymenth Gateway: {{ gateway }}
 
@@ -598,13 +601,14 @@ Shipping address:
 
 Items:
 {% for item in items %}
-    {{ item.qty }}x {{ item.title }} | {{  item.total }}
+    id: {{ item.id }} | qty: {{ item.qty }} | title: {{ item.title }} | total: {{  item.total }} | link: {{ item.link }}
 {% endfor %}
                 
 Total Without Taxes: {{ sell_without_taxes }}
 Total Taxes: {{ sell_total_taxes }}
 Total Shipping: {{ sell_total_shipping }}
-Total: {{ sell_total }} """
+Total: {{ sell_total }} 
+ """
                 
             elif key == "AWC":
                 subject = "Congratulations {{ bidder_name }}!" 
@@ -638,6 +642,20 @@ Total     : {{ sell_total }}        """
             elif key == "CB":
                 subject = "Contact from {{ shop }}"
                 body = ""
+                
+            elif key == "BCN":
+                subject = "Remember your items orders in {{ shop }}"
+                body = """Dear {{ bidder_name }}:
+
+Please remember your items in the cart created at {{ cart_date }}, for a total of ${{ cart_total }}.
+
+Cart items detail:
+
+{% for item in items %}
+    {{ item.qty }}x {{ item.title }} x ${{ item.price }} | sub total: ${{  item.total }}
+{% endfor %}
+
+Sincerly. {{ shop }}"""
                 
             email_notification = EmailNotification(type_notification=key, shop=shop, subject=subject, body=body)
             
@@ -679,17 +697,16 @@ def preferences_policies(request):
             request.flash['message'] = unicode(_("Policies successfully saved."))
             request.flash['severity'] = "success"
             return HttpResponseRedirect(reverse('preferences_policies'))
-        
-        request.flash['message'] = unicode(_("Policies successfully saved."))
-        request.flash['severity'] = "success"
-        return HttpResponseRedirect(reverse('preferences_policies'))
-    
-    
-    form = ShopPoliciesForm(instance=policies)
-    
-    return render_to_response('preferences/preferences_policies.html', 
-                              {'form': form}, 
-                              RequestContext(request))  
+
+            request.flash['message'] = unicode(_("Policies successfully saved."))
+            request.flash['severity'] = "success"
+            return HttpResponseRedirect(reverse('preferences_policies'))
+    else:
+        form = ShopPoliciesForm(instance=policies)
+
+    return render_to_response('preferences/preferences_policies.html',
+                              {'form': form},
+                              RequestContext(request))
 
 @shop_admin_required
 def preferences_dns(request):
@@ -831,6 +848,8 @@ def show_go(request, id):
 def add_show(request):
     from market_buy.models import Show
     from market_buy.forms import ShowForm
+    from shops.models import DealerToShow
+    
     shop = request.shop
     
     if request.method == "POST":
@@ -839,7 +858,8 @@ def add_show(request):
             
             show = form.save(commit = False)
             show.marketplace = shop.marketplace
-            show.save()
+            show.owner = shop.admin
+            show.create(shop)
             
             request.flash['message'] = "Show added"
             request.flash['severity'] = "success"
@@ -849,7 +869,32 @@ def add_show(request):
     
     params = {'form' : form}
     return render_to_response("store_admin/web_store/show_add.html", params, RequestContext(request))
+
+@shop_admin_required
+def edit_show(request, show_id):
+    from market_buy.models import Show
+    from market_buy.forms import ShowForm
+    shop = request.shop
+    show = get_object_or_404(Show, pk=show_id)
+    if show.owner != request.user:
+        return HttpResponseForbidden('Not allowed')
     
+    if request.method == "POST":
+        form = ShowForm(request.POST, instance=show)
+        if form.is_valid():
+            show = form.save(commit = False)
+            show.marketplace = shop.marketplace
+            show.owner = shop.admin
+            show.save()
+            
+            request.flash['message'] = "Show edited"
+            request.flash['severity'] = "success"
+            return HttpResponseRedirect(reverse('web_store_shows'))
+    else:
+        form = ShowForm(instance=show)
+    
+    params = {'form' : form}
+    return render_to_response("store_admin/web_store/show_edit.html", params, RequestContext(request))
 
 @shop_admin_required
 def change_username_password(request):
@@ -915,7 +960,10 @@ def send_template(request):
         
         notification = EmailNotification.objects.filter(id=id, shop=shop).get()
         
-        send_mail(notification.subject,notification.body, settings.EMAIL_FROM, fail_silently=True)
+        send_mail(notification.render_dummy(notification.subject),
+                  notification.render_dummy(notification.body),
+                  settings.EMAIL_FROM, recipient_list=[email,],
+                  fail_silently=True)
         
         request.flash['message'] = unicode(_("Email sent."))
         request.flash['severity'] = "success"

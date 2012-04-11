@@ -386,14 +386,15 @@ class BraintreeGateway():
         return result
         
         
-    def render_button(self, cart):
+    def render_button(self, cart, request):
         import decimal
         context = decimal.Context(prec=20, rounding=decimal.ROUND_HALF_DOWN)
         decimal.setcontext(context)
         
         url = braintree.TransparentRedirect.url()
         #TODO: Replace this in production
-        entry_point = "http://%s:8080%s" % (cart.shop.default_dns, reverse("braintree_confirm"))
+        
+        entry_point = request.build_absolute_uri(reverse("braintree_confirm"))
         amount = cart.total_with_taxes()
         logging.warn(amount)
         amount = amount.quantize(decimal.Decimal('.01'))
@@ -413,6 +414,7 @@ class BraintreeGateway():
             <input type="hidden" name="tr_data" value="%s" />
             <label>Credit Card Number</label><input type="text" name="transaction[credit_card][number]" /><br/>
             <label>Expiration Date</label><input type="text" name="transaction[credit_card][expiration_date]" /><br/>
+            <label>CVV</label><input type="text" name="transaction[credit_card][cvv]" /><br/>
             <button class="primaryAction small awesome" type="submit">Pay</button>
         </form>
         """ % (url, tr_data)
@@ -426,7 +428,7 @@ class BraintreeGateway():
         result = braintree.Transaction.submit_for_settlement(txn_id)
         return result
 
-
+@transaction.commit_on_success
 def confirm(request):
     """
     Braintree will resend our form, and we should confirm resending the query (removing the leading ?)
@@ -436,6 +438,16 @@ def confirm(request):
     
     shop = request.shop
     cart = request.cart
+
+    #### Verify Products Availability
+    if not cart.is_available():
+        request.flash['message'] = 'Items not longer available: '
+        for item in cart.items_not_availables():
+            request.flash['message'] += item.product.title
+        cart.remove_not_available_items()
+        
+        return HttpResponseRedirect(reverse('my_shopping'))
+        
         
     query_string =  "http_status=%s&id=%s&kind=%s&hash=%s" % (request.GET['http_status'], request.GET['id'], request.GET['kind'], request.GET['hash'])
     
@@ -478,7 +490,7 @@ def confirm(request):
             
         else:
             for error in result.errors.deep_errors:
-                txt = "attribute: %s, code: %s. %s" (error.attribute, error.code, error.message)    
+                txt = "attribute: %s, code: %s. %s" %(error.attribute, error.code, error.message)    
                 message += txt + "\n"
                 
         request.flash['message'] = message

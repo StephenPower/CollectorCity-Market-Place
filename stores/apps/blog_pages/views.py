@@ -124,7 +124,6 @@ def page_edit_home(request):
                               {'form': form, 'home': home, 'static_pages': static_pages, 'dynamic_pages': dynamic_pages},
                               RequestContext(request))
 
-
 @shop_admin_required
 def page_edit_about(request):
     shop = request.shop
@@ -132,19 +131,26 @@ def page_edit_about(request):
     dynamic_pages = DynamicPageContent.objects.filter(shop=shop)
     try:
         about = About.objects.filter(shop=shop).get()
-    except:
+    except About.DoesNotExist:
         about = Page(shop=shop)
         about.save()
-    form = AboutForm(request.POST or None, instance=about)
-    if form.is_valid():
-        form.save()
-        request.flash['message'] = unicode(_("Page successfully saved."))
-        request.flash['severity'] = "success"
-        return HttpResponseRedirect(reverse('page_edit_about'))
+
+    if request.method == "POST":
+        form = AboutForm(request.POST)
+        if form.is_valid():
+            about.title = form.cleaned_data['title']
+            about.body = form.cleaned_data['body']
+            about.meta_content = form.cleaned_data['meta_content']
+            about.save()
+            request.flash['message'] = unicode(_("Page successfully saved."))
+            request.flash['severity'] = "success"
+            return HttpResponseRedirect(reverse('page_edit_about'))
+    else:
+        form = AboutForm(instance=about)
+
     return render_to_response('store_admin/web_store/pages_edit_about.html',
                               {'form': form, 'static_pages': static_pages, 'dynamic_pages': dynamic_pages},
-                              RequestContext(request))    
-
+                              RequestContext(request))
 
 @shop_admin_required
 def blog_pages(request):

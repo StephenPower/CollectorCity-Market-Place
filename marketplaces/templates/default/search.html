@@ -7,7 +7,7 @@
 {% block content %}
 <ul class="breadcrumb">
  <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider"> / </span></li>
- <li>{% if current_category %}<a href="{% url market_search_category current_category.slug %}">{{ current_category.name }}</a><span class="divider"> / </span></li> {% endif %} {% if current_subcategory %} <span class="divider"> / </span>  {{ current_subcategory.name }}</li> {% endif %}
+ <li>{% if current_category %}<a href="{% url market_search_category current_category.slug %}">{{ current_category.name }}</a><span class="divider"> / </span></li> {% endif %} {% if current_subcategory %} {{ current_subcategory.name }}</li> {% endif %}
 </ul>
 
 
@@ -19,19 +19,37 @@
 		<ul>
 		{% for subcategory in current_category.subcategories.all %}
 			{% ifnotequal subcategory.product_set.count 0 %}
-			<li><a href="{% url market_search_subcategory current_category.slug subcategory.slug %}">{{ subcategory.name }}</a></li>
+			<li class="{{ subcategory.slug }}"><a href="{% url market_search_subcategory current_category.slug subcategory.slug %}">{{ subcategory.name }}</a></li>
 			{% endifnotequal %}
 		{% endfor %}
 
 		</ul>
 	{% else %}
 		<h5>{% trans "Categories" %}</h5>
+		<ul>
 		{% for category in marketplace.marketcategory_set.all %}
 			{% ifnotequal category.product_set.count 0 %}
-			<li><a href="{% url market_search_category category.slug %}">{{ category.name }}</a></li>
+			<li class="{{category.slug}}"><a href="{% url market_search_category category.slug %}">{{ category.name }}</a></li>
 			{% endifnotequal %}
 
 		{% endfor %}
+		</ul>
+	{% endif %}
+	{% if small_cents_dealers %}
+		<h5>{% trans "Shops" %}</h5>
+		<ul>
+			{% for shop in small_cents_dealers %}
+				<li><a href="http://{{ shop.default_dns }}" target="_blanck">{{ shop.name|title }}</a><br>
+					<small>
+						{{ shop.owner.get_full_name }}<br>
+						{{ shop.categories_total }}&nbsp;{% trans "Categories" %};
+						{{ shop.sub_categories_total }}&nbsp;{% trans "Sub Categories" %};
+					</small>
+						
+					</p>
+				</li>
+			{% endfor %}
+		</ul>
 	{% endif %}
 	</div>
 </div>
@@ -49,17 +67,17 @@
 	<div class="sort_by label">
 	<div class="span10">
 	Sort {{ products_list|length }} Coins By:
-		<a href="{% url set_order_mode %}?next={{ request.path }}{% if getvars %}?{{ getvars|urlencode }}{% endif %}&sort={% if sort_mode == 'recent' %}oldest{% else %}recent{% endif %}">{% trans "Date" %}</a> | 
-		<a href="{% url set_order_mode %}?next={{ request.path }}{% if getvars %}?{{ getvars|urlencode }}{% endif %}&sort={% if sort_mode == 'title' %}-title{% else %}title{% endif %}">{% trans "Title" %}</a> | 
+		<a href="{% url set_order_mode %}?next={{ request.path }}{% if getvars %}?{{ getvars|urlencode }}{% endif %}&sort={% if sort_mode == 'recent' %}oldest{% else %}recent{% endif %}">{% trans "Posted Date" %}</a> | 
+		<a href="{% url set_order_mode %}?next={{ request.path }}{% if getvars %}?{{ getvars|urlencode }}{% endif %}&sort={% if sort_mode == 'title' %}-title{% else %}title{% endif %}">{% trans "Description" %}</a> | 
 		<a href="{% url set_order_mode %}?next={{ request.path }}{% if getvars %}?{{ getvars|urlencode }}{% endif %}&sort={% if sort_mode == 'price' %}-price{% else %}price{% endif %}">{% trans "Price" %}</a>
 	</div>
 	<div class="span1 view_mode">
 	{% ifequal view_mode "gallery"  %}
-	<a href="{% url set_listing_mode %}?next={{ request.path }}?page%3D{{ products.number }}%26{% if getvars %}{{ getvars|urlencode }}{% endif %}&mode=list"><img src="{{ MEDIA_URL }}img/list-view.jpg" width="20" height="20" title="{% trans 'Switch to List View' %}"></img></a>
-	<img src="{{ MEDIA_URL }}img/gallery-view-sel.jpg" width="20" height="20" title="{% trans 'Switch to Gallery View' %}"></img>
+	<a href="{% url set_listing_mode %}?next={{ request.path }}?page%3D{{ products.number }}%26{% if getvars %}{{ getvars|urlencode }}{% endif %}&mode=list"><img src="{{ STATIC_URL }}img/list-view.jpg" width="20" height="20" title="{% trans 'Switch to List View' %}"></img></a>
+	<img src="{{ STATIC_URL }}img/gallery-view-sel.jpg" width="20" height="20" title="{% trans 'Switch to Gallery View' %}"></img>
 	{% else %}
-	<img src="{{ MEDIA_URL }}img/list-view-sel.jpg" width="20" height="20" title="{% trans 'Switch to List View' %}"></img> 
-	<a href="{% url set_listing_mode %}?next={{ request.path }}?page%3D{{ products.number }}{% if getvars %}%26{{ getvars|urlencode }}{% endif %}&mode=gallery"><img src="{{ MEDIA_URL }}img/gallery-view.jpg" width="20" height="20" title="{% trans 'Switch to Gallery View' %}"></img></a>
+	<img src="{{ STATIC_URL }}img/list-view-sel.jpg" width="20" height="20" title="{% trans 'Switch to List View' %}"></img> 
+	<a href="{% url set_listing_mode %}?next={{ request.path }}?page%3D{{ products.number }}{% if getvars %}%26{{ getvars|urlencode }}{% endif %}&mode=gallery"><img src="{{ STATIC_URL }}img/gallery-view.jpg" width="20" height="20" title="{% trans 'Switch to Gallery View' %}"></img></a>
 	{% endifequal %}
 	
 	</div>
@@ -67,26 +85,28 @@
 	{# --------- LISTING MODE ----------- #}
 	{% if view_mode == "gallery" %}
 	{% for product in products_list %}
+        {% if product.product_id %}
 	<div class="item_box">
 	{% with product.object.child.image.image.url_100x100 as image_url %}
              {% if image_url %}
-			 <a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
+			 <a href="{% url view_item product.product_id %}">
 			<img class="item" src="{{ image_url }}" title="{{ product.description|striptags }}"/></a>
 			{% else %}
-			 <a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
-			<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ product.description|striptags }}"/></a>
+			 <a href="{% url view_item product.product_id %}">
+			<img class="item" src="{{ STATIC_URL }}img/no-photo-medium.jpg" title="{{ product.description|striptags }}"/></a>
 			{% endif %}
 			{% endwith %}
-	<a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
+	<a href="{% url view_item product.product_id %}">
 		<div class="title">{{ product.title|truncatewords:4 }}</div>
 	</a>
-	 <a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
+	 <a href="{% url view_item product.product_id %}">
 	<div class="dealer">{{ product.shop_name|title }}</div></a>	
-	 <a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
+	 <a href="{% url view_item product.product_id %}">
 	<div class="price">{{ product.price|format_price:product.shop_currency }}</div>
 	</a>
 	
 	</div>
+        {% endif %}
 	{% endfor %}
 	{% else %}
 	{# --------- GALLERY MODE ----------- #}
@@ -101,6 +121,7 @@
 	
 
 	{% for product in products_list %}
+        {% if product.product_id %}
 	<tr>
 	<td class="backgroundwhite">
 	<a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
@@ -108,21 +129,22 @@
             {% if image_url %}
 			<img class="item" src="{{ image_url }}"  title="{{ product.description|striptags }}"/>
 			{% else %}
-			<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ product.description|striptags }}"/>
+			<img class="item" src="{{ STATIC_URL }}img/no-photo-medium.jpg" title="{{ product.description|striptags }}"/>
 			{% endif %}
 			{% endwith %}
 			</a>
 		</td>
 	<td>
-		<a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
+		<a href="{% url view_item product.product_id %}">
 {{ product.title }}</a>
 	<p></p>	<p>	<a href="http://{{ product.shop_default_dns }}" target="_blank">Dealer: {{ product.shop_name|title}}</a></p>
 	</td>
 	<td>
-	<a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
+	<a href="{% url view_item product.product_id %}">
             {{ product.price|format_price:product.shop_currency }}</a>
 	</td>
 	</tr>
+        {% endif %}
 	{% endfor %}
 	</tbody>
 	</table>

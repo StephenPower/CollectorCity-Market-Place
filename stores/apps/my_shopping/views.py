@@ -9,6 +9,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext, loader
 from django.template.defaultfilters import date
 from django.utils.translation import ugettext as _
+from django.db import transaction
 
 from bidding.views import my_render
 from core.decorators import shop_required
@@ -106,6 +107,11 @@ def my_shopping(request):
      
     cart_list = []
     for item in my_cart.cartitem_set.all():
+        # the product could be removed by the admin
+        if item.product == None:
+            my_cart.remove(item)
+            continue
+        
         if item.product.type() == "Item":
             #url = reverse('bidding_view_item', args=[item.product.id])
             url_remove = reverse('remove_from_cart', args=[item.id])
@@ -144,19 +150,25 @@ def my_shopping(request):
 def checkout_shipping(request):
     from sell.forms import ShippingDataForm
     
+    cart = request.cart    
     if request.method == 'POST':
         shipping_form = ShippingDataForm(data=request.POST)
         if shipping_form.is_valid():
-            #profile = request.user.get_profile()
-            cart = request.cart
+            profile = request.user.profile
             
             try:
                 oldshipping = cart.shippingdata
                 cart.shippingdata = None
                 cart.save()
+
+                if shipping_form.save_shipping():
+                    profile.update_shipping_info(shipping_form)
+
                 oldshipping.delete()
             except:
                 pass
+            
+            profile.update_user_info(shipping_form)
             
             shipping = shipping_form.save(commit=False)
             shipping.save()
@@ -166,8 +178,14 @@ def checkout_shipping(request):
             
             return HttpResponseRedirect(reverse("myshopping_checkout_confirm"))
     else:
-        #initial = {'street_address': '13444 Main Street', 'city': 'Springfield', 'state' : 'Maryland', 'zip': '20104', 'country' : 'USA' }
-        shipping_form = ShippingDataForm()
+        initial = {'first_name': cart.bidder.first_name,
+                   'last_name': cart.bidder.last_name,
+                   'street_address': cart.bidder.profile.street_address,
+                   'city': cart.bidder.profile.city,
+                   'state' : cart.bidder.profile.state,
+                   'zip': cart.bidder.profile.zip,
+                   'country' : cart.bidder.profile.country }
+        shipping_form = ShippingDataForm(initial=initial)
         
     return HttpResponse(my_render(request, {'form_shipping': shipping_form.as_p(),
                                             'page_title': 'Shipping',
@@ -175,7 +193,7 @@ def checkout_shipping(request):
                                             'url_home' : reverse("home"),
                                             }, 'shipping'))
 
-
+@transaction.commit_on_success
 def checkout_manual_payment(request):
     from payments.models import ManualPaymentShopSettings
     
@@ -185,6 +203,16 @@ def checkout_manual_payment(request):
     
     if request.method == "POST":
         cart = request.cart
+
+        #### Verify Products Availability
+        if not cart.is_available():
+            request.flash['message'] = 'Items not longer available: '
+            for item in cart.items_not_availables():
+                request.flash['message'] += item.product.title
+            cart.remove_not_available_items()
+            
+            return HttpResponseRedirect(reverse('my_shopping'))
+        
         sell = cart.close(payment_method="%s - %s" % ('Manual Payment', payment.name))
     
     return HttpResponse(my_render(request, {'instructions': payment.instructions,
@@ -205,6 +233,14 @@ def checkout_confirm(request):
     #profile = request.user.get_profile()
     cart = request.cart
     shop = request.shop
+
+    if not cart.is_available():
+        request.flash['message'] = 'Items not longer available: '
+        for item in cart.items_not_availables():
+            request.flash['message'] += item.product.title
+        cart.remove_not_available_items()
+        
+        return HttpResponseRedirect(reverse('my_shopping'))
     
     try:   
         google_settings = GoogleCheckoutShopSettings.objects.filter(shop = shop).get()
@@ -222,7 +258,7 @@ def checkout_confirm(request):
                                         braintree_settings.public_key,
                                         braintree_settings.private_key,
                                         )
-        button = braintree_gw.render_button(cart)
+        button = braintree_gw.render_button(cart, request)
         payment_buttons.append(button)
     except BraintreeShopSettings.DoesNotExist:
         pass
@@ -280,10 +316,13 @@ def checkout_confirm(request):
                       'image': {'original': image.image.url if image else None,
                                 'small': image.image.url_100x100 if image else None,
                                 'medium': image.image.url_400x400 if image else None,
-                               } 
+                               },
+                      'id': item.id,
                       })
     
-    shippingdata =({'street_address': cart.shippingdata.street_address.title(),
+    shippingdata =({ 'first_name': cart.shippingdata.first_name.title(),
+                     'last_name': cart.shippingdata.last_name.title(),
+                     'street_address': cart.shippingdata.street_address.title(),
                      'city': cart.shippingdata.city.title(),
                      'state': cart.shippingdata.state.upper(),
                      'zip': cart.shippingdata.zip,
@@ -302,7 +341,7 @@ def checkout_confirm(request):
                                             'payment_buttons': payment_buttons,
                                             'page_title': 'Confirm',
                                             'page_description': 'Confirm',
-                                            'admin_email': shop.admin.email,                                          
+                                            'admin_email': shop.admin.email,
                                            },
                                   'confirm'))
 

@@ -15,7 +15,7 @@
 <div class="span12 offset2">
 	<div class="content">
 	<h2>{{ total }} Auctions Found</h2>
-	<p>Listing {{ lots.object_list.count }} lot{{ lots.object_list.count|pluralize }}</h5>
+	<h3>Listing {{ lots.object_list.count }} lot{{ lots.object_list.count|pluralize }}</h3>
 	
 	{% if lots.object_list.count %}
 	{% for lot in lots.object_list %}
@@ -25,8 +25,8 @@
 		 <h3>{{ lot.title|title|safe }}</h3>
 		</div>
 	       	 <div class="modal-body">
-		 <p><img src="{{ lot.image.image.url_100x100 }}"> </p>
-		 <p>{{ lot.description|safe }}</p>
+		 <p><img src="{{ lot.image.image.url_100x100 }}" alt="{{ lot.description|striptags }}"> </p>
+		 <p>{{ lot.description }}</p>
 		</div>
 	       <div class="modal-footer">
 		<a href="{% url market_buy_product_redirect lot.product_ptr_id %}" target="_blank" class="btn primary">Go To Dealer's Product Page</a> 
@@ -37,9 +37,9 @@
 		<div class="item_box">
 			<a data-controls-modal="{{ lot.product_ptr_id }}" data-backdrop="true" data-keyboard="true">
 			{% if lot.image %}
-			<img class="item" src="{{ lot.image.image.url_100x100 }}" title="{{ lot.description|striptags }}"/>
+			<img class="item" src="{{ lot.image.image.url_100x100 }}" title="{{ lot.description|striptags }}" alt="{{ lot.description|striptags}}"/>
 			{% else %}
-			<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ lot.description|striptags }}"/>
+			<img class="item" src="{{ STATIC_URL }}img/no-photo-medium.jpg" title="{{ lot.description|striptags }}" alt="{{ lot.description|striptags}}"/>
 			{% endif %}
 			<div class="title">{{ lot.title|truncatewords:5 }}</div>
 			<div class="dealer">{{ lot.category.name }}</div>

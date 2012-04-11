@@ -12,36 +12,59 @@
 {% block main_content %}
 <div class="span8 offset2">
 <ul class="tabs">
- <li><a href="#ContactUs">Contact Us</a></li>
+ <li class="active"><a href="#ContactUs">Contact Us</a></li>
  <li><a href="#FeedBack">Survey</a></li>
 </ul>
 
 <div class="pill-content">
-<div id="ContactUs">
+<div id="ContactUs" class="active tab-pane" >
 	<h4>{% trans "If you want to contact us, please fill the form and a member of our team will response as soon as posible." %}</h4>
+
 	<form action="{% url market_contact_us %}" method="POST" class="form-stacked">
- 	<fieldset>	
-	<label>{% trans "Your Name" %}</label><input type="text" name="name"/>
-	<label>{% trans "Phone" %}</label><input type="text" name="phone"/>
-	<label>{% trans "Email" %}</label><input type="text" name="email"/>
-	<label>{% trans "Message" %}</label>
-	<textarea rows="10" cols="40" name="message" ></textarea>
-	</br></br>
-	<button class="btn primary" type="submit">{% trans "Send" %}</button>
-	</fieldset>
+	 	<fieldset>
+			<label>{% trans "Your Name" %}</label>
+			<!-- <input type="text" name="name"/> -->
+			{{ form.name }}
+			
+			<label>{% trans "Phone" %}</label>
+			<!-- <input type="text" name="phone"/> -->
+			{{ form.phone }}
+			
+			<label>{% trans "Email" %}</label>
+			<!-- <input type="text" name="email"/> -->
+			{{ form.email }}
+			
+			<label>{% trans "Message" %}</label>
+			<!-- <textarea rows="10" cols="40" name="message" ></textarea> -->
+			{{ form.message }}
+			
+			{% if form.captcha.errors %}
+				<div class="alert-message error">
+					{{ form.captcha.errors|join:", " }}
+				</div>
+			{% endif %}
+			<label>{% trans "Are You Human. Please enter the following text: " %}{{ captcha }}</label>
+			<!-- <input type="text" name="captcha"> -->
+			<br>
+			{{ form.captcha }}
+			</br>
+			</br>
+			<button class="btn primary" type="submit">{% trans "Send" %}</button>
+		</fieldset>
 	</form>
+	
+    {% block contact_details %}
+    {% endblock %}
 </div>
 
-<div class="span4">
-
-{% block contact_details %}
-{% endblock %}
-{% endblock %}
-</div>
-</div>
 
 <div id="FeedBack">
 <script type="text/javascript">var host = (("https:" == document.location.protocol) ? "https://secure." : "http://");document.write(unescape("%3Cscript src='" + host + "wufoo.com/scripts/embed/form.js' type='text/javascript'%3E%3C/script%3E"));</script>
+
+
+
+{% endblock %}
+
 
 <script type="text/javascript">
 var m7x0w7 = new WufooForm();

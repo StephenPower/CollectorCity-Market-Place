@@ -5,9 +5,32 @@
 
 {% block community_content %}
 
-<div class="span12">
-<h2>{% trans "Forums" %}</h2>
-<h3>Coming Soon</h3>
+<div class="span13">
+          <ul class="pills" data-tabs="tabs">
+            <li class="active"><a href="#support">Support Request</a></li>
+            <li><a href="#general_questions">General Questions</a></li>
+            <li><a href="#features">Feature Request</a></li>
+            <li><a href="#offtopic">Off Topic</a></li>
+          </ul>
+          <div class="pill-content">
+            <div class="active" id="support">
+<div class="fb-comments" data-href="{{marketplace.name}}/community/forums/#support" data-num-posts="25" data-width="740"></div>
+            </div>
+            <div id="general_questions">
+<div class="fb-comments" data-href="{{marketplace.name}}/community/forums/#general_questions" data-num-posts="25" data-width="740"></div>
+            </div>
+            <div id="features">
+
+<div class="fb-comments" data-href="{{marketplace.name}}/community/forums/#features" data-num-posts="25" data-width="740"></div>
+            </div>
+            <div id="offtopic">
+<div class="fb-comments" data-href="{{marketplace.name}}/community/forums/#offtopic" data-num-posts="25" data-width="740"></div>
+
+            </div>
+          </div>
+
+
+
 </div>
 </div>
 {% endblock %}

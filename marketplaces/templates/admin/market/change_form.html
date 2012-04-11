@@ -1,0 +1,7 @@
+{% extends "admin/change_form.html" %}
+
+{% block extrahead %}
+	{{ block.super }}
+	<script type="text/javascript" src="{{ MEDIA_URL_OUT_S3 }}js/tiny_mce/tiny_mce.js"></script>
+	<script type="text/javascript" src="{% url tinymce-js "default" %}"></script>
+{% endblock %}

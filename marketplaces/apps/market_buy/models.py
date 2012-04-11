@@ -1,6 +1,7 @@
 import datetime
 from django.db import models
 from django.conf import settings
+import logging
 
 from market.models import MarketPlace, MarketCategory, MarketSubCategory
 from auth.models import User
@@ -32,6 +33,8 @@ class Show(models.Model):
     contact_info = models.CharField(max_length=128)
     admission = models.DecimalField(max_digits=11, decimal_places=2, default="0.0")
     location = models.CharField(max_length=255, default="49.00, -96.00")
+    owner = models.ForeignKey(User, null=True, blank=True)
+    
     def is_active(self):
         import datetime
         today = datetime.datetime.today()
@@ -66,13 +69,37 @@ class Show(models.Model):
             return True
         except DealerToShow.DoesNotExist:
             return False 
-            
+    
+    def my_show(self, shop):
+        try:
+            return self.owner.id == shop.admin.id
+        except:
+            return False
+    
+    def create(self, shop):
+        from shops.models import DealerToShow
+
+        self.save()
+        if self.owner:
+            DealerToShow.objects.get_or_create(shop=shop, show=self)
         
 #TODO: change to EditorProductPick
 class EditorPick(models.Model):
     marketplace = models.ForeignKey(MarketPlace)
     order = models.IntegerField(default=5)
     product = models.ForeignKey("inventory.Product")
+    
+    @classmethod
+    def get_available_picks(cls, marketplace):
+        """
+            Return picks that are available to buy or bid
+        """
+        def is_available(pick):
+            return hasattr(pick.product, 'item') == False or pick.product.item.qty > 0
+
+        picks = EditorPick.objects.filter(marketplace=marketplace).order_by("order")
+        return filter(is_available, picks)
+
     def __str__(self):
         return "%s > %s (%s)" % (self.marketplace, self.product, self.order)
 
@@ -80,6 +107,18 @@ class MarketPlacePick(models.Model):
     marketplace = models.ForeignKey(MarketPlace)
     order = models.IntegerField(default=5)
     product = models.ForeignKey("inventory.Product")
+    
+    @classmethod
+    def get_available_picks(cls, marketplace):
+        """
+            Return picks that are available to buy or bid
+        """
+        def is_available(pick):
+            return hasattr(pick.product, 'item') == False or pick.product.item.qty > 0
+
+        picks = MarketPlacePick.objects.filter(marketplace=marketplace).order_by("order")
+        return filter(is_available, picks)
+
     def __str__(self):
         return "%s > %s (%s)" % (self.marketplace, self.product, self.order)
     

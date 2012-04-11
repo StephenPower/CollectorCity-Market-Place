@@ -1,6 +1,7 @@
+import datetime
 import decimal
 import logging
-
+from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.db import models
 from django.db.models import Sum
@@ -16,6 +17,8 @@ class SellError(Exception):
     pass
 
 class ShippingData(models.Model):
+    first_name = models.CharField(max_length=80)
+    last_name = models.CharField(max_length=80)
     street_address = models.CharField(max_length=80)
     city = models.CharField(max_length=80)
     state = models.CharField(max_length=80)
@@ -30,14 +33,17 @@ class Cart(models.Model):
     bidder = models.ForeignKey(User)
     shop = models.ForeignKey(Shop)
     shippingdata = models.OneToOneField(ShippingData, null=True, blank=True)
+    creation_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    last_update = models.DateTimeField(auto_now=True)
+
     def __unicode__(self):
         return "%s > %s" % (self.shop, self.bidder)
     
     def close(self, payment_method):
         from django.conf import settings
-        from django.core.mail import send_mail
+        from django.core.mail import send_mail, EmailMessage
         from django.template import Context, Template
-        from preferences.models import EmailNotification        
+        from preferences.models import EmailNotification, EmailNotificationHistory, TYPE_NOTIFICATION
         
         if self.shippingdata is None: raise Exception("Cart Shipping address should never be empty. Something is wrong!")
         sell = Sell.new_sell(self.shop, self.bidder, self.shippingdata, self)
@@ -45,8 +51,21 @@ class Cart(models.Model):
         for cart_item in self.cartitem_set.all():
             sell_item = SellItem(sell=sell, product=cart_item.product, qty=cart_item.qty, price=cart_item.price)
             sell_item.save()
+
+            cart_item.product.decrease_qty(cart_item.qty)
+            cart_item.product.save()
             
-            item = {'title': sell_item.product.title, 'qty': sell_item.qty, 'price': sell_item.price, 'total': sell_item.get_total()}
+            host_name = sell_item.product.shop.default_dns
+            link = "http://%s/admin/for_sale/item_details/%s" % (host_name, sell_item.product.id)
+            
+            item = { 'id': sell_item.product.id,
+                     'title': sell_item.product.title,
+                     'qty': sell_item.qty,
+                     'price': sell_item.price,
+                     'total': sell_item.get_total(),
+                     'link': link,
+                    }
+            
             items.append(item)
             
             cart_item.delete()
@@ -55,14 +74,16 @@ class Cart(models.Model):
         sell.save() 
         
         #Why is this put to None!!!
+        # there is only one cart for user so the cart has to be clean 
         self.shippingdata = None
         self.save()
         
         # -----------------------------
         # Send notification to Shop that new order has been created
         c = Context({
-                'buyer_name': self.bidder.get_full_name(),
+                'buyer_name': '%s %s' % (sell.shippingdata.first_name, sell.shippingdata.last_name), #self.bidder.get_full_name(),
                 'buyer_email': self.bidder.email,
+                'buyer_phone': self.bidder.profile.phone,
                 'gateway': sell.payment_method,
                 'shop': self.shop,
                 'shipping_street_address': sell.shippingdata.street_address,
@@ -81,20 +102,47 @@ class Cart(models.Model):
         # SEND NEW ORDER NOTIFICATION TO SHOP OWNER       
         try:
             notification = EmailNotification.objects.filter(type_notification='NON', shop=self.shop).get()
+            type_notification_name = dict(TYPE_NOTIFICATION)[notification.type_notification].title()
+
             subj_template = Template(notification.subject)
             body_template = Template(notification.body)
             
             subj_text = subj_template.render(c)
             body_text = body_template.render(c)
-            send_mail(subj_text, body_text, settings.EMAIL_FROM,  [self.shop.admin.email], fail_silently=True)
+#            send_mail(subj_text, body_text, settings.EMAIL_FROM, [self.shop.admin.email], fail_silently=True)
             
+            mail = EmailMessage(subject=subj_text, body=body_text, from_email=settings.EMAIL_FROM, to=[self.shop.admin.email],
+                                headers={'X-SMTPAPI': '{\"category\": \"%s\"}' % type_notification_name})
+            mail.send(fail_silently=True)
+            
+            notification_history = EmailNotificationHistory(shop=self.shop,
+                                                        type_notification=notification.type_notification,
+                                                        datetime= datetime.datetime.now(),
+                                                        to=self.shop.admin.email,
+                                                        subject=subj_text,
+                                                        body=body_text)
+            notification_history.save()
+
         except EmailNotification.DoesNotExist:
             msg = "New Order Notification"
-            send_mail("New order has been generated!", msg, settings.EMAIL_FROM,  [self.bidder.email], fail_silently=True)
+            
+            mail = EmailMessage(subject="New Order Notification",
+                                body=msg,
+                                from_email=settings.EMAIL_FROM,
+                                to=[self.shop.admin.email],
+                                headers={'X-SMTPAPI': '{\"category\": \"%s\"}' % dict(TYPE_NOTIFICATION)['NON'].title()})
+            mail.send(fail_silently=True)
+#            send_mail("New order has been generated!", msg, settings.EMAIL_FROM, [self.shop.admin.email], fail_silently=True)
             
         except Exception, e:
-            send_mail("Fail when trying to send email!", "%s" % e, settings.EMAIL_FROM,  [mail for (name, mail) in settings.STAFF], fail_silently=True)
-        
+            mail = EmailMessage(subject="Fail when trying to send email!",
+                                body=e,
+                                from_email=settings.EMAIL_FROM,
+                                to=[mail for (name, mail) in settings.STAFF],
+                                headers={'X-SMTPAPI': '{\"category\": \"Error\"}'})
+            mail.send(fail_silently=True)
+#            send_mail("Fail when trying to send email!", "%s" % e, settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF], fail_silently=True)
+
         # SEND NEW ORDER NOTIFICATION TO CUSTOMER
         try:
             notification = EmailNotification.objects.filter(type_notification='OC', shop=self.shop).get()
@@ -103,40 +151,65 @@ class Cart(models.Model):
             
             subj_text = subj_template.render(c)
             body_text = body_template.render(c)
-            send_mail(subj_text, body_text, settings.EMAIL_FROM,  [self.bidder.email], fail_silently=True)
             
+            mail = EmailMessage(subject=subj_text,
+                                body=body_text,
+                                from_email=settings.EMAIL_FROM,
+                                to=[self.bidder.email],
+                                headers={'X-SMTPAPI': '{\"category\": \"%s\"}' % dict(TYPE_NOTIFICATION)['OC'].title()})
+            mail.send(fail_silently=True)
+#            send_mail(subj_text, body_text, settings.EMAIL_FROM, [self.bidder.email], fail_silently=True)
+            notification_history = EmailNotificationHistory(shop=self.shop,
+                                                        type_notification=notification.type_notification,
+                                                        datetime= datetime.datetime.now(),
+                                                        to=self.bidder.email,
+                                                        subject=subj_text,
+                                                        body=body_text)
+            notification_history.save()
         except EmailNotification.DoesNotExist:
             msg = "This mail is to confirm your order on %s" % self.shop
-            send_mail("New order has been generated!", msg, settings.EMAIL_FROM, [self.bidder.email], fail_silently=True)
-            
+            mail = EmailMessage(subject="New order has been generated!",
+                                body=msg,
+                                from_email=settings.EMAIL_FROM,
+                                to=[self.bidder.email],
+                                headers={'X-SMTPAPI': '{\"category\": \"%s\"}' % dict(TYPE_NOTIFICATION)['OC'].title()})
+            mail.send(fail_silently=True)
+#            send_mail("New order has been generated!", msg, settings.EMAIL_FROM, [self.bidder.email], fail_silently=True)
         except Exception, e:
             from django.conf import settings
-            send_mail("Fail when trying to send email!", "%s" % e, settings.EMAIL_FROM,  [mail for (name, mail) in settings.STAFF], fail_silently=True)
+            mail = EmailMessage(subject="Fail when trying to send email!",
+                                body="%s" % e,
+                                from_email=settings.EMAIL_FROM,
+                                to=[mail for (name, mail) in settings.STAFF],
+                                headers={'X-SMTPAPI': '{\"category\": \"Error\"}'})
+            mail.send(fail_silently=True)
+#            send_mail("Fail when trying to send email!", "%s" % e, settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF], fail_silently=True)
         
         return sell
     
     def add(self, product, price, qty=1):
         try:
             product_type = ContentType.objects.get_for_model(product)
-            cart_item = CartItem.objects.filter(object_id=product.id, content_type__pk=product_type.id).get()
+            cart_item = self.cartitem_set.filter(object_id=product.id, content_type__pk=product_type.id).get()
             cart_item.qty += qty
         except CartItem.DoesNotExist:
             cart_item = CartItem(cart=self, product=product, price=price, qty=qty)
-        product.decrease_qty(qty)
+        self.date_update()
         cart_item.save()
 
     def remove(self, cartitem):
         """ Remove an item from the cart """
         try:
-            cartitem.product.increase_qty(cartitem.qty)
+#            cartitem.product.increase_qty(cartitem.qty)
             cartitem.delete()
         except CartItem.DoesNotExist:
             pass
+        self.date_update()
     
     def remove_one(self, cartitem):
         """ Remove just one item from the cart """
         try:
-            cartitem.product.increase_qty(1)
+#            cartitem.product.increase_qty(1)
             if cartitem.qty == 1:
                 cartitem.delete()
             else:
@@ -144,6 +217,7 @@ class Cart(models.Model):
                 cartitem.save()
         except CartItem.DoesNotExist:
             pass
+        self.date_update()
         
     def clean(self):
         """ Clean the cart """
@@ -204,7 +278,21 @@ class Cart(models.Model):
         """    
         return self.total() + self.taxes() + self.shipping_charge()
     
+    def is_available(self):
+        """ Verify that the items in the cart are available """
+        return len(filter(lambda cart_item: cart_item.is_available(), self.cartitem_set.all())) == self.cartitem_set.count()
+
+    def items_not_availables(self):
+        return filter(lambda cart_item: not cart_item.is_available(), self.cartitem_set.all())
     
+    def remove_not_available_items(self):
+        for item in self.items_not_availables():
+            self.remove(item)
+
+    def date_update(self):
+        self.last_update = datetime.datetime.now()
+        self.save()
+
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart)
     
@@ -217,6 +305,13 @@ class CartItem(models.Model):
     
     def sub_total(self):        
         return self.price * self.qty
+    
+    def is_available(self):
+        if hasattr(self.product, 'qty'):
+            return self.qty <= self.product.qty
+        else:
+            return True
+ 
 
 #TODO: Remove the null=True properties in shop & bidder!!!
 class Sell(models.Model):
@@ -300,7 +395,7 @@ class Sell(models.Model):
     def cancel_sell(self):
         if self.payment.state_actual.state != 'PA':
             for item in self.sellitem_set.all():
-                item.product.increase_qty(item.qty)
+#                item.product.increase_qty(item.qty)
                 item.product.activate()
                 item.save()
             self.cancel = True
@@ -374,7 +469,7 @@ class Sell(models.Model):
                 
                 
             for item in self.sellitem_set.all():
-                item.product.increase_qty(item.qty)
+#                item.product.increase_qty(item.qty)
                 item.product.activate()
                 item.save()
             self.cancel = True
@@ -456,9 +551,9 @@ class PaymentHistory(models.Model):
         return self.state
     
 STATE_SHIPPING = [
-    ('PE', _('Pending')),    
+    ('PE', _('Pending')),
     ('DI', _('Dispatched')),
-    ('FU', _('Fulfilled')),        
+    ('FU', _('Fulfilled')),
 ]
 
 
@@ -492,7 +587,13 @@ class Shipping(models.Model):
         shipping_history = ShippingHistory(shipping=self, state="DI")
         shipping_history.save()
         self.state_actual = shipping_history
-        self.save() 
+        self.save()
+        
+    def undispatched(self):
+        shipping_history = ShippingHistory(shipping=self, state="PE")
+        shipping_history.save()
+        self.state_actual = shipping_history 
+        self.save()  
 
     def fulfilled(self):
         shipping_history = ShippingHistory(shipping=self, state="FU")

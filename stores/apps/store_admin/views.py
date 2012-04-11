@@ -2,17 +2,20 @@ import logging
 import datetime
 import urllib
 
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
+from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
+from django.utils.translation import ugettext as _
 
 from auctions.models import AuctionSession
 from for_sale.models import Item
 from core.decorators import shop_admin_required
+
 from market.models import MarketCategory, MarketSubCategory
 from django.utils import simplejson
 
@@ -208,11 +211,17 @@ def customers_send_notification(request, id):
     the_message = "%s from %s has found an item that appears to match the item you are looking for. Contact %s at %s" % (shop.admin.get_full_name() or shop.admin.username, shop.name_shop(), shop.admin, shop.default_dns)
     body = the_wish + "\n\n" + the_message
     to = wishitem.posted_by.email
-    
-    send_mail(subject, body, shop.admin.email, [to], fail_silently=True)
+    mail = EmailMessage(subject=subject,
+                        body=body,
+                        from_email=shop.admin.email,
+                        to=[to],
+                        headers={'X-SMTPAPI': '{\"category\": \"Customer Notification\"}'})
+    mail.send(fail_silently=True)
+#    send_mail(subject, body, shop.admin.email, [to], fail_silently=True)
     request.flash['message'] = "Notification sent..."
     request.flash['severity'] = "success"
     return HttpResponseRedirect(reverse("customers_wish_lists"))
+
 @shop_admin_required
 def customers_mailing_list(request):
     from shops.models import MailingListMember
@@ -577,7 +586,184 @@ def inventory_auctions(request):
                               }, 
                               RequestContext(request))
 
+@shop_admin_required
+def inventory_carts(request):
+    from sell.models import Cart, CartItem
+    from haystack.query import SearchQuerySet
     
+    shop = request.shop
+
+    filter_by = request.GET.get('filter_by','')
+    order_by = request.GET.get('order_by','')
+    q_title = request.GET.get('q_title','')
+    id_category = request.GET.get('id_category','')
+    id_subcategory = request.GET.get('id_subcategory','')
+    
+    all_carts = Cart.objects.filter(shop=shop)
+    total = all_carts.count() - 1
+
+    items_per_page = int(request.GET.get('items_per_page', -1))
+    if items_per_page == -1:
+        if total >= 0 and total <= 10: items_per_page = 10
+        elif total > 10 and total <= 50: items_per_page = 20
+        elif total > 50 and total <= 100: items_per_page = 50
+        else: items_per_page = 100
+        
+    filter_params = {'order_by':order_by,
+                     'filter_by':filter_by,
+                     'q_title': q_title,
+                     'id_subcategory': id_subcategory,
+                     'id_category': id_category,
+                     'items_per_page': items_per_page,
+                     }
+    
+    if filter_by == 'title':
+        q_title = request.GET.get('q_title', None)
+        if q_title: 
+            sqs = SearchQuerySet().models(CartItem).autocomplete(summary=q_title, shop_id=unicode(shop.id))
+            all_carts = all_carts.filter(id__in=map(lambda sr: sr.cart_id, sqs))
+    elif filter_by == 'category':
+        id_category = request.GET.get('id_category','')
+        sqs = SearchQuerySet().models(CartItem).autocomplete(category_id=id_category, shop_id=unicode(shop.id))  
+        all_carts = all_carts.filter(id__in=map(lambda sr: sr.cart_id, sqs))
+    elif filter_by == 'subcategory':
+        id_subcategory = request.GET.get('id_subcategory','')
+        sqs = SearchQuerySet().models(CartItem).autocomplete(subcategory_id=id_subcategory, shop_id=unicode(shop.id))
+        all_carts = all_carts.filter(id__in=map(lambda sr: sr.cart_id, sqs)) 
+
+    if order_by == 'oldest':
+        all_carts = all_carts.order_by("id")
+    elif order_by == 'newest':
+        all_carts = all_carts.order_by("-id")
+    elif order_by == 'price':
+        all_carts = all_carts.order_by("price")
+    elif order_by == '-price':
+        all_carts = all_carts.order_by("-price")
+    elif order_by == 'qty':
+        all_carts = all_carts.order_by("qty")
+    elif order_by == '-qty':
+        all_carts = all_carts.order_by("-qty")
+        
+    pager = Paginator(all_carts, items_per_page)
+    try:
+        page = int(request.GET.get('page','1'))
+    except:
+        page = 1
+    try:
+        carts = pager.page(page)
+    except (EmptyPage, InvalidPage):
+        carts = pager.page(pager.num_pages)
+    paged = (pager.num_pages > 1)
+
+    return render_to_response('store_admin/inventory/carts.html', 
+                              {'carts': carts,
+                               'total' : total,
+                               'pages': pager.page_range,
+                               'paged': paged,
+                               'filter_params': filter_params,
+                               'getvars': '&'+urllib.urlencode(filter_params),
+                               'q_title': q_title,
+                              }, 
+                              RequestContext(request))
+
+@shop_admin_required
+def delete_cart_items(request):
+    from sell.models import Cart
+
+    ids = request.POST
+    if len(ids.items()) > 0:
+        for (item_id, status) in ids.items():
+            if status == "on":
+                cart = get_object_or_404(Cart, pk=item_id)
+                cart.clean()
+                cart.save()
+        request.flash['message'] = unicode(_("Cart Items removed"))
+        request.flash['severity'] = "success"
+    else:
+        request.flash['message'] = unicode(_("No Shopping Carts Selected"))
+        request.flash['severity'] = "error"
+
+    return HttpResponseRedirect(reverse("inventory_carts"))
+
+@shop_admin_required
+def notify_to_buyer(request, cart_id):
+    from sell.models import Cart
+    from django.template import Context, Template
+    from preferences.models import EmailNotification, EmailNotificationHistory, TYPE_NOTIFICATION
+    
+    shop = request.shop
+    cart = get_object_or_404(Cart, shop=shop, pk=cart_id)
+    
+    items = []
+    for cart_item in cart.cartitem_set.all():
+        item = { 'title': cart_item.product.title,
+                 'qty': cart_item.qty,
+                 'price': cart_item.price,
+                 'total': cart_item.sub_total(),
+                }
+        items.append(item)
+    
+    c = Context({
+            'bidder_name': '%s %s' %(cart.bidder.first_name, cart.bidder.last_name),
+            'shop': shop.name,
+            'cart_date': cart.creation_date,
+            'cart_total': cart.total(),
+            'items': items,
+        })
+    
+    try:
+        notification = EmailNotification.objects.filter(type_notification='BCN', shop=shop).get()
+        type_notification_name = dict(TYPE_NOTIFICATION)[notification.type_notification].title()
+        subj_template = Template(notification.subject)
+        body_template = Template(notification.body)
+        
+        subj_text = subj_template.render(c)
+        body_text = body_template.render(c)
+        
+        mail = EmailMessage(subject=subj_text,
+                            body=body_text,
+                            from_email=settings.EMAIL_FROM,
+                            to=[cart.bidder.email],
+                            headers={'X-SMTPAPI': '{\"category\": \"%s\"}' % type_notification_name})
+        mail.send(fail_silently=True)
+#        send_mail(subj_text, body_text, settings.EMAIL_FROM, [cart.bidder.email], fail_silently=True)
+        notification_history = EmailNotificationHistory(shop=shop,
+                                                        type_notification=notification.type_notification,
+                                                        datetime= datetime.datetime.now(),
+                                                        to=cart.bidder.email,
+                                                        subject=subj_text,
+                                                        body=body_text)
+        notification_history.save()
+        
+        request.flash['message'] = unicode(_("Notification sent to %s" % cart.bidder.email))
+        request.flash['severity'] = "success"
+    except:
+        request.flash['message'] = unicode(_("Fail Notification sent to %s" % cart.bidder.email))
+        request.flash['severity'] = "error"
+    
+    return HttpResponseRedirect(reverse("inventory_carts"))
+
+@shop_admin_required
+def buyer_info(request, cart_id):
+    from sell.models import Cart
+
+    shop = request.shop
+    cart = get_object_or_404(Cart, shop=shop, pk=cart_id)
+
+    context = {
+        'first_name': cart.bidder.first_name,
+        'last_name': cart.bidder.last_name,
+        'email': cart.bidder.email,
+        'street_address': cart.bidder.profile.street_address,
+        'city': cart.bidder.profile.city,
+        'state': cart.bidder.profile.state,
+        'zip': cart.bidder.profile.zip,
+        'country': cart.bidder.profile.country,
+        'phone': cart.bidder.profile.phone,
+    }
+
+    return render_to_response('store_admin/inventory/buyer_info.html', context, RequestContext(request))
+
 @shop_admin_required
 def inventory_categorize(request):
     return render_to_response('store_admin/inventory/overview.html', {}, 
@@ -652,6 +838,7 @@ def support_overview(request):
     
 def support_email(request):
     from store_admin.forms import EmailContactForm
+    from preferences.models import EmailNotificationHistory
     from django.template.defaultfilters import striptags
     from subscriptions.models import FeaturePayment
     shop = request.shop
@@ -674,11 +861,24 @@ def support_email(request):
             user_name = form.cleaned_data['name']
             
             subject = "Email Support Requested"
-            
             the_message = "%s has request email support from %s <%s>. \n\nUser Email: %s\n\nUser Question: %s" % (user_name, shop.name_shop(), shop.default_dns, user_email, striptags(user_question))
             
-            send_mail(subject, the_message, shop.admin.email, [to], fail_silently=True)
-            
+            mail = EmailMessage(subject=subject,
+                                body=the_message,
+                                from_email=settings.EMAIL_FROM,
+                                to=[to],
+                                headers={'X-SMTPAPI': '{\"category\": \"Email Support Requested\"}'})
+            mail.send(fail_silently=True)
+#            send_mail(subject, the_message, shop.admin.email, [to], fail_silently=True)
+
+            notification_history = EmailNotificationHistory(shop=shop,
+                                                            type_notification='CB',
+                                                            datetime=datetime.datetime.now(),
+                                                            to=to,
+                                                            subject=subject,
+                                                            body=the_message)
+            notification_history.save()
+
             request.flash['message'] = "Support request sent..."
             request.flash['severity'] = "success"
             return HttpResponseRedirect(reverse("support"))                    
@@ -711,11 +911,16 @@ def support_phone(request):
             user_name = form.cleaned_data['name']
             
             subject = "Phone Support Requested"
-            
             the_message = "%s has request phone support from %s <%s>. \n\nUser Phone: %s\n\nUser Messenger Id: %s" % (user_name, shop.name_shop(), shop.default_dns, user_phone, user_messenger_id)
-            
-            send_mail(subject, the_message, shop.admin.email, [to], fail_silently=True)
-            
+
+            mail = EmailMessage(subject=subject,
+                                body=the_message,
+                                from_email=shop.admin.email,
+                                to=[to],
+                                headers={'X-SMTPAPI': '{\"category\": \"Phone Support Requested\"}'})
+            mail.send(fail_silently=True)
+#            send_mail(subject, the_message, shop.admin.email, [to], fail_silently=True)
+
             request.flash['message'] = "Support request sent..."
             request.flash['severity'] = "success"
             return HttpResponseRedirect(reverse("support"))
@@ -780,7 +985,7 @@ def ajax_do_charge(request, feature):
     admin_email = shop.marketplace.contact_email
     if result.is_success:
         status = result.transaction.status
-        credit_card = "%s - %s******%s" % (result.transaction.credit_card[u'card_type'], result.transaction.credit_card[u'bin'], result.transaction.credit_card[u'last_4'])
+        credit_card = "%s - ***********%s" % (result.transaction.credit_card[u'card_type'], result.transaction.credit_card[u'last_4'])
         txn_id = result.transaction.id
         if status == 'authorized':
             logging.info("Transaction <id=%s> was successfully authorized!!" % (txn_id))
@@ -792,8 +997,22 @@ def ajax_do_charge(request, feature):
             else:
                 message = "WARNING: Transaction<id=%s> was successfully authorized but could not be submited for settlement. Try it manually via braintree admin site" % txn_id
                 logging.critical(message)
-            send_mail("Featured Successfully Purchased!", "\nWe have enabled the %s feature in your %s shop.\n\nWe collected $%s from your %s credit card account.\n\nThanks, %s" % (feature, shop, price, credit_card, shop.marketplace), settings.EMAIL_FROM, [shop.admin.email], True)
-            send_mail("%s purchased the %s feature" % (shop, feature), message, settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF]+[admin_email], True)
+
+            mail = EmailMessage(subject="Featured Successfully Purchased!",
+                                body="\nWe have enabled the %s feature in your %s shop.\n\nWe collected $%s from your %s credit card account.\n\nThanks, %s" % (feature, shop, price, credit_card, shop.marketplace),
+                                from_email=settings.EMAIL_FROM,
+                                to=[shop.admin.email],
+                                headers={'X-SMTPAPI': '{\"category\": \"Featured Purchased\"}'})
+            mail.send(fail_silently=True)
+#            send_mail("Featured Successfully Purchased!", "\nWe have enabled the %s feature in your %s shop.\n\nWe collected $%s from your %s credit card account.\n\nThanks, %s" % (feature, shop, price, credit_card, shop.marketplace), settings.EMAIL_FROM, [shop.admin.email], True)
+
+            mail = EmailMessage(subject="%s purchased the %s feature" % (shop, feature),
+                                body=message,
+                                from_email=settings.EMAIL_FROM,
+                                to=[mail for (name, mail) in settings.STAFF]+[admin_email],
+                                headers={'X-SMTPAPI': '{\"category\": \"Featured Purchased\"}'})
+            mail.send(fail_silently=True)
+#            send_mail("%s purchased the %s feature" % (shop, feature), message, settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF]+[admin_email], True)
         else:
             logging.critical("Transaction<id=%s> status is %s. Can't submit for settlement if status != authorized" % (txn_id, status))
         success = True
@@ -827,7 +1046,15 @@ def ajax_do_charge(request, feature):
         message = "Reason: transaction<id=%s> status is %s!. We have no more info about this status. Please check braintree admin console." % (status, result.transaction.id)
     
     logging.critical(message)
-    send_mail("%s tried but failed to purchase the %s feature" % (shop, feature), message, settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF]+[admin_email], True)    
+    
+    mail = EmailMessage(subject="%s tried but failed to purchase the %s feature" % (shop, feature),
+                        body=message,
+                        from_email=settings.EMAIL_FROM,
+                        to=[mail for (name, mail) in settings.STAFF]+[admin_email],
+                        headers={'X-SMTPAPI': '{\"category\": \"Error\"}'})
+    mail.send(fail_silently=True)
+#    send_mail("%s tried but failed to purchase the %s feature" % (shop, feature), message, settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF]+[admin_email], True)
+
     return HttpResponseServerError()
 
     

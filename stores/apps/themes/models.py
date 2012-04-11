@@ -44,6 +44,9 @@ TEMPLATES = [
              'payment_success',
              'payment_cancel',
              'payment_paypal_confirm',
+             'refund',
+             'privacy_policies',
+             'terms_of_service',
              ]
 
 PAGES = [
@@ -57,6 +60,9 @@ PAGES = [
          'view_history_lot',
          'view_lot',         
          'view_post',
+         'refund',
+         'privacy_policies',
+         'terms_of_service',
          ]
 
 OTHER_PAGES = [
@@ -199,9 +205,8 @@ class Theme(models.Model):
         for asset in Asset.objects.filter(theme=self):
             if asset.is_editable():
                 asset.render()
-            
-        
-        
+
+
 class Template(models.Model):
     theme = models.ForeignKey(Theme)
     name = models.CharField(max_length=60)

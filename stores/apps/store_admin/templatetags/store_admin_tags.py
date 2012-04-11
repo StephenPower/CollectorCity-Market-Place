@@ -8,6 +8,9 @@ register = template.Library()
 def will_go_show(show, shop):
     return show.will_go_show(shop)
 
+@register.filter
+def my_show(show, shop):
+    return show.my_show(shop)
 
 @register.filter
 def update_filters(params, value):

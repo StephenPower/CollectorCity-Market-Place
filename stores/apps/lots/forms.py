@@ -1,12 +1,17 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, ModelChoiceField
 
 from auctions.models import AuctionSession
 from models import Lot, ImageLot
 from market.models import MarketCategory, MarketSubCategory
 
+class CategoryChoiceField(ModelChoiceField):
+    def label_from_instance(self, obj):
+        return "%s" % obj.name
+
 
 class LotForm(ModelForm):
-    
+    category = CategoryChoiceField(queryset = MarketCategory.objects.all())
+        
     class Meta:
         model = Lot
         fields = ['title', 'description', 'starting_bid', 'reserve', 'weight', 'subcategory', 'category', 'session']

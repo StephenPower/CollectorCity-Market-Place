@@ -11,7 +11,7 @@
 	
 
 	<form action="." method="post" name="form" enctype="multipart/form-data">
-		<div class="grid_9">
+		<div class="grid_16">
 		
 			{% if form.title.errors %}<div class="error">{{ form.title.errors|join:", " }}</div>{% endif %}
 			<h4 style="padding-bottom: 0px; margin-bottom:0px;">{% trans "Title (Short Description)" %}:</h4>
@@ -156,8 +156,10 @@
 		    	$("#id_item-subcategory").empty();
 			    if (categories.length > 0){
 				      $.post("{% url ajax_sub_category %}", { 'categories': categories }, function(data){
+				      	  var current_subcategory = $("#id_item-subcategory").val();
 				      	  $("#id_item-subcategory").append(data);
-						  $("#id_item-subcategory").val("{{ item.subcategory.name }}");		      
+						  $("#id_item-subcategory").val("{{ item.subcategory.id }}");
+						  //$("#id_item-subcategory").val(current_subcategory);
 					  });
 	      		}
 	      		

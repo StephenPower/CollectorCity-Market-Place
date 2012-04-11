@@ -8,7 +8,7 @@ import decimal
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 from django.core.management import setup_environ
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 #from django.db import transaction
 
 import settings
@@ -33,11 +33,23 @@ def send_posts_ind_draft_reminder():
             if shop not in already_notified:
                 link = "http://%s%s" % (shop.default_dns, reverse("post_edit", args=[post.id]))
                 msg = "\n\nWe remember you that you have posts in a draft status on your %s shop. If you want that posts appears on you site you must publish them.\n\nGo to %s and make it public!" % (shop, link)
-                send_mail('Posts in draft reminder', msg, settings.EMAIL_FROM, [shop.owner().email], fail_silently=True)
+                mail = EmailMessage(subject='Posts in draft reminder',
+                                    body=msg,
+                                    from_email=settings.EMAIL_FROM,
+                                    to=[shop.owner().email],
+                                    headers={'X-SMTPAPI': '{\"category\": \"Posts In Draft Reminder\"}'})
+                mail.send(fail_silently=True)   
+#                send_mail('Posts in draft reminder', msg, settings.EMAIL_FROM, [shop.owner().email], fail_silently=True)
                 already_notified.add(shop)
     except Exception, e:
-        send_mail('Error when trying to send email notifying that customer have "posts in draft"', e , settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF], fail_silently=True)
-        
-        
+        mail = EmailMessage(subject='Error when trying to send email notifying that customer have "posts in draft"',
+                            body=e,
+                            from_email=settings.EMAIL_FROM,
+                            to=[mail for (name, mail) in settings.STAFF],
+                            headers={'X-SMTPAPI': '{"category": "Error"}'})
+        mail.send(fail_silently=True)
+#        send_mail('Error when trying to send email notifying that customer have "posts in draft"', e , settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF], fail_silently=True)
+
+
 if __name__ == "__main__":
     send_posts_ind_draft_reminder()

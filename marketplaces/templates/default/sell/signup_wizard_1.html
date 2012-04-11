@@ -5,14 +5,14 @@
 {% block step %}
 
 {% if plans %}
-<div class="span16">
+<div class="span13 offset2">
 <div class="WizardHeader">
 	<h2>A {{ marketplace.title }} Shop At Your Price</h2>
 </div>
 
 
 {% for plan in plans %}
-<div class="{{ plan.name }} PriceCol-{{ plan.id }} span5">
+<div class="{{ plan.name }} PriceCol-{{ plan.id }} span4">
     <div class="Plan-Title">
         <h3>{{ plan.name|title }}</h3>
     </div>
@@ -24,10 +24,20 @@
     <div class="divider"></div>
 
     <div class="Plan-Description">
-        {{ plan.description }}
+        {{ plan.description|safe }}
+     <form action="." method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="{{ step_field }}" value="{{ step0 }}" />
+    {{ previous_fields|safe }}
+    <input type="hidden" name="1-plan_id" value="{{ plan.id }}" /> 
+    <div class="PlanBuy">
+        <button type="submit" class="btn success">Choose Plan</button>	
     </div>
-    <div class="divider"></div>
+    </form>
 
+	</div>
+    <div class="divider"></div>
+{% comment %}
     <div class="PlanHighlight{{plan.name}}">
     {% if plan.name == "Premier" %}
         <div class="btn disabled PlanList"><a data-placement="below" href="#" animate="True" title="{{plan.name}}" data-content="{{ plan.description }}" rel="popover">Core Features</a></div>
@@ -89,9 +99,74 @@
         <button type="submit" class="btn success">Sign Up For {{ plan.name|title }}</button>	
     </div>
     </form>
+ {% endcomment %}
+
 </div>
+
 {% endfor %}
+</div>
+<div class="extra">
+	<div class="leftcolumneven">
+	<h3>Why Did You Start Great Coins?</h3>
+	<p>Simple, we wanted to create a market where <strong>trusted dealers</strong> could meet collectors without <strong>anyone</strong> getting in the way.</p>
+	<p><strong>For collectors</strong>, a simple place to find <strong>1000's of dealers</strong> at once.<strong> For dealers,</strong> a marketplace to grow their online business while<strong> keeping fees a predictable subscription</strong></p> 
+	<h3>Can I change My Plan At Any Time?</h3>
+	<p>Yes, simply go to your Account tab in the Shop admin to change plans at any time.</p>
+
+	<h3>Do you Charge any Listing Fees?</h3>
+	<p>{{marketplace.title|title}}<strong> does not </strong>charge for:<p>
+	<ul>
+	<li>Insertion</li>
+	<li>Final Value</li>
+	<li>Reserve</li>
+	<li>For Sale</li>
+	<li>Auction</li>
+	<li>Picture Hosting</li> 
+	</ul>
+	<p>No, The only limitations in your account are noted, the total items you can list a month, the total storage space and annual Store Revenue</p>
+
+	</div>
+	<div class="rightcolumneven">
+	<h3>Do I have to sign a long term contract?</h3>
+	<p>No. {{marketplace.title|title}} is a montly subscription with payment only for what you use. We do not require long-term contracts, you only pay month-to-month. If you want to cancel, you will be billed for the current month, but you won't be billed again. </p>
+
+	<h3>What Types of Payments Does {{marketplace.title|title}} Accept?</h3>
+	<p>We accept American Express, Discover, Visa and Master Card. We only accept online payments and cannot take payments over the phone.</p>
+	<h3>I have a website already, why {{marketplace.title|title}}?</h3>
+	<p>For a small subscription, you can now have another marketplace:
+		<ul>
+		<li>To find additional collectors</li>
+		<li>Grow your online business</li>
+		<li>Automate Online Marketing</li>
+		</ul>
+	<p>To save time, you can use industry standard formats to upload your current inventory, so you are not spending time entering coins twice.</p>
+	</div>
+
+<hr>
+ <div class="fullcolumn">
+<div class="Badges">
+
+</div>
+<h3>Your data is safe and secure with {{marketplace.title|title}}.</h3>
+<p> We use the most secure hosting with FireHost and we protect your sensitive credit card and personal information with Brain Tree Payments. Both companies are the leading security focused hosting and payment providers. You're worth it...</p>
+<hr>
+<h3>What Web Browsers Do You Support?</h3>
+<p> We test with Interent Explorer 7 and later (Please use 8 or 9). IE 6 is <strong>not</strong> supported. Firefox 3 and higer, Chrome 4 and higer and Safari 4 and higer. </p>
+<hr>
+<h3>Any Questions before you sign Up?</h3>
+<p>Drop us a note here and ask all the questions you want<p>
+<hr>
+<h3>What are your Terms of Service and Privacy Policy</h3>
+<p>Find that here.</p>
+
+
+
+
+</div>
+
 </div> 
+
+
 {% else%}
     {% if promotional_code %}
         <div class="alert-message warning">There is no plan that match with that code!</div>

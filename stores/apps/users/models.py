@@ -1,4 +1,5 @@
 from django.db import models
+from django.dispatch import receiver
 
 from auth.models import User
 from sell.models import Payment, Sell, Cart
@@ -13,7 +14,7 @@ class Profile(models.Model):
     country = models.CharField(max_length=50, blank=True, null=True)
     phone = models.CharField(max_length=50, blank=True, null=True)
     birth = models.DateField(blank=True, null=True)
-    photo = ImageWithThumbsField(upload_to='images', sizes=((100,100),((128,135)),(400,400)))
+    photo = ImageWithThumbsField(upload_to='images', sizes=((100,100),((128,135)),(400,400)), blank=True, null=True)
     #photo = models.ImageField(upload_to='images', blank=True, null=True)
     
     def get_cart(self, shop):
@@ -37,6 +38,20 @@ class Profile(models.Model):
         subscription = Subscription(owner=self, subscription_id=subscription_id, plan=subscription_plan)
         subscription.save()
     
+    def update_user_info(self, shipping_form):
+        self.user.first_name = shipping_form.cleaned_data['first_name']
+        self.user.last_name = shipping_form.cleaned_data['last_name']
+        self.user.save()
+    
+    def update_shipping_info(self, shipping_form):
+        self.update_user_info(shipping_form)
+        self.street_address = shipping_form.cleaned_data['street_address']
+        self.city = shipping_form.cleaned_data['city']
+        self.state = shipping_form.cleaned_data['state']
+        self.zip = shipping_form.cleaned_data['zip']
+        self.country = shipping_form.cleaned_data['country']
+        self.save()
+
     
     def __unicode__(self):
         return "Profile<%s>" % (self.user.username)
@@ -64,3 +79,11 @@ class EmailVerify(models.Model):
                 break
         self.save()
         return self.code
+    
+@receiver(models.signals.post_save, sender=User)
+def check_profile(sender, **kwargs):
+    try:
+        Profile.objects.get(user=kwargs['instance'])
+    except Profile.DoesNotExist:
+        profile = Profile(user=kwargs['instance'])
+        profile.save()

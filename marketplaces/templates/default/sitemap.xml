@@ -3,38 +3,38 @@
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<url><loc>http://www.greatcoins.com/</loc></url>
-<url><loc>http://www.greatcoins.com/buy/</loc></url>
-<url><loc>http://www.greatcoins.com/for_sale/</loc></url>
-<url><loc>http://www.greatcoins.com/auctions/</loc></url>
-<url><loc>http://www.greatcoins.com/buy/categories/</loc></url>
-<url><loc>http://www.greatcoins.com/buy/show_listing/</loc></url>
-<url><loc>http://www.greatcoins.com/buy/wish_list/</loc></url>
-<url><loc>http://www.greatcoins.com/buy/editor_pick/</loc></url>
-<url><loc>http://www.greatcoins.com/buy/shop_local/</loc></url>
-<url><loc>http://www.greatcoins.com/buy/advanced_search/</loc></url>
-<url><loc>http://www.greatcoins.com/sell/</loc></url>
-<url><loc>http://www.greatcoins.com/sell/features/</loc></url>
-<url><loc>http://www.greatcoins.com/sell/plans/</loc></url>
-<url><loc>http://www.greatcoins.com/community/</loc></url>
-<url><loc>http://www.greatcoins.com/community/blogs/</loc></url>
-<url><loc>http://www.greatcoins.com/community/faq/</loc></url>
-<url><loc>http://www.greatcoins.com/community/profiles/</loc></url>
-<url><loc>http://www.greatcoins.com/blog/</loc></url>
-<url><loc>http://www.greatcoins.com/sell/privacy/</loc></url>
-<url><loc>http://www.greatcoins.com/contact_us/</loc></url>
-<url><loc>http://www.greatcoins.com/buy/login/</loc></url>
-<url><loc>http://www.greatcoins.com/buy/signup/</loc></url>
-<url><loc>http://www.greatcoins.com/buy/show_search/</loc></url>
-<url><loc>http://www.greatcoins.com/buy/latest_items/</loc></url>
-<url><loc>http://www.greatcoins.com/survey/</loc></url>
-<url><loc>http://www.greatcoins.com/logout/</loc></url>
-<url><loc>http://www.greatcoins.com/buy/advanced_search_reset/</loc></url>
-<url><loc>http://www.greatcoins.com/buy/map_pick/</loc></url>
-<url><loc>http://www.greatcoins.com/buy/top_sellers/</loc></url>
-<url><loc>http://www.greatcoins.com/community/overview/</loc></url>
-<url><loc>http://www.greatcoins.com/community/forums/</loc></url>
-<url><loc>http://www.greatcoins.com/blog/</url>
-<url><loc>http://www.greatcoins.com/buy/signup/.</loc></url>
+<url><loc>{{ base_url }}</loc></url>
+<url><loc>{{ base_url }}buy/</loc></url>
+<url><loc>{{ base_url }}for_sale/</loc></url>
+<url><loc>{{ base_url }}auctions/</loc></url>
+<url><loc>{{ base_url }}buy/categories/</loc></url>
+<url><loc>{{ base_url }}buy/show_listing/</loc></url>
+<url><loc>{{ base_url }}buy/wish_list/</loc></url>
+<url><loc>{{ base_url }}buy/editor_pick/</loc></url>
+<url><loc>{{ base_url }}buy/shop_local/</loc></url>
+<url><loc>{{ base_url }}buy/advanced_search/</loc></url>
+<url><loc>{{ base_url }}sell/</loc></url>
+<url><loc>{{ base_url }}sell/features/</loc></url>
+<url><loc>{{ base_url }}sell/plans/</loc></url>
+<url><loc>{{ base_url }}community/</loc></url>
+<url><loc>{{ base_url }}community/blogs/</loc></url>
+<url><loc>{{ base_url }}community/faq/</loc></url>
+<url><loc>{{ base_url }}community/profiles/</loc></url>
+<url><loc>{{ base_url }}blog/</loc></url>
+<url><loc>{{ base_url }}sell/privacy/</loc></url>
+<url><loc>{{ base_url }}contact_us/</loc></url>
+<url><loc>{{ base_url }}buy/login/</loc></url>
+<url><loc>{{ base_url }}buy/signup/</loc></url>
+<url><loc>{{ base_url }}buy/show_search/</loc></url>
+<url><loc>{{ base_url }}buy/latest_items/</loc></url>
+<url><loc>{{ base_url }}survey/</loc></url>
+<url><loc>{{ base_url }}logout/</loc></url>
+<url><loc>{{ base_url }}buy/advanced_search_reset/</loc></url>
+<url><loc>{{ base_url }}buy/map_pick/</loc></url>
+<url><loc>{{ base_url }}buy/top_sellers/</loc></url>
+<url><loc>{{ base_url }}community/overview/</loc></url>
+<url><loc>{{ base_url }}community/forums/</loc></url>
+<url><loc>{{ base_url }}blog/</loc></url>
+<url><loc>{{ base_url }}buy/signup/</loc></url>
 </urlset>
 

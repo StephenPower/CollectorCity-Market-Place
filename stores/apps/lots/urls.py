@@ -27,7 +27,8 @@ urlpatterns = patterns('',
 #    url(r'^ajax_session_add/$', 'lots.views.ajax_session_add', name='ajax_session_add'),
 #    url(r'^ajax_session/$', 'lots.views.ajax_session', name='ajax_session'),
 
-    url(r'^add_image/([\d]+)/$', 'lots.views.add_image', name='add_image'),
+#    url(r'^add_image/([\d]+)/$', 'lots.views.add_image', name='add_image'),
+    url(r'^add_image/([\d]+)/$', 'lots.views.add_img', name='add_image'),
     url(r'^del_image/([\d]+)/([\d]+)/$', 'lots.views.del_image', name='del_image'),
     
     

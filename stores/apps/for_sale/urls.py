@@ -22,7 +22,9 @@ urlpatterns = patterns('',
     url(r'^item_delete/([\d]+)/$', 'for_sale.views.item_delete', name='item_delete'),
     url(r'^items_bulk_delete/$', 'for_sale.views.items_bulk_delete', name='items_bulk_delete'),
 #
-    url(r'^add_image/([\d]+)/$', 'for_sale.views.add_item_image', name='add_item_image'),
+#    url(r'^add_image/([\d]+)/$', 'for_sale.views.add_item_image', name='add_item_image'),
+    url(r'^add_image/([\d]+)/$', 'for_sale.views.add_img', name='add_item_image'),
+    url(r'^remove_image/([\d]+)/$', 'for_sale.views.remove_img', name='del_item_image'),
     url(r'^del_image/([\d]+)/([\d]+)/$', 'for_sale.views.del_item_image', name='del_item_image'),
     url(r'^set_primary_picture/([\d]+)/([\d]+)/$', 'for_sale.views.set_primary_picture', name='set_forsale_primary_picture'),
     

@@ -165,8 +165,8 @@ class Lot(Product):
         
     def sold(self):
         from sell.models import Cart
-        from preferences.models import EmailNotification
-        from django.core.mail import send_mail
+        from preferences.models import EmailNotification, EmailNotificationHistory, TYPE_NOTIFICATION
+        from django.core.mail import send_mail, EmailMessage
         from django.conf import settings
         from django.template import Context, Template
         
@@ -191,21 +191,47 @@ class Lot(Product):
         admin_email = self.shop.marketplace.contact_email
         try:
             notification = EmailNotification.objects.filter(type_notification='AWC', shop=self.shop).get()
+            type_notification_name = dict(TYPE_NOTIFICATION)[notification.type_notification].title()
             subj_template = Template(notification.subject)
             body_template = Template(notification.body)
             
             subj_text = subj_template.render(c)
             body_text = body_template.render(c)
-            send_mail(subj_text, body_text, settings.EMAIL_FROM, [self.bid_actual.bidder.email], fail_silently=True)
             
+            mail = EmailMessage(subject=subj_text,
+                                body=body_text,
+                                from_email=settings.EMAIL_FROM,
+                                to=[self.bid_actual.bidder.email],
+                                headers={'X-SMTPAPI': '{\"category\": \"%s\"}' % type_notification_name})
+            mail.send(fail_silently=True)
+#            send_mail(subj_text, body_text, settings.EMAIL_FROM, [self.bid_actual.bidder.email], fail_silently=True)
+
+            notification_history = EmailNotificationHistory(shop=self.shop,
+                                                        type_notification=notification.type_notification,
+                                                        datetime= datetime.datetime.now(),
+                                                        to=self.bid_actual.bidder.email,
+                                                        subject=subj_text,
+                                                        body=body_text)
+            notification_history.save()
         except EmailNotification.DoesNotExist:
             msg = "You made a bid u$s %s for %s and have won the auction!. Please contact %s to get more details about this purchase. Thanks" % (self.bid_actual.bid_amount, self.title, self.shop.admin.email)
-            send_mail("Congratulations!!", msg, settings.EMAIL_FROM,  [self.bid_actual.bidder.email], fail_silently=True)
-            
+            mail = EmailMessage(subject="Congratulations!!",
+                                body=msg,
+                                from_email=settings.EMAIL_FROM,
+                                to=[self.bid_actual.bidder.email],
+                                headers={'X-SMTPAPI': '{\"category\": \"%s\"}' % dict(TYPE_NOTIFICATION)['AWC'].title()})
+            mail.send(fail_silently=True)
+#            send_mail("Congratulations!!", msg, settings.EMAIL_FROM,  [self.bid_actual.bidder.email], fail_silently=True)
         except Exception, e:
-            send_mail("Could not send email to lot winner!", "Message could not be delivered to %s" % self.bid_actual.bidder.email, settings.EMAIL_FROM,  [mail for (name, mail) in settings.STAFF]+[admin_email], fail_silently=True)         
-        
-    
+            mail = EmailMessage(subject="Could not send email to lot winner!",
+                                body="Message could not be delivered to %s" % self.bid_actual.bidder.email,
+                                from_email=settings.EMAIL_FROM,
+                                to=[mail for (name, mail) in settings.STAFF]+[admin_email],
+                                headers={'X-SMTPAPI': '{\"category\": \"Error\"}'})
+            mail.send(fail_silently=True)
+#            send_mail("Could not send email to lot winner!", "Message could not be delivered to %s" % self.bid_actual.bidder.email, settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF]+[admin_email], fail_silently=True)         
+
+
     def didnt_sell(self):
         self.state = 'N'
         self.save()

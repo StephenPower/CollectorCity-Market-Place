@@ -9,7 +9,10 @@
 		{% if item.has_stock %}
 			<button type="submit" class="btn primary">Add to Cart</button>
 		{% else %}
-			<h4>Product out of stock</h4>		
+			<h4>Product out of stock</h4>
+			{% if item.sold_out_date %}
+				<h4 id="sold_msg">SOLD</h4>
+			{% endif %}
 		{% endif %}
 	{% endif %}
 </form>

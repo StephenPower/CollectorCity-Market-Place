@@ -5,13 +5,12 @@ from os.path import abspath, dirname, join
 import sys
 
 
-
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ROOT_DIR = abspath(join(dirname(__file__), os.path.pardir))
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+
 
 ##Add apps to sys.path
 sys.path.insert(1, os.path.join(PROJECT_ROOT, "apps"))
@@ -65,13 +64,16 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/media/'
 
+MEDIA_URL_OUT_S3 = '/media_out_s3/'
+MEDIA_ROOT_OUT_S3 = os.path.join(PROJECT_ROOT, 'media_out_s3')
+
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX = '/media/admin/'
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = ''
+SECRET_KEY = '...'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -101,7 +103,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'djangoflash.context_processors.flash',
     'core.context_processors.shop',    
     'core.context_processors.default_dns',    
-    'core.context_processors.google_key',    
+    'core.context_processors.google_key',
+    'core.context_processors.media_url_ous_s3',
     'bidding.context_processors.search',
 )
 
@@ -129,6 +132,9 @@ INSTALLED_APPS = (
     'haystack',
     'reversion',
     'rollyourown.seo',
+    'django_cron',
+    'tinymce',
+    'compressor',
 
     #POC
     'auth',
@@ -175,10 +181,10 @@ GOOGLE_MARKETPLACE_KEY = ''
 DEFAULT_DNS = 'shop.com'
 
 
-EMAIL_HOST = ""
-EMAIL_PORT = 587
-EMAIL_HOST_USER = ""
-EMAIL_HOST_PASSWORD = ""
+EMAIL_HOST = ''
+EMAIL_PORT = 25
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = True
 EMAIL_FROM = ''
 
@@ -238,7 +244,31 @@ COVERAGE_MODULES = [
 
 TEST_RUNNER='stores.test_coverage.test_runner_with_coverage'
 
+LANGUAGES = (
+    ('en', 'English'),
+)
+
+TINYMCE_DEFAULT_CONFIG = {
+    'spellchecker_languages' : "+English=en,"
+}
+
+TINYMCE_SPELLCHECKER = True
+
+CRON_CLASSES = [
+    "for_sale.cron.ShowItemsCronJob",
+]
+
+COMPRESS_ENABLED = False
+COMPRESS_CSS_FILTERS = ['compressor.filters.cssmin.CSSMinFilter']
+
+
 try:
     from local_settings import *
 except ImportError:
     pass
+
+if 'test' in sys.argv:
+    try:
+        from test_settings import *
+    except ImportError:
+        pass

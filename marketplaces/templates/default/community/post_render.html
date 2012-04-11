@@ -4,7 +4,7 @@
 		{% if post.shop.owner.get_profile.photo %}
 		<img class="item" alt="{{ post.shop.name }}" src="{{ post.shop.owner.get_profile.photo.url_100x100 }}" >
 		{% else %}
-		<img class="item" alt="{{ post.shop.name }}" src="{{ MEDIA_URL }}img/no-photo-big.jpg" />
+		<img class="item" alt="{{ post.shop.name }}" src="{{ STATIC_URL }}img/no-photo-big.jpg" />
 		{% endif %}
 		</a>
 	</td>

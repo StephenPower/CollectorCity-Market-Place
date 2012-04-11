@@ -1,4 +1,4 @@
-#import datetime
+import datetime
 import decimal
 import logging
 
@@ -6,10 +6,11 @@ from django.db import models
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.core.files.base import ContentFile
 from core.thumbs import ImageWithThumbsField
 from inventory.models import Product
+#from boto.sdb.db.manager import debug
 
 #TODO: PCGSNumberException, and the Coin references in create_from_inventory must be removed from this module
 
@@ -46,12 +47,14 @@ class PCGSNumberException(Exception):
 class Item(Product):
     qty = models.IntegerField(default=0)
     price = models.DecimalField(max_digits=11, decimal_places=2)
-    
+    show = models.BooleanField(default=True)
+    sold_out_date = models.DateTimeField(null=True, blank=True)
     
     def type(self):
         return "Item"
     
     def decrease_qty(self, qty):
+        logging.error("decrease item: %s" % qty)
         self.qty = self.qty - qty
         self.save()
         if self.qty <= 0:
@@ -68,7 +71,14 @@ class Item(Product):
             for sell in sell_items:
                 revenue += (sell.price * sell.qty)
             msg = "There are no more Items for %s.\n\nlink: %s\n\nTotal Items Sold: %s\n\nTotal Revenue: %s\n\n\nTake notice that this last item wasn't sold yet, is currently in a cart and could be removed from it anytime. If customer decides to remove the item from the cart it will be inmediatly restored to the inventory" % (self.title, path, total, revenue)
-            send_mail('Product Out Of Stock', msg, settings.EMAIL_FROM,  [self.shop.admin.email], fail_silently=True)
+            
+            mail = EmailMessage(subject='Product Out Of Stock',
+                                body=msg,
+                                from_email=settings.EMAIL_FROM,
+                                to=[self.shop.admin.email],
+                                headers={'X-SMTPAPI': '{\"category\": \"Product Out Of Stock\"}'})
+            mail.send(fail_silently=True)
+#            send_mail('Product Out Of Stock', msg, settings.EMAIL_FROM, [self.shop.admin.email], fail_silently=True)
     
     def increase_qty(self, qty):
         self.qty = self.qty + qty
@@ -150,7 +160,9 @@ class Item(Product):
                                                 grading_service.upper().strip())
         except Coin.DoesNotExist:
             raise PCGSNumberException("Invalid pcgs number: %s" % grading_coin_number)
-        
+        except Exception, e:
+            logging.debug(e)
+
         item.description = vals['ProductDescription']
         item.price = vals['RetailPrice']
         item.qty = int(decimal.Decimal(vals['Quantity']))
@@ -164,20 +176,49 @@ class Item(Product):
             ImageItemURLQueue(item=item, url=url).save()
             
         return item
-        
+
     def has_stock(self):
         return self.qty > 0
 
     def activate(self):
         pass
+
+    def update_show(self, save=True):
+        two_weeks_ago = datetime.datetime.now() - datetime.timedelta(days=14)
+
+        if self.qty == 0 and self.sold_out_date is None:
+            self.show = False
+        elif self.qty > 0:
+            self.show = True
+            self.sold_out_date = None
+        elif self.sold_out_date is None:
+            self.sold_out_date = datetime.datetime.now()
+            self.show = True
+        elif self.sold_out_date < two_weeks_ago:
+            self.show = False
+
+        if save:
+            self.save()
+            
+    def save(self, *args, **kwargs):
+        """
+            Save item model
+        """
+        self.update_show(save=False)
+        return super(Item, self).save(*args, ** kwargs)
     
 
 class ItemAdmin(admin.ModelAdmin):
     list_filter = ('price', 'qty')
     
+
+def build_image_item_filename(instance, filename):
+    import uuid
+    return "images/%s-%s" % (uuid.uuid4(), filename)
+
 class ImageItem(models.Model):
     #image = models.ImageField(upload_to='images') 
-    image = ImageWithThumbsField(upload_to='images', sizes=((100,100),(400,400)), crop=False)
+    image = ImageWithThumbsField(upload_to=build_image_item_filename, sizes=((100,100),(400,400)), crop=False)
     item = models.ForeignKey(Item)
     primary_picture = models.BooleanField(default=False)
     

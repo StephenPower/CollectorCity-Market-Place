@@ -4,8 +4,8 @@
 
 {% block content %}
 <ul class="breadcrumb">
- <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider">/</span></a></li>
- <li><a href="{% url market_buy %}">{% trans "Buy" %}</a></span class="divider">/</span></a></li>
+ <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider">/</span></li>
+ <li><a href="{% url market_buy %}">{% trans "Buy" %}</a><span class="divider">/</span></li>
  <li class="active">{% trans "Favorites" %}</li>
 </ul>
 
@@ -24,7 +24,7 @@
               <h3>{{ pick.product.title }}</h3>
             </div>
             <div class="modal-body">
-              <p><img src="{{pick.product.child.image.image.url_100x100}}" ></p>
+              <p><img src="{{pick.product.child.image.image.url_100x100}}" alt="{{ pick.product.description }}"></p>
              <p>{{ pick.product.description|striptags|safe }}</p>
             <p>
               </div>

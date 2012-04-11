@@ -12,11 +12,6 @@
  <div class="well">
   <h5>{% trans "Dealer Resources" %}</h5>
 	<ul class="sell_dealer_resources">
-		<li><a class="sell_dealer_resources" href="/">{% trans "Create an account" %}</a></li>
-		<li><a class="sell_dealer_resources" href="/">{% trans "Naming my Store" %}</a></li>
-		<li><a class="sell_dealer_resources" href="/">{% trans "Do'es and Don't" %}</a></li>
-		<li><a class="sell_dealer_resources" href="/">{% trans "Fees/Pricing" %}</a></li>
-		<li><a class="sell_dealer_resources" href="/">{% trans "Selling FAQ" %}</a></li>
 		<li><a class="sell_dealer_resources" href="{% url market_privacy_policy %}">{% trans "Privacy Policy" %}</a></li>
 	</ul>
  </div>
@@ -26,13 +21,13 @@
 
 <div class="span12">
 	
-<h2>{% trans "Sell On" %} {{ marketplace.name }}</h2>
+<h2>{% trans "Sell On" %} {{ marketplace.title }}</h2>
 
 
-<p>{{ marketplace.name }}  is the online Marketplace for buying and selling. 
+<p>{{ marketplace.title }}  is the online Marketplace for buying and selling. 
 Created by a Collector and Dealer, We monitor the marketplace for counterfeits, and coins that don't match the description.</p>
 
-<h2>{% trans "What You Can Sell on" %} {{ marketplace.name }}</h2>
+<h2>{% trans "What You Can Sell on" %} {{ marketplace.title }}</h2>
 
 
 
@@ -46,17 +41,17 @@ Created by a Collector and Dealer, We monitor the marketplace for counterfeits, 
 </tr>
 </thead>
 <tbody>
-</tr>
-<td>	<img alt="Coins" src="{{ MEDIA_URL }}img/coins.jpg"/></td>
-<td>	<img alt="Coins" src="{{ MEDIA_URL }}img/dealer-to-dealer.jpg"/> </td>
-<td>	<img alt="Coins" src="{{ MEDIA_URL }}img/precious-metals.jpg"/> </td>
-<td>	<img alt="Coins" src="{{ MEDIA_URL }}img/books-and-supplies.jpg"/> </td>
+<tr>
+<td>	<img alt="Coins" src="{{ STATIC_URL }}img/coins.jpg"/></td>
+<td>	<img alt="Coins" src="{{ STATIC_URL }}img/dealer-to-dealer.jpg"/> </td>
+<td>	<img alt="Coins" src="{{ STATIC_URL }}img/precious-metals.jpg"/> </td>
+<td>	<img alt="Coins" src="{{ STATIC_URL }}img/books-and-supplies.jpg"/> </td>
 </tr>
 </tbody>
 </table>
 
 
-<h2>{% trans "What Do You Get" %}</h2>
+<h2>{% trans "What You Get" %}</h2>
 
 <table class="NoBorderTable SellTable">
 <thead>
@@ -69,24 +64,24 @@ Created by a Collector and Dealer, We monitor the marketplace for counterfeits, 
 </tr>
 </thead>
 <tbody>
-</tr>
-<td>	<img alt="Your Own Store" src="{{ MEDIA_URL }}img/customize-store.jpg"/></td>
-<td>	<img alt="Marketing" src="{{ MEDIA_URL }}img/build-value.jpg"/></td>
-<td>	<img alt="Payments & Security" src="{{ MEDIA_URL }}img/credit-cards.jpg"/> </td>
-<td>	<img alt="Running Your Shop" src="{{ MEDIA_URL }}img/automate-shop.jpg"/> </td>
+<tr>
+<td>	<img alt="Your Own Store" src="{{ STATIC_URL }}img/customize-store.jpg"/></td>
+<td>	<img alt="Marketing" src="{{ STATIC_URL }}img/build-value.jpg"/></td>
+<td>	<img alt="Payments & Security" src="{{ STATIC_URL }}img/credit-cards.jpg"/> </td>
+<td>	<img alt="Running Your Shop" src="{{ STATIC_URL }}img/automate-shop.jpg"/> </td>
 </tr>
 <tr>
 <td>Customize your store with a<b> Graphic Designer</b> or use our <b>Free Templates</b></td>
-<td>Build the value of your store,not some <b>Bay.</b></br> Track <b>orders, sales</b> and your website.</br> Integrate <b>Google Analytics</b></td>
-<td>Accept <b>Credit Cards, PayPal, Google Checkout</b> or your own.</br>It's safe & secure <b>PCI certified hosting</b> so you don't have to worry</td>
-<td>Automate your online store:Import inventory, post to <b>{{ marketplace.name }}</b> automatically</td>
+<td>Build the value of your store, not some <b>Bay.</b> Track <b>orders, sales</b> and your website. Integrate <b>Google Analytics</b></td>
+<td>Accept <b>Credit Cards, PayPal, Google Checkout</b> or your own. It's safe & secure <b>PCI certified hosting</b> so you don't have to worry</td>
+<td>Automate your online store: Import inventory, post to <b>{{ marketplace.title }}</b> automatically</td>
 </tr>
 </tbody>
 </table>
 
 <div class="alert-message block-message error"><b>What's Not Allowed</b>: Counterfeits, Altered, Doctored and Coins that Don't Match the Description</div>
 
-<h2>{% trans "Why Sell on" %} {{ marketplace.name }}</h2>
+<h2>{% trans "Why Sell on" %} {{ marketplace.title }}</h2>
 <ul>
 	<li>
 			<h3>{% trans "No Technical Skills Required" %}</h3>
@@ -98,7 +93,7 @@ Created by a Collector and Dealer, We monitor the marketplace for counterfeits, 
 	</li>
 	<li>
 			<h3>{% trans "Safe and Secure" %}</h3>
-			<p>Great Coins went through the <b>security and safety tests</b>, so you don't have to.<b> Minimize PCI compliance,</b> Accept online credit cards with 128 Bit SSL encrypted Checkout, and Automatic Shop Backup</p>
+			<p>Great Coins went through the <b>security and safety tests</b>, so you don't have to.<b> Minimize PCI compliance,</b> accept online credit cards with 128 Bit SSL encrypted Checkout, and Automatic Shop Backup</p>
 	</li>
 </ul>
 <div class="clear"></div>

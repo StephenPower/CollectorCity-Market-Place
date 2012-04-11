@@ -4,8 +4,8 @@
 {% block content %}
 <div class="span16 offset2">
 	<div class="announce left">
-		<p><h2>Welcome to {{ marketplace.name }} {{ shop.admin.username }} !!</h2></p>
-		<p>{{ marketplace.name }} is the online Marketplace for buying and selling coins.<br/>
+		<p><h2>Welcome to {{ marketplace.title }} {{ shop.admin.username }} !!</h2></p>
+		<p>{{ marketplace.title }} is the online Marketplace for buying and selling coins.<br/>
 		A collector and a Dealer wanted to create a market where buyers and sellers to find the very best coins.<br/>
 		We monitor the marketplace for counterfiets and coins that don't match the description.</p> 
 
@@ -17,22 +17,22 @@
 	<div class="span16">
 	<div class="span3 shop_feature_box">
 		<p>{% trans "Post Coins" %}</p>
-		<img alt="Coins" src="{{ MEDIA_URL }}img/coins.jpg"></img>
+		<img alt="Coins" src="{{ STATIC_URL }}img/coins.jpg"></img>
 	</div>
 
 	<div class="span3 shop_feature_box">
 		<p>{% trans "Setup Payments" %}</p>
-		<img alt="Coins" src="{{ MEDIA_URL }}img/coins.jpg"></img>
+		<img alt="Coins" src="{{ STATIC_URL }}img/coins.jpg"></img>
 	</div>
 	
 	<div class="span3 shop_feature_box">
 		<p>{% trans "Choose Your Store Look" %}</p>
-		<img alt="Coins" src="{{ MEDIA_URL }}img/coins.jpg"></img>
+		<img alt="Coins" src="{{ STATIC_URL }}img/coins.jpg"></img>
 	</div>
 	
 	<div class="span3 shop_feature_box">
 		<p>{% trans "Auction Coins" %}</p>
-		<img alt="Coins" src="{{ MEDIA_URL }}img/coins.jpg"></img>
+		<img alt="Coins" src="{{ STATIC_URL }}img/coins.jpg"></img>
 	</div>
 	</div>
 	
@@ -49,7 +49,7 @@
    _gaq.push(['_trackPageview']); 
    _gaq.push(['_addTrans',
      '{{ shop.id }}',           // order ID - required 
-     '{{ shop.admin.username }}',  // affiliation or store name 
+     '{{ shop.admin.use.title }}',  // affiliation or store name 
      '{{ subscription.plan.price }}',          // total - required 
      '0.0',           // tax  
      '{{ shopinfo.city }}',       // city

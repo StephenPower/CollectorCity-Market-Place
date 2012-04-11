@@ -1,0 +1,55 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+
+{% block content %}
+	<form name="form" method="post" action="." class="form-stacked span10 offset2 alert-message block-message info" enctype="multipart/form-data">
+		<fieldset class="register">
+			<h2><a id="lip" href=".">Your Profile</a></h2></br>
+			<div class="mrl pull-right">
+				{% if form.photo.errors %}<div class="alert-message error">{{ form.photo.errors|join:", " }}</div>{% endif %}
+				<label>{% trans "User Avatar" %}</label>
+				{% if photo %}
+					<img src="{{ photo.url_100x100 }}">
+					<br><a href="{% url delete_profile_image %}" class="label info">{% trans "Delete" %}</a>
+				{% else %}
+					<img src="{{ STATIC_URL }}img/no-photo-shop2.png" width="100px" height="100px">
+				{% endif %}
+				<br>
+				<input type="file" name="photo"/>
+			</div>
+
+			{% if form.username.errors %}<div class="alert-message error">{{ form.username.errors|join:", " }}</div>{% endif %}
+			<label>{{ form.username.label }}</label>{{ form.username }}
+
+			{% if form.first_name.errors %}<div class="alert-message error">{{ form.first_name.errors|join:", " }}</div>{% endif %}
+			<label>{{ form.first_name.label }}</label>{{ form.first_name }}
+
+			{% if form.last_name.errors %}<div class="alert-message error">{{ form.last_name.errors|join:", " }}</div>{% endif %}
+			<label>{{ form.last_name.label }}</label> {{ form.last_name }}
+
+			{% if form.phone.errors %}<div class="alert-message error">{{ form.phone.errors|join:", " }}</div>{% endif %}
+			<label>{{ form.phone.label }}</label> {{ form.phone }}
+
+			{% if form.street_address.errors %}<div class="alert-message error">{{ form.street_address.errors|join:", " }}</div>{% endif %}
+			<label>{{ form.street_address.label }}</label> {{ form.street_address }}
+			
+			{% if form.city.errors %}<div class="alert-message error">{{ form.city.errors|join:", " }}</div>{% endif %}
+			<label>{{ form.city.label }}</label> {{ form.city }}
+
+			{% if form.state.errors %}<div class="alert-message error">{{ form.state.errors|join:", " }}</div>{% endif %}
+			<label>{{ form.state.label }}</label> {{ form.state }}
+
+			{% if form.zip.errors %}<div class="alert-message error">{{ form.zip.errors|join:", " }}</div>{% endif %}
+			<label>{{ form.zip.label }}</label> {{ form.zip }}
+
+			{% if form.country.errors %}<div class="alert-message error">{{ form.country.errors|join:", " }}</div>{% endif %}
+			<label>{{ form.country.label }}</label> {{ form.country }}
+
+			<div class="buttonHolder">			
+				<br/>
+				<button type="submit" class="btn primary">Update</button>
+			</div>
+		</fieldset>
+	</form>
+
+{% endblock %}

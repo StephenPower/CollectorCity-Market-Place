@@ -19,7 +19,7 @@
 	{% if best_seller.shop.owner.get_profile.photo %}
 	<img class="item" alt="{{ best_seller.shop.name }}" src="{{ best_seller.shop.owner.get_profile.photo.url_128x135 }}" width="75px"/>
 	{% else %}
-	<img class="item" alt="{{ best_seller.shop.name }}" src="{{ MEDIA_URL }}img/no-photo-big.jpg" width="75px"/>
+	<img class="item" alt="{{ best_seller.shop.name }}" src="{{ STATIC_URL }}img/no-photo-big.jpg" width="75px"/>
 	{% endif %}
 	<div class="date">{% trans "Week" %} {{ best_seller.from_date|date:"d M Y" }}</div>
 	<div class="dealer">{{ best_seller.shop.name_shop }}</div>
@@ -70,7 +70,7 @@
 	{% if product.child.image %}
 	<img class="item" src="{{ product.child.image.image.url_100x100 }}" width="25px" title="{{ product.description|striptags }}"/>
 	{% else %}
-	<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" width="25px" title="{{ product.description|striptags }}"/>
+	<img class="item" src="{{ STATIC_URL }}img/no-photo-medium.jpg" width="25px" title="{{ product.description|striptags }}"/>
 	{% endif %}
 	<p>{{ product.title|title }}</p>
 	</a>

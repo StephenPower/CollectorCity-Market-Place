@@ -3,22 +3,23 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
-	$("#dialog-confirm").dialog(
-		{
-		autoOpen: false, 
-		modal: true,
-		resizable: false,
-		draggable: false,
-		width: 350,
-		heigth: 300,
-		buttons: { 
-				"Cancel": function() { $(this).dialog("close"); },
-				"Confirm": function() { $("#bid_form").submit(); },
-			} 
-		}
-	);
-	
-	({  })
+	$("#dialog-confirm").dialog({
+            autoOpen: false,
+            modal: true,
+            resizable: false,
+            draggable: false,
+            width: 350,
+            heigth: 300,
+            buttons: {
+                "Cancel": function() { $(this).dialog("close"); },
+                "Confirm": function() { $("#bid_form").submit(); },
+            },
+            open: function() {
+                $('.ui-dialog-buttonpane').find('button:contains("Cancel")').addClass('cancelButton');
+                $('.ui-dialog-buttonpane').find('button:contains("Confirm")').addClass('confirmButton');
+            }
+    });
+
 	$("#bidbutton").click(function(event){
 		event.preventDefault();
 		var a = $("#id_amount").attr("value");
@@ -27,7 +28,6 @@ $(document).ready(function(){
 			$("#dialog-confirm").dialog("open");
 		}
 	});
-		
 });
 </script>
 

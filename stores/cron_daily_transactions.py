@@ -8,7 +8,7 @@ import decimal
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 from django.core.management import setup_environ
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 #from django.db import transaction
 
 import settings
@@ -46,11 +46,25 @@ def send_daily_transactions_notifications():
                 msg += "\t - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
             msg += "\nTOTAL : u$s %s\n" % total     
             msg += "===============================================================\n"
-        send_mail('Daily Transaction Statuses', msg, settings.EMAIL_FROM,  [mail for (name, mail) in settings.STAFF], fail_silently=True)
+        
+        mail = EmailMessage(subject='Daily Transaction Statuses',
+                            body=msg,
+                            from_email=settings.EMAIL_FROM,
+                            to=[mail for (name, mail) in settings.STAFF],
+                            headers={'X-SMTPAPI': '{\"category\": \"Daily Transaction Statuses\"}'})
+        mail.send(fail_silently=True)    
+#        send_mail('Daily Transaction Statuses', msg, settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF], fail_silently=True)
+        
         logging.debug(msg)
     except Exception, e:
-        send_mail('Error when trying to get daily transaction statuses', e , settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF], fail_silently=True)
-        
-        
+        mail = EmailMessage(subject='Error when trying to get daily transaction statuses',
+                            body=e,
+                            from_email=settings.EMAIL_FROM,
+                            to=[mail for (name, mail) in settings.STAFF],
+                            headers={'X-SMTPAPI': '{\"category\": \"Error\"}'})
+        mail.send(fail_silently=True)
+#        send_mail('Error when trying to get daily transaction statuses', e , settings.EMAIL_FROM, [mail for (name, mail) in settings.STAFF], fail_silently=True)
+
+
 if __name__ == "__main__":
     send_daily_transactions_notifications()

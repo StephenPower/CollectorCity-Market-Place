@@ -33,7 +33,7 @@
 </table>
 
 <h2>{% trans "Just Launched" %}</h2>
-<table class="NoBorderTable">
+<table class="NoBorderTable span12">
 <thead>
 <tr>
 <td></td>
@@ -43,22 +43,23 @@
 <tbody>
 {% for shop in shops %}
 <tr>
+
 <td>	<a href="http://{{ shop.default_dns }}" target="_blank">
 		{% if shop.owner.get_profile.photo %}
 		<img class="thumbnail" alt="{{ shop.name }}" src="{{ shop.owner.get_profile.photo.url_400x400 }}" height="75"/>
 		{% else %}
-		<img class="thumbnail" alt="{{ shop.name }}" src="{{ MEDIA_URL }}img/no-photo-big.jpg" height="75"/>
+		<img class="thumbnail" alt="{{ shop.name }}" src="{{ STATIC_URL }}img/no-photo-big.jpg" height="75"/>
 		{% endif %}
-</td>
-<td>		<p class="description">{{ shop.admin.get_full_name }}
-		{{ shop.default_dns }}
-		{{ shop.description|safe }}</p>
+</a></td>		
+<td><a href="http://{{ shop.default_dns }}" target="_blank"><p class="description">
+	http://{{ shop.default_dns }}
+		{{ shop.description|safe }}</a></p>
 </td>
 </tr>
 {% endfor %}
 </tbody>
 </table>
-
+<hr>
 <h2>{% trans "Latest Blog Posts" %}</h2>
 <table class="NoBorderTable">
 <thead>

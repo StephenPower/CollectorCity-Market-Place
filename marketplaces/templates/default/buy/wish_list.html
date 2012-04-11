@@ -10,7 +10,7 @@
 <script type="text/javascript">
 	$(document).ready(function() {
  
-		$("#dialog_form").dialog({
+		$("#dialog_form_open").dialog({
 			autoOpen: false,
 			height: 520,
 			width: 460,
@@ -45,8 +45,8 @@
 	});
 </script>
 <ul class="breadcrumb">
- <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider">/</span></a></li>
- <li><a href="{% url market_buy %}">{% trans "Buy" %}</a><span class="divider">/</span></a></li>
+ <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider">/</span></li>
+ <li><a href="{% url market_buy %}">{% trans "Buy" %}</a><span class="divider">/</span></li>
  <li class="active">{% trans "Wish List" %}</li>
 </ul>
 
@@ -73,24 +73,19 @@
 {% endif %}
   </div>
 </div>
-	<form class="form-stacked" id="dialog_form" action="{% url post_wish_list_item %}" method="POST" name="form">
-		{{ form.as_p }}
-		<button type="submit" class="btn primary">{% trans 'Save Item' %}</button> 
-        
-	</form>
 
 	  <div id="modal-from-dom" class="modal hide fade">
             <div class="modal-header">
               <a href="#" class="close">&times;</a>
-              <h3>Post Your Wish Lis Item</h3>
+              <h3>Post Your Wish List Item</h3>
             </div>
             <div class="modal-body">
         	<form class="form-stacked" id="dialog_form" action="{% url post_wish_list_item %}" method="POST" name="form">
 		{{ form.as_p }}
 		<button type="submit" class="btn primary">{% trans 'Save Item' %}</button> 
-            </div>
+            	</form>
+		</div>
             <div class="modal-footer">
-       		<button type="submit" class="btn primary">{% trans 'Save Item' %}</button> 
 	   </div>
           </div>
  
@@ -135,7 +130,7 @@
 </table>
 
 {% else %}
-<div class="alert-message warning">{% trans "There is no wish list items posted yet..." %}</div>
+<div class="alert-message warning">{% trans "There are no Wish List items posted yet..." %}</div>
 {% endif %}
 
 {% comment %}

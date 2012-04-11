@@ -1,0 +1,85 @@
+{% extends "default/base.html" %}
+{% load i18n %}
+{% load sell_tags %}
+
+{%  block content %}
+	<ul class="breadcrumb">
+ 		<li><a href="{% url market_home %}">{% trans "Home" %}</a></li>
+ 		<span class="divider">/</span>
+ 		<li><a href="{% url market.views.search product.category.slug %}">{{ product.category.name }}</a></li>
+ 		<span class="divider">/</span>
+ 		<li><a href="{% url market_search_subcategory product.category.slug product.subcategory.slug %}">{{ product.subcategory.name }}</a></li>
+ 		<span class="divider">/</span>
+ 		<li class="active">{{ product.title }}</li>
+	</ul>
+	
+	<div class="sidebar">
+		<div class="well">
+			<h5>{% trans "Other Categories By This Dealer" %}</h5>
+			<ul>
+				{% for category in shop_categories  %}
+					<li><a href="{% url market_search_category_by_shop category.slug product.shop.id %}">{{ category.name }}</a></li>
+				{% endfor %}
+			</ul>
+			<br>
+			<h5>{% trans "Other Dealers With This Category Coin" %}</h5>
+			<ul>
+				{% for related_shop in related_shops %}
+					<ul><a href="http://{{ related_shop.default_dns }}" target="_blank">{{ related_shop.name }}</a></ul>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+
+	<div class=" margin_h padding_h" id="product_detail_wrap">
+		<div class="span6 offset1 columns">
+			<div id="myCarousel" class="carousel">
+				<div class="carousel-inner">
+					{% for image in images %}
+    					<div class="item{% if forloop.first %} active{% endif %}">
+    						<a href="{{ image.image.url }}" target="_blank"><img src="{{ image.image.url_400x400 }}" width="320px"></a>
+    						<div class="carousel-caption">
+								<h4>{{ product.title }}</h4>
+                 				<p>Click On Image to View Original Size</p>
+               				</div>
+    					</div>
+    				{% endfor %}
+    			</div>
+  				<a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+  				<a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+			</div>
+		</div>
+		<div class="well span4">
+			<h2>{{ product.title }}</h2>
+			<p class="product_detail_categories">
+				<a href="{% url market.views.search product.category.slug %}">{{ product.category.name }}</a> >> <a href="{% url market_search_subcategory product.category.slug product.subcategory.slug %}"">{{ product.subcategory.name }}</a></p>
+			<h2 class="product_detail_price">{% trans "Price" %}: {{ price|money_format:product.shop  }}</h2>
+			<a class="btn primary" id="dealer_site_btn" href="{% url market_buy_product_redirect product.id %}" target="_blank">{% trans "Go To Dealer's Site" %}</a>
+		</div>
+		<br>
+		<div class="well span4" id="product_shop_detail">
+			<h2>{% trans "Dealer Stats" %}</h2>
+			<p>{% trans "Dealer Since" %}: {{ product.shop.date_time|date:"M Y"}}</p>
+			<p id="shop_transactions">
+				{% if shop_transactions != 0 %}
+					<span id="transactions_cont">{{ shop_transactions }}</span> {% trans "transactions" %}
+				{% else %}
+					<span id="new_dealer">{% trans "New Dealer" %}</span>
+				{% endif %}
+			</p>
+		</div>
+		
+		<div class="row-fluid" id="item_description">
+		  	<div class="span8 offset1">
+        		<p>{{ product.description|safe }}</p>
+    		</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('.carousel').carousel();
+		});
+	</script>
+	
+{% endblock %}

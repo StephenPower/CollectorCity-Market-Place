@@ -30,6 +30,7 @@ def default_dns(request):
     
     return params
 
+
 def secure_media(request):
     """
         Change MEDIA_URL
@@ -43,3 +44,6 @@ def secure_media(request):
     
     return {'REQUEST_IS_SECURE': False}
 
+
+def media_url_ous_s3(request):
+    return {'MEDIA_URL_OUT_S3': getattr(settings, 'MEDIA_URL_OUT_S3', '')}

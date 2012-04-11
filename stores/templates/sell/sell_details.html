@@ -111,7 +111,10 @@
 				<div><a href="{% url sell_dispatched sell.id %}" class="medium awesome green">{% trans "Dispatched" %}</a></div>
 			{% else %}
 				{% ifequal sell.shipping.state_actual.state 'DI' %}
-					<div><a href="{% url sell_fulfilled sell.id %}" class="medium awesome orange">{% trans "Fulfilled" %}</a></div>
+					<div>
+						<a href="{% url sel_undispatched sell.id %}" class="medium awesome red">{% trans "Undispatch" %}</a>
+						<a href="{% url sell_fulfilled sell.id %}" class="medium awesome orange">{% trans "Fulfilled" %}</a>
+					</div>
 				{% endifequal %}
 			{% endifequal %}
 		{% endif %}

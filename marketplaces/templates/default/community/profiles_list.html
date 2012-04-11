@@ -4,25 +4,26 @@
 {% block profiles_selection %}current_selection{% endblock %}
 
 {% block community_content %}
-
-<div class="grid_155555 alpha omega">
+<div class="row">
+<div class="span12">
 
 {% for letter in letters %}
-<div class="grid_1 capital_letter">
+<div class="span1 capital_letter">
         <h2><a href="{% url community_profiles_list letter %}">{{ letter }}</a></h2>
 </div>
 {% endfor %}
 
 
 {% if shops %}
+<div class="row">
 {% for shop in shops %}
-	<div class="profile">
+	<div class="profile span5">
 		<a href="http://{{ shop.default_dns }}" target="_blank">
 		<div class="dealer_box">
 			{% if shop.owner.get_profile.photo %}
 			<img class="item" alt="{{ shop.name }}" src="{{ shop.owner.get_profile.photo.url_400x400 }}" height="128" width="135"/>
 			{% else %}
-			<img class="item" alt="{{ shop.name }}" src="{{ MEDIA_URL }}img/no-photo-big.jpg" height="128" width="135"/>
+			<img class="item" alt="{{ shop.name }}" src="{{ STATIC_URL }}media/img/no-photo-big.jpg" height="128" width="135"/>
 			{% endif %}
 			<div class="dealer">{{ shop.admin.get_full_name }}</div>
 			<div class="title">{{ shop.default_dns }}</div>
@@ -31,8 +32,9 @@
 		</a>
 	</div>
 {% endfor %}
-<div class="clear"></div>
-
+</div>
+</div>
+<p></p>
 <b><h3><a href="{% url community_profiles %}">Back To Dealer Profiles</a></h3></b>
 <b><h3><a href="{% url market_community %}">Back To the Community</a></h3></b>
 {% else %}
@@ -44,6 +46,5 @@
 
 {% endif %}
 </div>
-
 
 {% endblock %}

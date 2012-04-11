@@ -26,11 +26,11 @@
 
    {% ifnotequal category.product_set.count 0 %}
 	<tr>
-	<td><h3><a href="{% url market_search_category category.slug %}">{{ category.name }}</a><h3></td>
+	<td><h3><a href="{% url market_search_category category.slug %}">{{ category.name }}</a></h3></td>
 	<td>
 	{% for subcategory in category.subcategories.all %}
 	   {% ifnotequal subcategory.product_set.count 0 %}
-		<em><p><a href="{% url market_search_subcategory category.slug subcategory.slug %}">{{ subcategory.name }}</a></p></em>
+	<p><em><a href="{% url market_search_subcategory category.slug subcategory.slug %}">{{ subcategory.name }}</a></em></p>
 	   {% endifnotequal %}
 	{% endfor %}
 	</td>
@@ -42,5 +42,5 @@
 </tbody>
 </table>
 </div>
-
+</div>
 {% endblock %}

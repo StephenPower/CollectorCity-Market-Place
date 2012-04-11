@@ -3,9 +3,21 @@
 {% load i18n %}
 {% block content %}
 
+<div class="WizardHeader">
+      <h2>Why A {{ marketplace.title }}?</h2>
+</div>
+
+
+
+
+
+
+
+
+
 {% if marketplans %}
 <div class="span16">
-	<h3>Plan Details {{ marketplace.title }}</h3>
+<h3>Plan Details {{ marketplace.title }}</h3>
 
 <div class="table span14 offset2">
 <div class="span3" >
@@ -68,7 +80,339 @@
 </div>
 <div class="SignUpFeaturePage span11 offset2 alert-message block-message success">
 <div class="SignUpCopyText span6">
-<h2>Try {{ marketplace.name }} !!!</h2>
+<h2>Try {{ marketplace.title|title }} !!!</h2>
+<h4>Get Started in 45 seconds, no hassles, no fuss</H4>
+</div>
+<a href="{% url market_sell %}" name="1-plan_id" class= "btn success" value="{{ plan.id }}" />
+Create Your Shop</a>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+{% else%}
+        <div class="alert-message info">There are no Plans for this marketplace!</div>
+{% endif %} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="extra">
+        <div class="leftcolumneven">
+        <h2>For Dealers</h2>
+	<h3>Why Did You Start Great Coins?</h3>
+        <p>Simple, we wanted to create a market where <strong>trusted dealers</strong> could meet collectors without <strong>anyone</strong> getting in the way.</p>
+        <h3>How do you help Dealers?</h3>
+        <p>What Do Dealers Need Help with Most?</p>
+	<ul>
+	<li>Marketing</li>
+	<li>Finding Customers</li>
+	<li>Reducing my cost to Market and Find New Customers :)</li>
+	</ul>
+	<p>The current Bay allows you great access to collectors, it only asks for ~50% of your gross margins. Great Coins was founded by a dealer and collector who wanted the industry to regain control and not let the dollars leave the Collectible Market.</p>
+         <h3>Can I change My Plan At Any Time?</h3>
+        <p>Yes, simply go to your Account tab in the Shop admin to change plans at any time.</p>
+        <h3>Do you Charge any Listing Fees?</h3>
+        <p>{{marketplace.title|title}}<strong> does not </strong>charge for:<p>
+        <ul>
+        <li>Insertion</li>
+        <li>Final Value</li>
+        <li>Reserve</li>
+        <li>For Sale</li>
+        <li>Auction</li>
+        <li>Picture Hosting</li>
+        </ul>
+        <p>No, The only limitations in your account are noted, the total items you can list a month, the total storage space and annual Store Revenue</p>
+	<h3>Do I have to sign a long term contract?</h3>
+        <p>No. {{marketplace.title|title}} is a montly subscription with payment only for what you use. We do not require long-term contracts, you only pay month-to-month. If you want to cancel, you will be billed for the current month, but you won't be billed again. </p>
+
+        </div>
+        <div class="rightcolumneven">
+        <h2>For Collectors</h2>
+	<h3>Why Did You Start Great Coins?</h3>
+        <p>Simple, we wanted to create a market where <strong>collectors</strong> could meet dealers without <strong>anyone</strong> getting in the way.</p>
+        <h3>How do I buy?</h3>
+        <p>{{marketplace.title|title}}'s makes it easy, browse the <a href="{% url market_home %}">Home Page.</a> </p>
+        <h3>What Types of Payments Does {{marketplace.title|title}} Accept?</h3>
+        <p>Payments are up to each shop; {{ marketplace.title|title }} provides the ability to take PayPal, Google Checkout, Manual Payments (checks /wire transfers) and Credit Cards.</p>
+        <h3>Others are more popular, why I should I shop at {{marketplace.title|title}}?</h3>
+        <p>Plain and simple to support the collectible community and most important to find what you are looking for.</p>
+        </div>
+
+<hr>
+ <div class="fullcolumn">
+<div class="Badges">
+
+</div>
+<h3>Your data is safe and secure with {{marketplace.title|title}}.</h3>
+<p> We use the most secure hosting with FireHost and we protect your sensitive credit card and personal information with Brain Tree Payments. Both companies are the leading security focused hosting and payment providers. You're worth it...</p>
+<hr>
+<h3>What Web Browsers Do You Support?</h3>
+<p> We test with Interent Explorer 7 and later (Please use 8 or 9). IE 6 is <strong>not</strong> supported. Firefox 3 and higher, Chrome 4 and higer and Safari 4 and higer. </p>
+<hr>
+<h3>Any Questions before you sign Up?</h3>
+<p>Drop us a note here and ask all the questions you want<p>
+<hr>
+<h3>What are your Terms of Service and Privacy Policy</h3>
+<p>Find that here.</p>
+
+
+
+
+
+</div>
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %}
+<div class="span16">
+	<h3>Plan Details {{ marketplace.title }}</h3>
+
+<div class="table span14 offset2">
+<div class="span3" >
+<div class="PlanHeader">
+<span>{% trans "Plan" %}</span>
+</div>
+<div class="p btn disabled clear row1">{% trans "Set Up Fee" %}</div>
+<div class="p btn disabled clear row2">{% trans "Transaction Fee" %}</div>
+<div class="p btn disabled clear row1">{% trans "Custom Domains" %}</div>
+<div class="p btn disabled clear row2">{% trans "Bandwidth" %}</div>
+<div class="p btn disabled clear row1">{% trans "SSL" %}</div>
+{% comment %} <div class="p btn disabled clear row2">{% trans "Custom Migrations" %}</div>{% endcomment %}
+{% comment %} <div class="p btn disabled clear row2">{% trans "Trial Period" %}</div>
+<div class="p btn disabled clear row2">{% trans "Billing Period" %}</div>
+<div class="p btn disabled clear row1">{% trans "Google Analytics" %}</div>
+{% comment %}<div class="p btn disabled clear row2">{% trans "Tax Integration" %}</div
+<div class="p btn disabled clear row2">{% trans "Storage" %}</div>
+{% comment %}<div class="p btn disabled clear row2">{% trans "Admin Accounts" %}</div>
+<div class="p btn disabled clear row1">{% trans "Picture Per Item" %}</div>
+<div class="p btn disabled clear row2">{% trans "Picture Per Lot" %}</div>
+<div class="p btn disabled clear row1">{% trans "Auction Items" %}</div>
+<div class="p btn disabled clear row2">{% trans "Store Items" %}</div>
+<div class="p btn disabled clear row1">{% trans "Store Revenue" %}</div>
+<div class="p btn disabled clear row2">{% trans "Monthly Price" %}</div>
+</div>
+{% for plan in marketplans %}
+
+<div class="{{ plan.name }} PriceCol-{{ plan.id }} span3">
+
+{% if plan.name == "Professional" %}
+
+<div class="Plan-Title Business"><h2>{{ plan.name }}</h2><span class="PlanLead">#1 Plan</span></div>
+
+{% else %}
+
+<div class="Plan-Title"><h2>{{ plan.name }}</h2></div>
+
+{% endif %}
+
+<p class="btn disabled clear row1">{% trans "Waived" %}</p>
+<p class="btn disabled clear row2">{% trans "None" %}</p>
+<p class="btn disabled clear row1">{% trans "Yes" %}</p>
+<p class="btn disabled clear row2">{% trans "Unlimited" %}</p>
+<p class="btn disabled clear row1">{% trans "Yes" %}</p>
+{% comment %}<p class="btn disabled clear row1">{% if plan.custom_migration %} {% trans "Yes" %} {% else %} {% trans "False" %} {% endif %}</div>{% endcomment %}
+{% comment %}<p class="btn disabled clear row1">{% if plan.has_trial_period %} {{ plan.trial_period }} Month {% else %} No Trial {% endif %}</div>
+<p class="btn disabled clear row2">{% if plan.billing_period == 1 %}Monthly{% else %}Every {{ plan.billing_period }} Months{% endif %}</p>
+<p class="btn disabled clear row1">{% if plan.google_analytics_support %} Yes {% else %} No {% endif %}</p>
+{% comment %}<p class="btn disabled clear row1">{% if plan.auto_tax_integration %} Yes {% else %} No {% endif %}</div
+<p class="btn disabled clear row2">{% if plan.total_mbs_storage == 0 %}Unlimited{% else %}{{ plan.total_mbs_storage }} MB{% endif %}</p>
+{% comment %}<p class="btn disabled clear row1">{{ plan.admin_accounts }}</div
+<p class="btn disabled clear row1">{% if plan.pictures_per_item == 0 %}Unlimited{% else %}up to {{ plan.pictures_per_item }}{% endif %}</p>
+<p class="btn disabled clear row2">{% if plan.pictures_per_lot == 0 %}Unlimited{% else %}up to {{ plan.pictures_per_lot }}{% endif %}</p>
+<p class="btn disabled clear row1">{% if plan.concurrent_auction_items == 0 %}Unlimited{% else %}up to {{ plan.concurrent_auction_items }}{% endif %}</p>
+<p class="btn disabled clear row2">{% if plan.concurrent_store_items == 0 %}Unlimited{% else %}up to {{ plan.concurrent_store_items }}{% endif %}</p>
+<p class="btn disabled clear row1">{% if plan.total_store_revenue == 0 %}Unlimited{% else %}up to {{ plan.total_store_revenue }}{% endif %}</p>
+<p class="btn disabled clear row2 price_table">US$ {{ plan.price }}</p>
+</div>
+        {% endfor %}
+</div>
+<div class="SignUpFeaturePage span11 offset2 alert-message block-message success">
+<div class="SignUpCopyText span6">
+<h2>Try {{ marketplace.title }} !!!</h2>
 <h4>Get Started in 45 seconds, no hassles, no fuss</H4>
 </div>
 <a href="{% url market_sell %}" name="1-plan_id" class= "btn success" value="{{ plan.id }}" />
@@ -88,7 +432,4 @@ Create Your Shop</a>
 
 
 </div> 
-{% else%}
-        <div class="alert-message info">There are no Plans for this marketplace!</div>
-{% endif %} 
-{% endblock content %}
+{% endcomment %}

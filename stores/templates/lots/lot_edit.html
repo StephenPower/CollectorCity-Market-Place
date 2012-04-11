@@ -170,7 +170,7 @@
 			    if (categories.length > 0){
 				      $.post("{% url ajax_sub_category %}", { 'categories': categories }, function(data){
 					      $("#id_lot-subcategory").append(data);
-					      $("#id_lot-subcategory").val("{{ lot.subcategory.name }}");
+					      $("#id_lot-subcategory").val("{{ lot.subcategory.id }}");
 				      });
 	      		}
 		    })

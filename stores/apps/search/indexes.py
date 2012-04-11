@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from haystack.indexes import (RealTimeSearchIndex, CharField, IntegerField,
-    FloatField, DateTimeField)
+    FloatField, DateTimeField, EdgeNgramField, DecimalField)
 from haystack import site
 
 # import models to be indexed...
@@ -10,6 +10,7 @@ from for_sale.models import Item
 from auctions.models import AuctionSession
 from lots.models import Lot
 from inventory.models import Product
+from sell.models import CartItem
 
 
 class ItemIndex(RealTimeSearchIndex):
@@ -24,6 +25,7 @@ class ItemIndex(RealTimeSearchIndex):
     title = CharField(model_attr="title")
     description = CharField(model_attr="description", indexed=False, null=True)
     price = FloatField(model_attr="price", indexed=False)
+#    price = DecimalField(model_attr="price", indexed=False)
     added_at = DateTimeField(model_attr="date_time", stored=False)
 
     shop_id = IntegerField(model_attr="shop__id", stored=False)
@@ -37,19 +39,26 @@ class ItemIndex(RealTimeSearchIndex):
     # * added_at ASC / DESC
     # * price ASC / DESC
     # * title ASC / DESC
-    
-    def get_queryset(self):
-        return Item.objects.filter(qty__gt=0)
 
+#    def get_queryset(self):
+    def index_queryset(self):
+        return Item.objects.filter(qty__gt=0)
 
 site.register(Item, ItemIndex)
 
+class CartItemIndex(RealTimeSearchIndex):
+    summary = EdgeNgramField(model_attr='product__title', document=True)
+    shop_id = IntegerField(model_attr="cart__shop__id", stored=False)
+    cart_id = IntegerField(model_attr="cart__id")
+    category_id = CharField(model_attr="product__category_id")
+    subcategory_id = CharField(model_attr="product__subcategory_id", null=True)
+    
+site.register(CartItem, CartItemIndex)
 
 class AuctionSessionIndex(RealTimeSearchIndex):
     """
     Indexes auctions.models.AuctionSession instances
     """
-
     # remember to respect haystack primary field convention name!
     # by default, stored and indexed parameters are True
     summary = CharField(document=True, use_template=True)
@@ -63,13 +72,11 @@ class AuctionSessionIndex(RealTimeSearchIndex):
     starts_at = DateTimeField(model_attr="start", stored=False)
     ends_at = DateTimeField(model_attr="end", stored=False)
 
-    def get_queryset(self):
-        return AuctionSession.objects.filter(start__lte=datetime.now(),
-            end__gt=datetime.now())
-
+#    def get_queryset(self):
+    def index_queryset(self):
+        return AuctionSession.objects.filter(start__lte=datetime.now(), end__gt=datetime.now())
 
 site.register(AuctionSession, AuctionSessionIndex)
-
 
 class LotIndex(RealTimeSearchIndex):
     """
@@ -92,12 +99,12 @@ class LotIndex(RealTimeSearchIndex):
 
     added_at = DateTimeField(model_attr="date_time", stored=False)
 
-    def get_queryset(self):
+#    def get_queryset(self):
+    def index_queryset(self):
         # allow to search only active lots
         return Lot.objects.filter(state="A")
 
 site.register(Lot, LotIndex)
-
 
 class ProductIndex(RealTimeSearchIndex):
     """
@@ -117,6 +124,7 @@ class ProductIndex(RealTimeSearchIndex):
     subcategory = CharField(model_attr="subcategory__name", null=True)#, faceted=True, null=True)
     subcategory_id = IntegerField(model_attr="subcategory__id", null=True)
     price = FloatField()
+#    price = DecimalField()
     image_url = CharField(null=True, indexed=True)
 
     marketplace_id = IntegerField(model_attr="shop__marketplace__id")

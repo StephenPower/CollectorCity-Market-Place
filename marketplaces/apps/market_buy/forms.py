@@ -25,7 +25,7 @@ class ShowForm(ModelForm):
     
     class Meta:
         model = Show
-        exclude = ['marketplace', 'country', 'contact_info', 'admission', 'location','time_from', 'time_to']
+        exclude = ['marketplace', 'country', 'contact_info', 'admission', 'location','time_from', 'time_to', 'owner']
         
 
 class BuyerForm(UserCreationForm):

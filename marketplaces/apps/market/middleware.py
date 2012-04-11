@@ -9,7 +9,7 @@ for market in MarketPlace.objects.all():
 class MarketPlaceMiddleware:
 
     def process_request(self, request):
-        host = request.get_host()
+        host = request.get_host().split(':')[0]
         request.marketplace = None
         for base_domain, market in MARKETS.iteritems():
             if host.endswith(base_domain):

@@ -25,10 +25,14 @@
               <h3>{{ item.title }}</h3>
             </div>
             <div class="modal-body">
-              <p><img src="{{item.child.image.image.url_100x100}}" ></p>
+		{% if item.image %}
+              <p><img src="{{item.child.image.image.url_100x100}}" alt="{{ item.description|striptags|safe }}" ></p>
              <p>{{ item.description|striptags|safe }}</p>
-            <p>
-              </div>
+            	{% else %}
+		 <p> <img src="{{ STATIC_URL }}img/no-photo-medium.jpg" alt="{{ item.description|striptags|safe }}" ></p>
+             	 <p>{{ item.description|striptags|safe }}</p>
+            	{% endif %}
+		  </div>
             <div class="modal-footer">
               <a href="{% url market_buy_product_redirect item.product_ptr_id %}" target="_blank" class="btn primary">Go To Product Page</a>
               <a href="#" class="btn secondary">Go Back To Marketplace</a>
@@ -37,9 +41,9 @@
 
 		<div class="item_box">
 			<a data-controls-modal="{{ item.product_ptr_id }}" data-backdrop="true" data-keyboard="true">		{% if item.image %}
-			<img class="item" src="{{ item.image.image.url_100x100 }}" title="{{ item.description|striptags }}"/>
+			<img class="item" src="{{ item.child.image.image.url_100x100 }}" title="{{ item.description|striptags }}"/>
 			{% else %}
-			<img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ item.description|striptags }}"/>
+			<img class="item" src="{{ STATIC_URL }}img/no-photo-medium.jpg" title="{{ item.description|striptags }}"/>
 			{% endif %}
 			<div class="title">{{ item.title|truncatewords:5 }}</div>
 			<div class="dealer">{{ item.category.name }}</div>

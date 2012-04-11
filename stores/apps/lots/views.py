@@ -1,8 +1,11 @@
+import logging
+
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils.translation import ugettext as _
+from django.utils import simplejson
 
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
@@ -218,7 +221,7 @@ def lot_edit(request, lot_id):
 #                image.save()
 #                image.lot = lot
 #                image.image.save(img.name,img)
-            request.flash['message'] = unicode(_("Lot successfully updated."))
+            request.flash['message'] = unicode(_("Lot successfully updated. It might take a half hour to reflect the proper search results."))
             request.flash['severity'] = "success"
         else:
             request.flash['message'] = unicode(_("Lot couldn't be updated."))
@@ -290,35 +293,94 @@ def set_primary_picture(request, lot_id, image_id):
     return HttpResponseRedirect(reverse('lot_details', args=[lot_id]))
 
 
-@shop_admin_required
-def add_image(request, lot_id):
-    
-    if request.method == 'POST':
-        shop = request.shop
-        lot = get_object_or_404(Lot, pk=lot_id)
-    
-        limit = shop.get_limit('pictures_per_lot')
-        total = ImageLot.objects.filter(lot=lot).count()
-            
-        if total >= limit:
-            request.flash['message'] = "You have reach the limit of pictures per lot allowed by your plan!"
-            request.flash['severity'] = "error"
-        
-        else:
-            form = ImageLotForm(request.POST, request.FILES)
-            if form.is_valid():
-                img = form.save(commit=False)
-                img.lot = lot
-                img.save()
-                request.flash['message'] = "Image successfully saved!"
-                request.flash['severity'] = "success"
-            else:
-                request.flash['message'] = "You have reach the limit of pictures per lot allowed by your plan!"
-                request.flash['severity'] = "error"
-        
-        return HttpResponseRedirect(reverse('lot_details', args=[lot_id]))
+#@shop_admin_required
+#def add_image(request, lot_id):
+#    
+#    if request.method == 'POST':
+#        shop = request.shop
+#        lot = get_object_or_404(Lot, pk=lot_id)
+#    
+#        limit = shop.get_limit('pictures_per_lot')
+#        total = ImageLot.objects.filter(lot=lot).count()
+#            
+#        if total >= limit:
+#            request.flash['message'] = "You have reach the limit of pictures per lot allowed by your plan!"
+#            request.flash['severity'] = "error"
+#        
+#        else:
+#            form = ImageLotForm(request.POST, request.FILES)
+#            if form.is_valid():
+#                img = form.save(commit=False)
+#                img.lot = lot
+#                img.save()
+#                request.flash['message'] = "Image successfully saved!"
+#                request.flash['severity'] = "success"
+#            else:
+#                request.flash['message'] = "You have reach the limit of pictures per lot allowed by your plan!"
+#                request.flash['severity'] = "error"
+#        
+#        return HttpResponseRedirect(reverse('lot_details', args=[lot_id]))
+#    else:
+#        raise Http404
+
+def response_mimetype(request):
+    if "application/json" in request.META['HTTP_ACCEPT']:
+        return "application/json"
     else:
-        raise Http404
+        return "text/plain"
+
+class JSONResponse(HttpResponse):
+    """JSON response class."""
+    def __init__(self,obj='',json_opts={},mimetype="application/json",*args,**kwargs):
+        content = simplejson.dumps(obj,**json_opts)
+        super(JSONResponse,self).__init__(content,mimetype,*args,**kwargs)
+        
+@shop_admin_required
+def add_img(request, lot_id):
+    try:
+        lot = get_object_or_404(Lot, pk=lot_id, shop=request.shop)
+        data = []
+        if request.method == 'POST':
+            limit = request.shop.get_limit('pictures_per_lot')
+            total = ImageLot.objects.filter(lot=lot).count()
+
+            f = request.FILES.get('files')
+            if f and not (total >= limit):
+                image = ImageLot(lot=lot)
+                image.image.save(f.name, f)
+                lot.save()
+
+                data = [{
+                        'name': f.name, 
+                        'url': image.image.url,
+                        'size': image.image.size, 
+                        'thumbnail_url': image.image.url_100x100,
+                        'delete_url': reverse('del_image', args=[lot_id, image.id]), 
+                        'delete_type': "DELETE",
+                        'url_set_primary': reverse('set_lot_primary_picture', args=[lot_id, image.id])
+                }]
+            else:
+                data = [{'error': 'You have reach the limit of pictures per lot allowed by your plan!' }]
+        else:
+            for image in lot.imagelot_set.all():
+                data.append({
+                             'name': image.image.name,
+                             'url': image.image.url,
+                             'size': image.image.size,
+                             'thumbnail_url': image.image.url_100x100,
+                             'delete_url': reverse('del_image', args=[lot_id, image.id]), 
+                             'delete_type': "DELETE",
+                             'is_primary': image.primary_picture,
+                             'url_set_primary': reverse('set_lot_primary_picture', args=[lot_id, image.id]) 
+                })
+
+        response = JSONResponse(data, {}, response_mimetype(request))
+        response['Content-Disposition'] = 'inline; filename=files.json'
+        
+        return response
+    except Exception, ex:
+        logging.exception(str(ex))
+
 
 @shop_admin_required
 def del_image(request, lot_id, image_id):

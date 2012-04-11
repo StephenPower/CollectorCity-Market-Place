@@ -1,0 +1,126 @@
+#report{}
+
+#report h1 {
+	background: #417690;
+	color: #FFF;
+	padding: 5px;
+	text-align: left;
+	-moz-border-radius:4px;
+	-moz-border-radius:4px;
+	-ms-border-radius:4px;
+	-ms-border-radius:4px;
+	-webkit-border-radius:4px;
+	-webkit-border-radius:4px;
+	margin: 20px 0;
+}
+
+ul{
+	margin-left: 0px;
+}
+
+ul li a{
+	font-size: 14px;
+}
+
+ul li{
+	list-style: disc;
+	margin-bottom: 10px;
+}
+
+.info_box{
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	-ms-border-radius:5px;
+	width: 45%;
+}
+
+.info_box .item{
+	margin-bottom: 2px;
+	height: 25px;
+}
+
+.info_box .item .key{	
+	background: #417690;
+	color: #FFF;
+	width: 30%;
+	display: inline;	
+	float: left;
+	padding: 5px;
+	text-align: right;
+	-moz-border-radius-topleft:4px;
+	-moz-border-radius-bottomleft:4px;
+	-ms-border-radius-topleft:4px;
+	-ms-border-radius-bottomleft:4px;
+	-webkit-border-top-left-radius:4px;
+	-webkit-border-bottom-left-radius:4px;
+}
+
+.info_box .item .value{
+	background: #EEE;
+	width: 65%;
+	display: inline;	
+	float: left;
+	padding: 5px;
+	text-align: left;
+	-moz-border-radius-topright:4px;
+	-moz-border-radius-bottomright:4px;
+	-ms-border-radius-topright:4px;
+	-ms-border-radius-bottomright:4px;
+	-webkit-border-top-right-radius:4px;
+	-webkit-border-bottom-right-radius:4px;
+}
+
+.margin_v {
+	margin-top: 2px;
+	margin-bottom: 5px;
+}
+
+
+.table{margin-bottom: 10px;}
+
+.table .small {font-size: 10}
+
+.table .tr{}
+
+.table .td{
+	width: 125px;
+	display: inline;
+    float: left;
+    margin-left: 3px;
+    margin-right: 2px;
+    position: relative;
+}
+
+.table .small .td {
+	width: 140px;
+}
+
+.table .th{
+	width: 125px;
+	display: inline;
+    float: left;
+    margin-left: 3px;
+    margin-right: 2px;
+    position: relative;
+    font-weight: bold;
+}
+
+.table .small .th {
+	width: 140px;
+}
+
+.section .title {
+	-moz-border-radius:4px;	
+	-ms-border-radius:4px;	
+	-webkit-border-radius:4px;	
+	background: #CCC;
+	margin-bottom: 15px;
+	padding: 5px;
+}
+
+.ui-dialog-titlebar { display:none; }
+.ui-dialog{border: none;}
+
+.admin_filter {
+	float: right;
+}

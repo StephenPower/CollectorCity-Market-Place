@@ -14,6 +14,7 @@ from shops.models import Shop
 from django.shortcuts import render_to_response
 from django.template import loader
 from django.template.context import RequestContext
+from django.db import transaction
 
 from bidding.views import my_render
 
@@ -160,7 +161,7 @@ class PayPalGateway(object):
 
     """
 
-    def GetExpressCheckoutDetails(self, token = None):
+    def GetExpressCheckoutDetails(self, token = None, subject = None):
         """
         This method performs the NVP API method that is responsible from getting the payment details.
         This returns True if successfully fetch the checkout details, otherwise returns False.
@@ -177,6 +178,10 @@ class PayPalGateway(object):
             'METHOD' : "GetExpressCheckoutDetails",
             'TOKEN' : token
         }
+        
+        if subject:
+            parameters['SUBJECT'] = subject
+        
         query_string = self.signature + urllib.urlencode(parameters)
         response = urllib.urlopen(self.NVP_API_ENDPOINT, query_string).read()
         response_dict = parse_qs(response)
@@ -378,18 +383,29 @@ class PayPalGateway(object):
         <h3>PayPal</h3>
         <a href="%s"><img src="%simg/paypal-button.gif"/></a>
         """ % (reverse('payments_paypal_paynow'), settings.MEDIA_URL)
-        
+
 @shop_required    
 def cancel(request):
     return HttpResponseRedirect(reverse('payments_cancel'))
 
-@shop_required    
+@transaction.commit_on_success
+@shop_required
 def success(request):    
     from payments.gateways.paypal import PayPalGateway
     from payments.models import PayPalShopSettings, PayPalToken, PayPalTransaction
     from preferences.models import Preference
     from sell.templatetags.sell_tags import money_format
 
+    cart = request.cart
+    
+    #### Verify Products Availability
+    if not cart.is_available():
+        request.flash['message'] = 'Items not longer available: '
+        for item in cart.items_not_availables():
+            request.flash['message'] += item.product.title
+        cart.remove_not_available_items()
+        
+        return HttpResponseRedirect(reverse('my_shopping'))
     
     if request.method == 'GET':
         payerid = request.GET.get('PayerID', None)
@@ -456,7 +472,7 @@ def success(request):
        
         #return_url = request.build_absolute_uri(reverse("paypal_success"))
         #cancel_url = request.build_absolute_uri(reverse("paypal_cancel"))
-        is_token_data = paypal_gw.GetExpressCheckoutDetails(paypaltoken.token)
+        is_token_data = paypal_gw.GetExpressCheckoutDetails(paypaltoken.token, subject=paypal_settings.email)
         
         if not is_token_data:
             logging.critical("Error found when trying to do a GetExpressCheckoutDetails api call on Paypal. RESPONSE: %s" % paypal_gw.api_response)
@@ -535,6 +551,16 @@ def paynow(request):
         
     shop = request.shop
     cart = request.cart
+
+    #### Verify Products Availability
+    if not cart.is_available():
+        request.flash['message'] = 'Items not longer available: '
+        for item in cart.items_not_availables():
+            request.flash['message'] += item.product.title
+        cart.remove_not_available_items()
+        
+        return HttpResponseRedirect(reverse('my_shopping'))
+
     
     try:   
         paypal_settings = PayPalShopSettings.objects.filter(shop = shop).get()

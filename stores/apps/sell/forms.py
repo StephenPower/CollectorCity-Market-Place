@@ -6,6 +6,7 @@ from django.contrib.localflavor.us.forms import USStateSelect, USZipCodeField
 
 class ShippingDataForm(forms.ModelForm):
     state = forms.CharField(widget=USStateSelect)
+    save_shipping_info = forms.BooleanField(label="Save Shipping Information", widget=forms.CheckboxInput(), required=False)
     
     class Meta:
         model = ShippingData
@@ -18,12 +19,19 @@ class ShippingDataForm(forms.ModelForm):
         return zip
     
     def clean(self):
+        first_name = self.cleaned_data.get("first_name", "")
+        last_name = self.cleaned_data.get("last_name", "")
         country = self.cleaned_data.get("country", "")
         street = self.cleaned_data.get("street_address", "")
         city = self.cleaned_data.get("city", "")
         
+        if first_name.strip() == "": raise forms.ValidationError("First name is a required field.")
+        if last_name.strip() == "": raise forms.ValidationError("First name is a required field.")
         if street.strip() == "": raise forms.ValidationError("Street is a required field.")
         if city.strip() == "": raise forms.ValidationError("City is a required field.")
         if country.strip() == "": raise forms.ValidationError("Country is a required field.")
         
         return self.cleaned_data
+    
+    def save_shipping(self):
+        return self.cleaned_data.get("save_shipping_info", False)

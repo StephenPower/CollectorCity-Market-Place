@@ -1,0 +1,35 @@
+{% extends 'store_admin/web_store/marketing.html' %}
+{% load i18n uni_form_tags %}
+{% load store_admin_tags %}
+
+{% block t_shows %}current_tab{% endblock %}
+
+{% block main %}
+<div class="grid_18 box">
+	
+	<form action="." method="POST" name="form" class="uniForm">
+		<h2>Edit Show</h2>
+		<fieldset class="inlineLabels">
+			<div class="multiField">
+				{{ form|as_uni_form }}
+			</div>
+		</fieldset>
+		<fieldset class="inlineLabels">
+			<div class="buttonHolder multiField">
+				<button type="submit" class="small awesome">{% trans "Update" %}</button>
+				<a href="{% url web_store_shows %}" class="link_cancel">{% trans "Or Cancel" %}</a>
+			</div>
+		</fieldset>
+	</form>	
+	
+	<script type="text/javascript">
+		$(function() {
+			$("#id_date_from").datepicker();
+			$("#id_date_to").datepicker();
+			$(".ui-datepicker").css('z-index', 1000);  		    
+		});
+	</script>
+	
+</div>
+	
+{% endblock %}

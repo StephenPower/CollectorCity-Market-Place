@@ -26,11 +26,11 @@ class SubscriptionPlan(models.Model):
     billing_period = models.PositiveSmallIntegerField(blank=True, default=1)
     
     #Plan Features
-    total_store_revenue = models.DecimalField(max_digits=11, decimal_places=2)
-    concurrent_store_items = models.PositiveIntegerField() 
-    concurrent_auction_items = models.PositiveIntegerField()
-    listings_per_month = models.PositiveIntegerField()
-    payment_methods = models.PositiveSmallIntegerField()
+    total_store_revenue = models.DecimalField(max_digits=11, decimal_places=2, default=1000)
+    concurrent_store_items = models.PositiveIntegerField(default=100) 
+    concurrent_auction_items = models.PositiveIntegerField(default=100)
+    listings_per_month = models.PositiveIntegerField(default=30)
+    payment_methods = models.PositiveSmallIntegerField(default=4)
     additional_payment_price = models.DecimalField(max_digits=11, decimal_places=2, default=0.0)
     pictures_per_lot = models.PositiveSmallIntegerField(default=1)
     pictures_per_item = models.PositiveSmallIntegerField(default=1)
@@ -38,7 +38,7 @@ class SubscriptionPlan(models.Model):
     total_mbs_storage = models.IntegerField(default=50)        
     total_data_transfer = models.IntegerField(default=50)
     #General Features
-    admin_accounts = models.PositiveSmallIntegerField()
+    admin_accounts = models.PositiveSmallIntegerField(default=1)
     auto_tax_integration = models.BooleanField(default=False)
     custom_migration = models.BooleanField(default=False)
     custom_domain_name_fee = models.DecimalField(max_digits=11, decimal_places=2, default=0.0) #Fee

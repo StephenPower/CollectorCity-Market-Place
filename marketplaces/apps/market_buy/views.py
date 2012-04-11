@@ -4,13 +4,12 @@ import bisect
 
 from django.conf import settings
 from django.contrib.localflavor.us.us_states import STATE_CHOICES
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
+from django.core.paginator import Paginator, InvalidPage, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext as _
 
 from auth.decorators import login_required
@@ -18,12 +17,6 @@ from django.core.mail.message import EmailMultiAlternatives
 from uni_form.helpers import FormHelper, Layout, Fieldset, Row, Submit
 
 from market_buy.forms import AdvancedSearchForm
-
-
-
-
-
-
 
 
 def advanced_search(request, reset=False):
@@ -95,7 +88,7 @@ def editor_pick(request):
     from models import EditorPick
     
     marketplace = request.marketplace
-    picks = EditorPick.objects.filter(marketplace=marketplace).order_by("order")
+    picks = EditorPick.get_available_picks(marketplace)
     return render_to_response("%s/buy/favorites.html" % request.marketplace.template_prefix, 
                               {'picks' : picks} , RequestContext(request))
 
@@ -166,11 +159,10 @@ def show_search(request):
     for show in all_shows:
         point2 = [float(x) for x in show.geo_location()]
         distance = distance_between_points(point1, point2 , metric)
-        logging.critical("%s - %s - %s" % (show, point2, distance))
         if distance < max_distance:
             bisect.insort(shows, (int(distance), show))
-        
-    params = {'states': STATE_CHOICES, 'shows': shows, 'place': place }
+
+    params = {'states': STATE_CHOICES, 'shows': shows, 'place': place}
     
     return render_to_response("%s/buy/show_listing.html" % request.marketplace.template_prefix, 
                               params, RequestContext(request))
@@ -361,19 +353,6 @@ def signup(request):
         
         """ Set profile """
         profile = Profile(user=user)
-        
-#        profile.street_address = form.cleaned_data["street_address"]
-#        profile.city = form.cleaned_data["city"]
-#        profile.state = form.cleaned_data["state"]
-#        profile.zip = form.cleaned_data["zip"]
-#        profile.country = form.cleaned_data["country"]
-#        profile.phone = form.cleaned_data["phone"]
-#        profile.photo = form.cleaned_data["photo"]
-#        profile.birth = datetime.date(
-#                      int(form.cleaned_data['year']),
-#                      int(form.cleaned_data['month']),
-#                      int(form.cleaned_data['day']),
-#                      )
         profile.save()
 
         """ Send mail to confirm account """
@@ -381,6 +360,7 @@ def signup(request):
         code = email_verify.generate_code()
         email_verify.save()
         
+        # TODO: remove this
         send_mail_account_confirmation(user, email_verify.code, request.marketplace)        
         
 #        return HttpResponseRedirect(reverse('confirmemail', args=[code]))
@@ -453,7 +433,11 @@ def send_mail_account_confirmation(user, code, marketplace):
                        
     %(marketplace_name)s Team.""") % {'username': user.username, 'link': link, 'marketplace_name': marketplace.name}
     
-    msg = EmailMultiAlternatives(subject, text_content, settings.EMAIL_FROM, [user.email, settings.EMAIL_FROM])
+    msg = EmailMultiAlternatives(subject,
+                                 text_content,
+                                 settings.EMAIL_FROM,
+                                 [user.email, settings.EMAIL_FROM],
+                                 headers={'X-SMTPAPI': '{\"category\": \"Account Confirmation\"}'})
     logging.critical(text_content);
     
     try:
@@ -503,3 +487,66 @@ def confirmemail(request, code):
         request.flash['message'] = _("<h5>Account verification failed</h5>")
         request.flash['severity'] = "error"
         return HttpResponseRedirect(reverse('market_home'))
+
+@login_required
+def user_profile(request):
+    from auth.models import User
+    from users.forms import UserProfile
+    from users.models import check_profile
+    marketplace = request.marketplace
+    user = request.user
+    
+    check_profile(User, instance=request.user)
+    
+    if request.method == 'POST':
+        form = UserProfile(data=request.POST, user=user)
+        if form.is_valid():
+            user.username = form.cleaned_data['username']
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+            user.profile.street_address = form.cleaned_data['street_address']
+            user.profile.city = form.cleaned_data['city']
+            user.profile.state = form.cleaned_data['state']
+            user.profile.zip = form.cleaned_data['zip']
+            user.profile.country = form.cleaned_data['country']
+            user.profile.phone = form.cleaned_data['phone']
+
+            try:
+                photo = request.FILES['photo']
+                user.profile.photo = photo
+            except:
+                pass 
+
+            user.save()
+            user.profile.save()
+        
+            return HttpResponseRedirect(reverse('market_home'))
+    else:
+        initial = { 'username': user.username,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                    'street_address': user.profile.street_address,
+                    'city': user.profile.city,
+                    'state': user.profile.state,
+                    'zip': user.profile.zip,
+                    'country': user.profile.country,
+                    'phone': user.profile.phone,
+                    }
+        form = UserProfile(initial=initial, user=user)
+    
+    params = {'form': form, 'photo': user.profile.photo }
+    return render_to_response("%s/buy/profile.html" % marketplace.template_prefix,
+                               params,
+                               RequestContext(request))
+
+@login_required
+def delete_profile_image(request):
+    from users.models import Profile
+    try:
+        profile = Profile.objects.get(user__id=request.user.id)
+        profile.photo = ''
+        profile.save()
+    except Exception, ex:
+        logging.debug(str(ex))
+
+    return HttpResponseRedirect(reverse('market_buy_user_profile'))

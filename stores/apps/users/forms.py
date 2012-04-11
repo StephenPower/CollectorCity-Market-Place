@@ -1,10 +1,13 @@
 import calendar
 import datetime
+import re
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-
 from auth.models import User
+from sell.forms import ShippingDataForm
+from core.thumbs import ImageWithThumbsField
+from django.contrib.localflavor.us.forms import USStateField, USStateSelect
 
 MONTH = [ (str(i+1),m) for i,m in enumerate(calendar.month_name[1:]) ]
 DAY = [ (str(i),str(i)) for i in range(1,32) ]
@@ -86,3 +89,43 @@ class BidderForm(forms.Form):
 #        except:
 #            raise forms.ValidationError(_("Day is out of range for month."))
 #        return year
+
+class UserProfile(forms.Form):
+    username = forms.RegexField(label=_("Username"), max_length=30, regex=r'^\w+$', required=False,
+        error_message = _("This value must contain only letters, numbers and underscores."))
+    first_name = forms.CharField(label=_("First name"), max_length=50, required=False) 
+    last_name = forms.CharField(label=_("Last name"), max_length=50, required=False)
+    phone = forms.CharField(label=_("Phone number"), max_length=80, required=False)
+    street_address = forms.CharField(label=_("Street address"), max_length=80, required=False)
+    city = forms.CharField(label=_("City"), max_length=80, required=False)
+    state = USStateField(label=_("State / Province"), required=False, widget=USStateSelect)
+    zip = forms.CharField(label=_("ZIP / Portal code"), max_length=30, required=False)
+    country = forms.CharField(label=_("Country or region"), max_length=50, required=False)
+    photo = ImageWithThumbsField(sizes=((100,100),(400,400)), crop=False)
+
+    def __init__(self, user=None, *args, **kwargs):
+        self.user = user
+        super(UserProfile, self).__init__(*args, **kwargs)
+
+    def clean_username(self):
+        username = self.cleaned_data["username"]
+        username = username.strip()
+        if self.user.username == username:
+            return username
+        
+        if username == "":
+            raise forms.ValidationError(_("Username field can't be blank."))
+        
+        try:
+            User.objects.get(username=username)
+        except User.DoesNotExist:
+            return username
+        raise forms.ValidationError(_("A user with that username already exists."))
+
+    def clean_zip(self):
+        zip = self.cleaned_data.get("zip", "")
+        if zip and not (re.match("[0-9]{5}(-[0-9]{4})?$", zip)):
+            raise forms.ValidationError("Invalid Zip code. Valid formats are XXXXX or XXXXX-XXXX")
+           
+        return zip
+

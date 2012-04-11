@@ -3,13 +3,23 @@
 {% load i18n %}
 
 {% block step %}
-<script type="text/javascript" src="{{ MEDIA_URL}}js/tiny_mce/tiny_mce.js"></script>
-<script type="text/javascript">
-tinyMCE.init({
-	mode : "textareas",	
-	theme : "advanced",
-	readonly : true ,
-});
+
+	{% block tinyMCE %}
+		<script type="text/javascript" src="{{ STATIC_URL }}js/tiny_mce/tiny_mce.js"></script>
+		<script type="text/javascript" src="{% url tinymce-js 'default' %}"></script>
+	{% endblock %}
+	
+	{% comment %}
+	<!-- 
+	<script type="text/javascript" src="{{ STATIC_URL}}js/tiny_mce/tiny_mce.js"></script>
+	<script type="text/javascript">
+	tinyMCE.init({
+		mode : "textareas",	
+		theme : "advanced",
+		readonly : true ,
+	});
+	 -->
+	{% endcomment %}
 
 $(document).ready(function(){
 	$("#id_2-shop_address").click(function(){

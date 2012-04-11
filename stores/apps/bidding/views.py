@@ -21,14 +21,15 @@ from shops.models import MailingListMember
 from sell.templatetags.sell_tags import money_format
 from sell.models import Cart
 from themes.models import Asset
+from preferences.models import ShopPolicies
 
 from jinja2 import Environment
 from jinja2.loaders import BaseLoader
 
 
-PAGE_SEARCH = 10
-PAGE_BLOG = 3
-PAGE_LOTS = 6
+PAGE_SEARCH = 15
+PAGE_BLOG = 8
+PAGE_LOTS = 15
 
 
 class ThemeLoader(BaseLoader):
@@ -94,6 +95,12 @@ def my_render(request, param, name_page=None):
     c = RequestContext(request, {'shop':request.shop})
     menu = (t.render(c))
 
+    """ Policies """
+    policies = ShopPolicies.objects.filter(shop=request.shop)
+    t = loader.get_template('bidding/blocks/policy.html')
+    c = RequestContext(request, {'shop':request.shop})
+    policies = (t.render(c))
+
     """ Header """
     t = loader.get_template('bidding/blocks/header.html')
     c = RequestContext(request, {'shop':request.shop})
@@ -157,20 +164,24 @@ def my_render(request, param, name_page=None):
     
     param_default = {
                      'about': about,
-                     'content': content,
                      'flash': flash,
-                     'footer': footer,  
                      'header': header,
+                     'content': content,
+                     'header': header,
+                     'footer': footer,  
                      'last_post': last_post,
-                     'links': links,
                      'new_items': new_items,
                      'menu': menu,
+                     'links': links,
                      'page_title': param.get('page_title', ''),
                      'page_description': param.get('page_description', ''),
                      'total_cart_items': total_cart_items,
                      'url_my_shopping': reverse('my_shopping'),
                      'url_my_orders': reverse('my_orders'),
                      'url_search': reverse('bidding_search'),
+                     'url_refund': reverse('bidding_refund'),
+                     'url_privacy_policy': reverse('bidding_privacy_policy'),
+                     'url_terms_of_service': reverse('bidding_terms_of_service'),                     
                      'user_is_logged': request.user.is_authenticated() and not request.shop.is_admin(request.user),
                      'shop_name': request.shop.name_shop(),
                      'sessions': sessions_list,
@@ -188,7 +199,7 @@ def my_render(request, param, name_page=None):
 @shop_required
 def bidding_home(request):
     from shops.forms import MailingListMemberForm
-    
+	
     logging.critical(request.GET.get("u", None))
     shop = request.shop
     if request.method == "POST":
@@ -209,6 +220,8 @@ def bidding_home(request):
     block_mailing_list = (t.render(c))
     
     home = Home.objects.filter(shop=request.shop).get()
+
+
     
     #TODO: replace collections
     """ news_items """
@@ -257,12 +270,15 @@ def bidding_home(request):
                  'body': home.body, 
                  'image': home.image
                  },
-             'last_post': last_post,
-             'mailing_list': block_mailing_list,
              'new_items': new_items,
+             'mailing_list': block_mailing_list,
+             'page_title': 'Home',
              'page_title': 'Home',
              'page_description': striptags(home.meta_content),
              'sessions': new_sessions,
+             'url_refund': reverse('bidding_refund'),
+             'url_privacy_policy': reverse('bidding_privacy_policy'),
+             'url_terms_of_service': reverse('bidding_terms_of_service'),
             }
         
     return HttpResponse(my_render(request, param, 'home'))
@@ -271,8 +287,10 @@ def bidding_home(request):
     
 @shop_required
 def bidding_for_sale(request):
-    items_list = Item.objects.filter(shop=request.shop, qty__gt=0)
-        
+    items_list = Item.objects.filter(shop=request.shop, qty__gte=0, show=True)
+    shop_categories = request.shop.categories_list()
+    shop_subcategories = request.shop.sub_categories_list()
+    
     pager = Paginator(items_list, PAGE_LOTS)
     try:
         page = int(request.GET.get('page','1'))
@@ -309,7 +327,9 @@ def bidding_for_sale(request):
         description = "No meta description found"
     
     param = {
-             'items': items_list, 
+             'items': items_list,
+             'shop_categories': shop_categories,
+             'shop_subcategories': shop_subcategories,
              'paginator': paginator,
              'page_title': 'For Sale',
              'page_description': description,
@@ -321,7 +341,6 @@ def bidding_for_sale(request):
 @shop_required
 @auctions_feature_required
 def bidding_auctions(request, session_id=None):
-    
     if session_id:
         session = get_object_or_404(AuctionSession, pk=session_id)
         lots = Lot.objects.filter(shop=request.shop, session=session, state='A')
@@ -354,6 +373,9 @@ def bidding_auctions(request, session_id=None):
                          })
 
     sessions = AuctionSession.objects.filter(shop=request.shop, end__gte=datetime.now())
+    shop_categories = request.shop.categories_list()
+    shop_subcategories = request.shop.sub_categories_list()
+    
     t = loader.get_template('bidding/blocks/sessions.html')
     c = RequestContext(request, {'sessions': sessions})
     block_sessions = (t.render(c))
@@ -377,6 +399,8 @@ def bidding_auctions(request, session_id=None):
              'paginator': paginator,
              'page_title': 'Auctions',
              'page_description': description,
+             'shop_categories': shop_categories,
+             'shop_subcategories': shop_subcategories,
              } 
 
     return HttpResponse(my_render(request, param, 'auctions'))
@@ -452,11 +476,36 @@ def bidding_about_us(request):
                 {'title': about.title, 'body': about.body, 'location': request.shop.location},
              'map': block_map,
              'page_title': 'About Us',
-             'page_description': '%s' % striptags(about.meta_content) 
+             'page_description': '%s' % striptags(about.meta_content),
+             'url_refund': reverse('bidding_refund'),
+             'url_privacy_policy': reverse('bidding_privacy_policy'),
+             'url_terms_of_service': reverse('bidding_terms_of_service'), 
             }
     
     return HttpResponse(my_render(request, param, 'about_us'))
 
+@shop_required
+def bidding_refund(request):
+    shop_policies = ShopPolicies.objects.get(shop=request.shop)
+    refund = shop_policies.refund_policy
+    param = {'refund': { 'body': refund }, 'page_title': 'Refund'}
+    
+    return HttpResponse(my_render(request, param, 'refund'))
+
+@shop_required
+def privacy_policy(request):
+    shop_policies = ShopPolicies.objects.get(shop=request.shop)
+    privacy_policies = shop_policies.privacy_policy
+    param = { 'privacy_policies': { 'body': privacy_policies }, 'page_title': 'Privacy Policies'}
+
+    return HttpResponse(my_render(request, param, 'privacy_policies'))
+
+@shop_required
+def terms_of_service(request):
+    shop_policies = ShopPolicies.objects.get(shop=request.shop)
+    terms_of_service = shop_policies.terms_of_service
+    param = { 'terms_of_service': { 'body': terms_of_service }, 'page_title': 'Terms of Service'}
+    return HttpResponse(my_render(request, param, 'terms_of_service'))
 
 
 @shop_required
@@ -699,7 +748,6 @@ def bidding_search(request):
                                             'page_description': description 
                                             }, 'search'))
 
-
 @shop_required    
 def pages(request, name_page):
     page = get_object_or_404(Page, shop = request.shop, name_link = name_page)
@@ -713,15 +761,39 @@ def pages(request, name_page):
 
 @shop_required    
 def pages_sitemap(request):
+    lots = Lot.objects.filter(shop=request.shop, state='A')
+    items = Item.objects.filter(shop=request.shop)
+    posts = Post.objects.filter(shop=request.shop, draft="False")
     urls = ""
-    for page in Page.objects.filter(shop = request.shop):
+ 
+    for post in posts:
+        urls += """<url><loc>%(url)s</loc><lastmod>%(last_mod)s</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>""" % {
+            'url': request.build_absolute_uri(reverse('bidding_view_post', args=[post.id])),
+            'last_mod': post.date_time.strftime("%Y-%m-%d")
+       }
+
+    for item in items:
+        urls += """<url><loc>%(url)s</loc><lastmod>%(last_mod)s</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>""" % {
+            'url': request.build_absolute_uri(reverse('bidding_view_item', args=[item.id])),
+            'last_mod': item.date_time.strftime("%Y-%m-%d")
+       }
+
+
+    for lot in lots:
+        urls += """<url><loc>%(url)s</loc><lastmod>%(last_mod)s</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>""" % {
+            'url': request.build_absolute_uri(reverse('bidding_view_lot', args=[lot.id])),
+            'last_mod': lot.date_time.strftime("%Y-%m-%d")
+        }
+
+ 
+    for page in Page.objects.filter(shop=request.shop):
         urls += """<url><loc>%(url)s</loc><lastmod>%(last_mod)s</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>""" % {
             'url': request.build_absolute_uri(page.get_bidding_url()),
             'last_mod': page.last_updated.strftime("%Y-%m-%d")
         }
 
     try:
-        about = About.objects.get(shop = request.shop)
+        about = About.objects.get(shop=request.shop)
         urls += """<url><loc>%(url)s</loc><lastmod>%(last_mod)s</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>""" % {
             'url': request.build_absolute_uri(reverse("bidding_about_us")),
             'last_mod': about.last_updated.strftime("%Y-%m-%d")
@@ -742,3 +814,11 @@ def pages_sitemap(request):
     <?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">%(urls)s</urlset>""" % {'urls': urls}
     return HttpResponse(sitemap)
+
+@shop_required    
+def pages_robots(request):
+    robots = """
+    User-agent: *
+    Disallow:
+    """ 
+    return HttpResponse(robots)

@@ -1,36 +1,20 @@
 {% load i18n %}
 
+{% load markup %}
+
 <div class="market_post">
-	<h2>{{ post.title }}</h2>
-	<div class="alert-message block-message warning">Posted By <b>{{ post.posted_by }}</b> on <b>{{ post.date }}</b> | {{ post.comments.count }} comments </div>
-	<div class="post_body">{{ post.body }}</div>
+	<a href="{% url market_blog_view_post post.slug %}"> <h2>{{ post.title|title }}</h2></a>
+	<div class="alert-message block-message warning">Posted By <b>{{ post.posted_by|title }}</b> on <b>{{ post.date }}</b> | {{ post.comments.count }} comments </div>
+<div class="post_body">{{ post.body|textile }}</div>
+
 	{% if post.allow_comments %}
-	
-	{% with post.comments as comments %}
-	<h4>{% if comments.count %}{{ comments.count }}{% else %}No{% endif %} comment{{ comments.count|pluralize }}</h4>
-	{% for comment in comments %}
-		<div class="span12 comment">
-			<span class="date">{{ comment.date }}</span> | <b class="info">{{ comment.user }}</b> says:
-			<p>{{ comment.comment }}</p>
-		</div>
-	{% empty %}
-	<p>Be the first and post your comment!</p>
-	{% endfor %}
-	{% endwith %}
-	
-	<a onclick="javascript:open_shops_dialog({{ post.id }})" class="alert-message block-message warning leave-comment">{% trans "Leave a Comment" %}</a><img src="{{ MEDIA_URL }}img/little_comment.png"></img>
-	<div id="comment_box_{{ post.id }}" class="comment-box">
-		<form action="{% url add_post_comment %}" method="POST">
-			{% if form.comment.errors %}<div class="error">{{ form.comment.errors|join:", " }}</div>{% endif %}
-			{{ form.comment }}
-			<input type="hidden" name="post" value="{{ post.id }}">
-			<div class="buttonHolder">
-				<button type="submit" class="btn primary">{% trans "Submit" %}</button>
-			</div>
-		</form>
-	</div>
+	<div class="fb-comments" data-href="{{ post.marketplace }}/blog/{{post.slug}}/"	data-num-posts="10" data-width="600"></div>
+
+
+
 	{% else %}
-	<p>{% trans "Comments are closed" %}</p>
+	<h3>Comments Closed for this Blog Post</h3>
+
 	{% endif %}
 	
 	<div class="post_tags"><b>Tags</b>:

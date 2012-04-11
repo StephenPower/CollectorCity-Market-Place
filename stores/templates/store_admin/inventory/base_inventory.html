@@ -16,6 +16,7 @@
 	<li class="links_sub_menu {% block m_items %}{% endblock %}"><a href="{% url inventory_items %}">{% trans "Items For Sale" %}</a></li>
 	<li class="links_sub_menu {% block m_lots %}{% endblock %}"><a href="{% url inventory_lots %}">{% trans "Items For Auctions" %}</a></li>
 	<li class="links_sub_menu {% block m_auctions %}{% endblock %}"><a href="{% url inventory_auctions %}">{% trans "Auctions" %}</a></li>
+	<li class="links_sub_menu {% block m_carts %}{% endblock %}"><a href="{% url inventory_carts %}">{% trans "Shopping Carts" %}</a></li>
 	{#<li class="links_sub_menu {% block m_category %}{% endblock %}"><a href="{% url inventory_categorize %}">{% trans "Categorize" %}</a></li>#}
 	</ul> 
 {% endblock %}

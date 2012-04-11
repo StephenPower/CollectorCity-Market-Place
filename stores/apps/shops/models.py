@@ -2,6 +2,7 @@ import logging
 
 from django.conf import settings 
 from django.db import models
+from django.db.models import Q
 from django.contrib import admin
 
 from auth.models import User 
@@ -231,11 +232,26 @@ class Shop(models.Model):
         from inventory.models import Product
         return Product.objects.filter(shop=self).count()
     
+    def total_transactions(self):
+        from sell.models import Sell
+        return Sell.objects.filter(shop=self, shop__marketplace=self.marketplace).count()
+    
+    def categories_list(self):
+        return sorted(set(map(lambda product: product.category, self.product_set.filter(Q(item__qty__gt=0)|Q(lot__isnull=False)).select_related('category'))), key=lambda category: category.name)
+    
+    def sub_categories_list(self):
+        return sorted(set(map(lambda product: product.subcategory, self.product_set.filter(Q(subcategory__isnull=False),Q(item__qty__gt=0)|Q(lot__isnull=False)).select_related('subcategory'))), key=lambda category: category.name)
+
+    def categories_total(self):
+        return len(set(map(lambda product: product.category, self.product_set.filter(Q(item__qty__gt=0)|Q(lot__isnull=False)).select_related('category'))))
+    
+    def sub_categories_total(self):
+        return len(set(map(lambda product: product.subcategory, self.product_set.filter(Q(subcategory__isnull=False),Q(item__qty__gt=0)|Q(lot__isnull=False)).select_related('subcategory'))))
+
     def geo_location(self):
         return self.location.split(",")
     
     def update_geolocation(self):
-        
         from geopy import geocoders
         try:
             profile = self.owner().get_profile()
@@ -469,3 +485,6 @@ class DealerToShow(models.Model):
 class MailingListMember(models.Model):
     shop = models.ForeignKey(Shop)
     email = models.EmailField()
+
+    def __unicode__(self):
+        return u'%s > %s' %(self.shop.name, self.email)

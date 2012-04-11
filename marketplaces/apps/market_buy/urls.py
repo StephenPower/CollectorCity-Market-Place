@@ -21,6 +21,8 @@ urlpatterns = patterns('',
     
     url(r'^login/$', 'market_buy.views.login', name='market_buy_login'),
     url(r'^signup/$', 'market_buy.views.signup', name='market_buy_signup'),
+    url(r'^profile/$', 'market_buy.views.user_profile', name='market_buy_user_profile'),
+    url(r'^delete_profile_image/$', 'market_buy.views.delete_profile_image', name='delete_profile_image'),
     
     url(r'^product/p(?P<id>[\d]+)/', 'market_buy.views.product_redirect', name="market_buy_product_redirect"),
     url(r'^product/i(?P<id>[\d]+)/', 'market_buy.views.item_redirect', name="market_buy_item_redirect"),

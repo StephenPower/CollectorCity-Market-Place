@@ -3,9 +3,11 @@ import decimal
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.localflavor.us.models import USStateField
+from django.template import Context, Template
+import datetime
 
 from shops.models import Shop
-
+from for_sale.models import Item
 
 DAYS = [
         ('1','1'),
@@ -132,6 +134,7 @@ TYPE_NOTIFICATION=[
                    ('AWC',_('Auction Won Confirmation')),
                    ('NON',_('New Order Notification')),
                    ('CB',_('Contact Buyer')),
+                   ('BCN',_('Buyer Cart Notification')),
 #                   ('SU',_('Shipping Update')),
 #                   ('SC',_('Shipping Confirmation')),
                    ]
@@ -139,13 +142,59 @@ TYPE_NOTIFICATION=[
 class EmailNotification(models.Model):
     shop = models.ForeignKey(Shop)
     type_notification = models.CharField(max_length=3, choices=TYPE_NOTIFICATION)
-    subject = models.CharField(max_length=60)     
+    subject = models.CharField(max_length=60)
     body = models.TextField()
+
+    def __unicode__(self):
+        return u'Email Notification: %s' % self.type_notification
     
+    def render_dummy(self, template_string):
+        "Return a dummy Email Notification body"
+        
+        return Template(template_string).render(Context({
+            'buyer_name': 'Jhon B',
+            'buyer_email': 'jhonb@mail.com',
+            'gateway': 'aPaymentGateway',
+            'shop': 'Test Shop',
+            'shipping_street_address': '',
+            'shipping_city': 'Washington',
+            'shipping_state': 'District of Columbia',
+            'shipping_zip': '1234',
+            'shipping_country': 'USA',
+            'sell_date': datetime.datetime.now(),
+            'sell_total': '185',
+            'sell_without_taxes': '160',
+            'sell_total_taxes': '25',
+            'sell_total_shipping': '50',
+            'bidder_name': 'Paul C',
+            'bid_amount': '75',
+            'bid_time': 'Tue Aug 25 17:35:00 2012',
+            'session_title': 'Untitled Session',
+            'session_description': 'Untitled Session descrpition',
+            'session_start': 'Sat Jan 28 14:16:07 2012',
+            'session_end': 'Mon Jan 30 15:22:29 2012',
+            'lot_title': 'Example Lot',
+            'lot_description': 'Description of Example Lot',
+            'items': [ {'title': '1942 Tombac 5c MS63 PCGS', 'qty': '2', 'price': '65.35', 'total': '130.70','id': '54', 'link': 'http://'},
+                       {'title': '1950-d Semi-Key VF', 'qty': '1', 'price': '13.40', 'total': '13.40', 'id': '18', 'link': 'http://'},
+                       {'title': '1942 Tombac 5c MS63 PCGS', 'qty': '4', 'price': '12.75', 'total': '51.00', 'id': '45', 'link': 'http://'} ],
+        }))
+
 class ShopPolicies(models.Model):
     shop = models.ForeignKey(Shop)
-    refund_policy = models.TextField()
-    privacy_policy = models.TextField()
-    terms_of_service = models.TextField()
+    refund_policy = models.TextField(null=True, blank=True)
+    privacy_policy = models.TextField(null=True, blank=True)
+    terms_of_service = models.TextField(null=True, blank=True)
     def __unicode__(self):
         return "%s shop Policies" % self.shop
+
+class EmailNotificationHistory(models.Model):
+    shop = models.ForeignKey(Shop)
+    type_notification = models.CharField(max_length=3, choices=TYPE_NOTIFICATION)
+    datetime = models.DateTimeField()
+    to = models.CharField(max_length=60)
+    subject = models.CharField(max_length=60)
+    body = models.TextField()
+    
+    def __unicode__(self):
+        return u'Email Notification: %s to: %s' %(self.type_notification, self.to)

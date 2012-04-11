@@ -1,0 +1,14 @@
+{% extends 'store_admin/inventory/base_inventory.html' %}
+
+
+{% block submenu_extra_text %}
+{% comment %}
+	{% if total %}
+		<ul class="submenu_text">
+			<li>{{ total }} active{{ total|pluralize }} cart{{ total|pluralize }} in your shop</li>
+		</ul>
+	{% endif %}
+{% endcomment %}
+{% endblock %}
+
+{% block m_carts %}current_sub_menu{% endblock %}

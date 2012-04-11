@@ -1,1 +1,38 @@
-{% extends "default/sitemap.xml" %}
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<url><loc>http://www.greatcoins.com/</loc></url>
+<url><loc>http://www.greatcoins.com/buy/</loc></url>
+<url><loc>http://www.greatcoins.com/for_sale/</loc></url>
+<url><loc>http://www.greatcoins.com/auctions/</loc></url>
+<url><loc>http://www.greatcoins.com/buy/categories/</loc></url>
+<url><loc>http://www.greatcoins.com/buy/show_listing/</loc></url>
+<url><loc>http://www.greatcoins.com/buy/wish_list/</loc></url>
+<url><loc>http://www.greatcoins.com/buy/editor_pick/</loc></url>
+<url><loc>http://www.greatcoins.com/buy/shop_local/</loc></url>
+<url><loc>http://www.greatcoins.com/buy/advanced_search/</loc></url>
+<url><loc>http://www.greatcoins.com/sell/</loc></url>
+<url><loc>http://www.greatcoins.com/sell/features/</loc></url>
+<url><loc>http://www.greatcoins.com/sell/plans/</loc></url>
+<url><loc>http://www.greatcoins.com/community/</loc></url>
+<url><loc>http://www.greatcoins.com/community/blogs/</loc></url>
+<url><loc>http://www.greatcoins.com/community/faq/</loc></url>
+<url><loc>http://www.greatcoins.com/community/profiles/</loc></url>
+<url><loc>http://www.greatcoins.com/blog/</loc></url>
+<url><loc>http://www.greatcoins.com/sell/privacy/</loc></url>
+<url><loc>http://www.greatcoins.com/contact_us/</loc></url>
+<url><loc>http://www.greatcoins.com/buy/login/</loc></url>
+<url><loc>http://www.greatcoins.com/buy/signup/</loc></url>
+<url><loc>http://www.greatcoins.com/buy/show_search/</loc></url>
+<url><loc>http://www.greatcoins.com/buy/latest_items/</loc></url>
+<url><loc>http://www.greatcoins.com/survey/</loc></url>
+<url><loc>http://www.greatcoins.com/logout/</loc></url>
+<url><loc>http://www.greatcoins.com/buy/advanced_search_reset/</loc></url>
+<url><loc>http://www.greatcoins.com/buy/map_pick/</loc></url>
+<url><loc>http://www.greatcoins.com/buy/top_sellers/</loc></url>
+<url><loc>http://www.greatcoins.com/community/overview/</loc></url>
+<url><loc>http://www.greatcoins.com/community/forums/</loc></url>
+</urlset>
+

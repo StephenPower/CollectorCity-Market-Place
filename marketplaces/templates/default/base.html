@@ -1,58 +1,83 @@
 {% load i18n %}
 {% load seo %}
-
+{% load compress %}
 
 <!DOCTYPE html >
 <html>
 <head>
-	
 	{% get_metadata %}
 	
-<meta name="google-site-verification" content="wMzrYWx7N3YXKsm5Y9N4wqVJxqCYX3oyil7IrtcgNYI" />
-
+	<meta name="google-site-verification" content="wMzrYWx7N3YXKsm5Y9N4wqVJxqCYX3oyil7IrtcgNYI" />
 
 <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
-
+    
+	{% compress css %}
+		<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.treeview.css" />
+		<link rel="stylesheet" href="{{ STATIC_URL }}uni_form/uni-form-generic.css" />
+		<link rel="stylesheet" href="{{ STATIC_URL }}uni_form/uni-form.css" />
+		<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui-1.8.custom.css" />
+		<link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap1115.css" />
+		<link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-carousel.css" />
+	{% endcompress %}
+	<link rel="stylesheet" href="{{ STATIC_URL }}css/steve.css" />
+    <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript"></script> -->
 	
-	<link rel="stylesheet" href="{{ MEDIA_URL }}css/jquery.treeview.css" />
-	<link rel="stylesheet" href="{{ MEDIA_URL }}uni_form/uni-form-generic.css" />
-	<link rel="stylesheet" href="{{ MEDIA_URL }}uni_form/uni-form.css" />
-	<link rel="stylesheet" href="{{ MEDIA_URL }}css/jquery-ui-1.8.custom.css" />
-	<link rel="stylesheet" href="{{ MEDIA_URL }}css/bootstrap1114.css" />
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript"></script>
+	<!-- 
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js" type="text/javascript"></script>
+     -->
     <script src="//www.google.com/jsapi?key={{ GOOGLE_KEY }}" type="text/javascript"></script>
 
-	{% if REQUEST_IS_SECURE %}
-	<script type="text/javascript" src="https://use.typekit.com/hzo4jsg.js"></script>
-	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
-    {% else %}
-	<script type="text/javascript" src="http://use.typekit.com/hzo4jsg.js"></script>
-	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
-    {% endif %}
-
-
-	<script src="{{ MEDIA_URL }}js/imgpreview.js" type="text/javascript"></script>
-	<script src="{{ MEDIA_URL }}js/jquery.treeview.min.js" type="text/javascript"></script>
-	<script src="{{ MEDIA_URL }}js/bootstrap-twipsy.js" type="text/javascript"></script>
-	<script src="{{ MEDIA_URL }}js/bootstrap-popover.js" type="text/javascript"></script>
-	<script src="{{ MEDIA_URL }}js/bootstrap-modal.js" type="text/javascript"></script>
-	<script src="{{ MEDIA_URL }}js/bootstrap-alerts.js" type="text/javascript"></script>
-	<script src="{{ MEDIA_URL }}js/bootstrap-dropdown.js" type="text/javascript"></script>
-	<script src="{{ MEDIA_URL }}js/bootstrap-tabs.js" type="text/javascript"></script>
+		<!-- <script src="{{ STATIC_URL }}js/imgpreview.js" type="text/javascript"></script> -->
+	{% compress js %}
 	
+		<script src="{{ STATIC_URL }}js/jquery.min.js" type="text/javascript"></script>
+		<script src="{{ STATIC_URL }}js/jquery-ui.min.js" type="text/javascript"></script>
+		<script src="{{ STATIC_URL }}js/jquery.treeview.min.js" type="text/javascript"></script>
+		<script src="{{ STATIC_URL }}js/bootstrap-twipsy.js" type="text/javascript"></script>
+		<script src="{{ STATIC_URL }}js/bootstrap-popover.js" type="text/javascript"></script>
+		<script src="{{ STATIC_URL }}js/bootstrap-modal.js" type="text/javascript"></script>
+		<script src="{{ STATIC_URL }}js/bootstrap-alerts.js" type="text/javascript"></script>
+
+		<script src="{{ STATIC_URL }}js/bootstrap-dropdown.js" type="text/javascript"></script>
+		<script src="{{ STATIC_URL }}js/bootstrap-tabs.js" type="text/javascript"></script>
+		<script src="{{ STATIC_URL }}js/bootstrap-carousel.js" type="text/javascript"></script>
+		<script src="{{ STATIC_URL }}js/bootstrap-transition.js" type="text/javascript"></script>
+ 	{% endcompress %}
+ 	
+	{% comment %}
+	{% if REQUEST_IS_SECURE %}
+		<script type="text/javascript" src="http://use.typekit.com/xaq4hhn.js"></script>
+		<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+    {% else %}
+		<script type="text/javascript" src="https://use.typekit.com/xaq4hhn.js"></script>
+		<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+    {% endif %}
+    {% endcomment %}
 </head>
-   
+
 <body>
+
+<div id="fb-root"></div>
+	{# compress js #}
+		<script>(function(d, s, id) {
+		  var js, fjs = d.getElementsByTagName(s)[0];
+		  if (d.getElementById(id)) {return;}
+		  js = d.createElement(s); js.id = id;
+		  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+		  fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+		</script>
+	{# endcompress #}
+
   	<div class="topbar">
  	 <div class="topbar-inner">
 	  <div class="container">
 		{% block body %}
-	   	<div class="tagline"><a class="brand" href="/"><img src="https://s3.amazonaws.com/market-media.numismatichq.com/media/img/Logo-Great-Coins.png"></a></div>
+	   	<div class="tagline"><a class="brand" href="/"><img src="https://s3.amazonaws.com/market-media.numismatichq.com/media/img/Logo-Great-Coins.png" alt="{{marketplace.name}} Logo"></a></div>
 		<ul class="nav">
 			<li class="dropdown" data-dropdown="dropdown">
 			<a href="#" class="dropdown-toggle">{% trans "Buy" %}</a>
@@ -92,17 +117,24 @@
 				<li><a href="{% url community_blogs %}">Member Blogs</a></li>
 			 	<li><a href="{% url community_faq %}">FAQ</a></li>
 			 	<li><a href="{% url community_profiles %}">Dealer Profiles</a></li>
+				<li><a href="{% url community_forums %}">Forums</a></li>
 				</ul>
 			</li>
 	    		<li><a href="{% url market_blog %}">{% trans "Blog" %}</a></li>
-		
+				
 
   </ul>
+		<form  action="{% url market_search %}" method="GET" class="pull-left" name="search">
+			<input type="text" id="q" name="q" placeholder="Search Great Coins">
+
+		</form>
+
                <ul class="nav secondary-nav">
 				{% if user.is_authenticated %}
 			<li class="dropdown" data-dropdown="dropdown">
 			<a href="#" class="dropdown-toggle">Welcome {{ user }}</a>
 				<ul class="dropdown-menu">
+				 <li><a href="{% url market_buy_user_profile %}">Profile</a></li>
 				 <li><a href="{% url logout %}">Logout</a></li>
 				 <li><a href="{% url market_contact_us %}">Contact Us</a></li>
 				</ul>
@@ -111,9 +143,8 @@
 			<li class="dropdown" data-dropdown="dropdown">
 			<a href="#" class="dropdown-toggle">{% trans "About Us" %}</a>
 				<ul class="dropdown-menu">
-				 <li><a href="{% url market_privacy_policy %}">Priavacy Policy</a></li>
+				 <li><a href="{% url market_privacy_policy %}">Privacy Policy</a></li>
 				 <li><a href="{% url market_contact_us %}">Contact Us</a></li>
-				 <li><a href="{% url market_blog %}">Corporate Blog</a></li>
 				</ul>
 			</li>
 
@@ -123,9 +154,8 @@
 			<li class="dropdown" data-dropdown="dropdown">
 			<a href="#" class="dropdown-toggle">{% trans "About Us" %}</a>
 				<ul class="dropdown-menu">
-				 <li><a href="{% url market_privacy_policy %}">Priavacy Policy</a></li>
+				 <li><a href="{% url market_privacy_policy %}">Privacy Policy</a></li>
 				 <li><a href="{% url market_contact_us %}">Contact Us</a></li>
-				 <li><a href="{% url market_blog %}">Corporate Blog</a></li>
 				</ul>
 			</li>
 
@@ -174,46 +204,39 @@
     	{% endif %}
 
 		<div class="container">
-			{% block header %}	{% endblock %}
+			{% block header %}
+			{% endblock %}
 	
-			<div class="span17 search">
-			<form  action="{% url market_search %}" method="GET" name="search">
-				<select id="category" name="category">
-				<option>All Categories</option>					
-				{% for category in marketplace.marketcategory_set.all %}
-					{% ifnotequal category.product_set.count 0  %}
-					<option>{{ category.name }}</option>
-					{% endifnotequal %}
-				{% endfor %}
-				</select>
-			<input type="text" id="q" name="q" />
-			<input type="submit" class="btn small primary" id="search-icon" value="Search" />
-			</form>
-
-			</div>
-						{% block content %} </div>{% endblock %}
-		</div>	
+			{% block content %}
+			{% endblock %}
 		</div>	
 
 			{% block footer %}
-		<div class="span17">	
-		 <ul class="breadcrumb">
-			<li class="active">2011 {{ marketplace.name }} is a registered trademark of CollectorCity.com <span class="divider"> / </span></li>
-			<li><a href="{% url market_privacy_policy %}">{% trans "Privacy Policy" %}</a><span class="divider"> / </span></li> 
-			<li><a href="{% url community_faq %}#what-is-greatcoinscom">{% trans "About Us" %}</a><span class="divider"> / </span></li>
-			<li><a href="{% url market_contact_us %}">{% trans "Contact Us" %}</a><span class="divider"> / </span></li>
-			<li><a href="{% url community_faq %}">{% trans "Help" %}</a><span class="divider"> / </span> </li>
-			<li><a href="{% url logout %}">{% trans "Logout" %}</a><span class="divider"> / </span></li>
-		 </ul>
+		<footer>
+		</footer>
 
+		<div class="span18 offset1">	
+		 <ul class="breadcrumb">
+			<li class="active">2011 CollectorCity.com <span class="divider"> / </span></li>
+			<li><a href="{% url market_privacy_policy %}">{% trans "Privacy Policy" %}</a><span class="divider"> / </span></li> 
+			<li><a href="{% url market_contact_us %}">{% trans "Contact Us" %}</a><span class="divider"> / </span></li>
+			<li><a href="{% url community_faq %}">{% trans "FAQ" %}</a><span class="divider"> / </span> </li>
+			<li><a href="{% url logout %}">{% trans "Logout" %}</a><span class="divider"> / </span></li>
+			<li><a href="https://twitter.com/great_coins" class="twitter-follow-button">Follow @great_coins</a>
+<script src="//platform.twitter.com/widgets.js" type="text/javascript"></script></li>
+			<li><div class="fb-like" data-href="http://www.facebook.com/pages/Great-Coins/133656090014195" data-send="true" data-layout="button_count" data-width="46" data-show-faces="true" data-font="verdana"></div>
+			</li>
+		 </ul>
+</div>
 		{% endblock %}
 
 	{% endblock %}
 
 {% block body_footer %}
+
 <script type="text/javascript">
   var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-13297300-4']);
+  _gaq.push(['_setAccount', '{{ ANALYTICS_UA|default:"UA-20238336-1" }}']);
   _gaq.push(['_trackPageview']);
 
   (function() {
@@ -222,6 +245,7 @@
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
 </script>
+
 {% endblock %}
 
 
@@ -231,12 +255,6 @@
     <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
     <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
   <![endif]-->
-
-
-
-
-
-
 
 </body>
 </html>

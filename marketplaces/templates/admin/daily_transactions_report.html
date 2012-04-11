@@ -57,7 +57,7 @@
 	{% endfor %}
 	
 	<div id="progress" class="dialogContent" style="text-align: center; display: none; width: 100px; height: 100px;">
-		<img id="img1" src="{{ MEDIA_URL }}img/ajax-loader.gif"/>
+		<img id="img1" src="{{ STATIC_URL }}img/ajax-loader.gif"/>
 		<p>Loading...</p>
 	</div>
 	
@@ -83,7 +83,7 @@
 				    closeOnEscape: false,
 				    dialogClass : 'alert',				    
 				    open: function(type, data) {
-				    	$('#img1').attr('src', '{{ MEDIA_URL }}img/ajax-loader.gif');
+				    	$('#img1').attr('src', '{{ STATIC_URL }}img/ajax-loader.gif');
 				    	$(".ui-dialog-titlebar-close").hide();
 				    	$(".ui-dialog-titlebar").hide();
     					$(this).parent().appendTo($("form:first"));

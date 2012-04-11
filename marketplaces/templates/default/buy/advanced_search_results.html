@@ -4,51 +4,52 @@
 {% block content %}
     <ul class="breadcrumb">
         <li><a href="{% url market_home %}">{% trans "Home" %}</a><span class="divider"> / </span></li>
-        <li><a href="{% url market_buy %}">{% trans "Buy" %}</a><span class="divider"> / </span></li> 
+        <li><a href="{% url market_buy %}">{% trans "Buy" %}</a><span class="divider"> / </span></li>
         <li class="active"><a href="{% url buy_advanced_search %}?{{ form.get_qs }}">{% trans "Advanced Search Results" %}</a></li>
     </ul>
 
-	
-    <div id="view-mode-container" class="span12 offset2{{ view_mode }}">
-    	{% with result_list.object_list|length as result_count %}
+
+<div id="view-mode-container" class="span12 offset2{{ view_mode }}">
+        {% with result_list.object_list|length as result_count %}
             <h3>{% blocktrans %}Listing {{ result_count }} results from {{ total }} items found {% endblocktrans %}</h3>
         {% endwith %}
-        <p>
-            <a href="{% url buy_advanced_search %}?{{ form.get_qs }}">
+        <p><a href="{% url buy_advanced_search %}?{{ form.get_qs }}">
                <h3> {% trans "Go back and refine your search again" %}</h3>
             </a>
         </p>
 
-        <div id="view-buttons" class="span10">
-            <span class="view_mode">{% trans "View as" %}:</span> 
+        <div id="view-buttons" class="span11">
+            <span class="view_mode">{% trans "View as" %}:</span>
             <div class="gallery-buttons">
                 <a href="#mode-list" onclick="$('#view-mode-container').toggleClass('gallery').toggleClass('list'); return false;">
-                    <img src="{{ MEDIA_URL }}img/list-view.jpg" width="20" height="20" title="{% trans 'Switch to List View' %}" />
+                    <img src="{{ STATIC_URL }}img/list-view.jpg" width="20" height="20" title="{% trans 'Switch to List View' %}" />
                 </a>
-                <img src="{{ MEDIA_URL }}img/gallery-view-sel.jpg" width="20" height="20" title="{% trans 'Gallery View' %}" />
+                <img src="{{ STATIC_URL }}img/gallery-view-sel.jpg" width="20" height="20" title="{% trans 'Gallery View' %}" />
             </div>
             <div class="list-buttons" onclick="$('#view-mode-container').toggleClass('gallery').toggleClass('list'); return false;">
-                <img src="{{ MEDIA_URL }}img/list-view-sel.jpg" width="20" height="20" title="{% trans 'List View' %}" />
+                <img src="{{ STATIC_URL }}img/list-view-sel.jpg" width="20" height="20" title="{% trans 'List View' %}" />
                 <a href="#mode-gallery onclick="$('#view-mode-container').toggleClass('gallery').toggleClass('list'); return false;"">
-                    <img src="{{ MEDIA_URL }}img/gallery-view.jpg" width="20" height="20" title="{% trans 'Switch to Gallery View' %}" />
+                    <img src="{{ STATIC_URL }}img/gallery-view.jpg" width="20" height="20" title="{% trans 'Switch to Gallery View' %}" />
                 </a>
             </div>
         </div>
-        
-        <div id="gallery-results" name="mode-gallery">
+
+        <div class="gallery-results" id="mode-gallery">
             {% for product in result_list.object_list %}
             <div class="span3">
                 <div class="item_box">
                     <a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
-                    {% with product.child.image.image.url_100x100 as image_url %}
+                     {% with product.child.image.image.url_100x100 as image_url %}
                     {% if image_url %}
                     <img class="item" src="{{ image_url }}" title="{{ product.description|striptags }}"/>
                     {% else %}
-                    <img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" title="{{ product.description|striptags }}"/>
+                    <img class="item" src="{{ STATIC_URL }}img/no-photo-medium.jpg" title="{{ product.description|striptags }}"/>
                     {% endif %}
                     {% endwith %}
-                    <div class="title">{{ product.title|truncatewords:5 }}</div>
-                    <div class="dealer">{{ product.category.name }}</div>
+                    
+
+			<div class="title">{{ product.title|truncatewords:5 }}</div>
+                    <div class="dealer">{{ product.category }}</div>
                     <div class="price">{{ product.price|format_price:product.shop_currency }}</div>
                     </a>
                 </div>
@@ -56,17 +57,17 @@
             {% endfor %}
         </div>
 
-        <div id="list-results" name="mode-list">
+        <div class="list-results" id="mode-list">
             {% for product in result_list.object_list %}
             <div class="span12 offset2">
                 <hr></hr>
                 <div class="span2">
-                    <a href="{% url market_buy_product_redirect product.product_id %}" target="_blank"> 
+                    <a href="{% url market_buy_product_redirect product.product_id %}" target="_blank">
                     {% with product.child.image.image.url_100x100 as image_url %}
                     {% if image_url %}
                     <img class="item" src="{{ image_url }}" height="55" width="55" title="{{ product.description|striptags }}"/>
                     {% else %}
-                    <img class="item" src="{{ MEDIA_URL }}img/no-photo-medium.jpg" height="51" width="56" title="{{ product.description|striptags }}"/>
+                    <img class="item" src="{{ STATIC_URL }}img/no-photo-medium.jpg" height="51" width="56" title="{{ product.description|striptags }}"/>
                     {% endif %}
                     {% endwith %}
                     </a>
@@ -82,7 +83,6 @@
             {% endfor %}
         </div>
 
-        <div class="clear"></div>
         <div class="pagination">
             {% with result_list as objects %}
                 {% include 'advanced_paginator.html'%}
@@ -107,3 +107,4 @@
 }
 </style>
 {% endblock %}
+

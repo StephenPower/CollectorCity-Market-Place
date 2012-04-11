@@ -1,21 +1,21 @@
-from django.forms import ModelForm
-
+from django import forms
+from captcha.fields import CaptchaField
 from market.models import MarketCategory, MarketSubCategory, MarketMailingListMember, MarketPostComment
-  
 
-class MarketPostCommentForm(ModelForm):
+
+class MarketPostCommentForm(forms.ModelForm):
     class Meta:
         model = MarketPostComment 
         exclude = ['user', 'post']
 
 
-class MarketCategoryForm(ModelForm):
+class MarketCategoryForm(forms.ModelForm):
     class Meta:
         model = MarketCategory 
         exclude = ['marketplace']
 
 
-class MarketSubCategoryForm(ModelForm):
+class MarketSubCategoryForm(forms.ModelForm):
     class Meta:
         model = MarketSubCategory
         fields = ['marketplace', 'slug']
@@ -28,7 +28,14 @@ class MarketSubCategoryForm(ModelForm):
 #            category = self.fields.get('category')
 #            category.queryset = Category.objects.filter(shop=self.shop)
 
-class MarketMailingListMemberForm(ModelForm):
+class MarketMailingListMemberForm(forms.ModelForm):
     class Meta:
         model = MarketMailingListMember
         exclude = ['marketplace']
+
+class ContactForm(forms.Form):
+    name = forms.CharField()
+    phone = forms.CharField()
+    email = forms.EmailField()
+    message = forms.CharField(widget=forms.Textarea)
+    captcha = CaptchaField()

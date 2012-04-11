@@ -263,9 +263,16 @@ class GoogleCheckoutGateway(object):
             raise Exception("Could not read merchant private data from google notification")
         
         logging.debug("\nGoogle Message Type = %s\nOrder Number = %s\nBuyer = %s\nOrder Amount = %s" % (type, order_number, buyer,order_total))
-                      
+        
         try:
             cart = get_object_or_404(Cart, pk=cart_id)
+            
+            if not cart.is_available():
+                self.cancel_order(order_number, reason="out of stock")
+                cart.remove_not_available_items()
+                logging.error("Order id: %s, cancel. Out of stock, Cart id: %s" %(order_number, cart.id))
+                return
+            
             sell = cart.close("GoogleCheckout")
             
             order = GoogleCheckoutOrder(sell=sell)

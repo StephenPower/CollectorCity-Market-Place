@@ -3,18 +3,22 @@
 
 
 {% block content %}
-<div class="span8 offset2">
-<form action="." method="POST" class="form-stacked alert-message block-message info">
-	<fieldset>
-		<label>Username</label>
-		<input type="text" name="username"/>
-		<label>Password</label>
-		<input type="password" name="password"/>
-			<br/></br>
-			<button type="submit" class="btn primary">{% trans "Login" %}</button>
-	       	{% if next %}<input type="hidden" name="next" value="{{ next|escape }}" />{% endif %}
-	</fieldset>
-	<br/><br/>
-</form>
+<div class="span9 offset2">
+	<form action="." method="POST" class="form-stacked alert-message block-message info">
+		<fieldset>
+			<label>Username</label>
+			<input type="text" name="username"/>
+			<label>Password</label>
+			<input type="password" name="password"/>
+				<br/></br>
+				<button type="submit" class="btn primary">{% trans "Login" %}</button>
+		       	{% if next %}<input type="hidden" name="next" value="{{ next|escape }}" />{% endif %}
+		</fieldset>
+		<br/><br/>
+	</form>
+
+	<a class="btn" href="{% url socialauth_begin 'twitter' %}"><span class="twitter-btn">{% trans "Sign in with Twitter" %}</span></a>
+	<a class="btn" href="{% url socialauth_begin 'facebook' %}"><span class="facebook-btn">{% trans "Sign in with Facebook" %}</span></a>
+	<a class="btn" href="{% url socialauth_begin 'google' %}"><span class="google-btn">{% trans "Sign in with Google" %}</a>
 </div>
 {% endblock %}

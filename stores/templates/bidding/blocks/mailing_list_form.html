@@ -1,4 +1,9 @@
-<form action="." method="POST" name="form">
-  	{{ form }}
-	<input type="submit" value="Subscribe"></input>
-</form>
+{% load i18n %}
+
+<div id="mail_list_form">
+	<form action="." method="POST" name="form">
+		<label for="id_email">{% trans "Enter Your Email Address" %}:</label>
+		{{ form.email }}
+		<input type="submit" value="Subscribe" id="mail_list_submit_btn"></input>
+	</form>
+</div>

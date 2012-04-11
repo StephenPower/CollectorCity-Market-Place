@@ -4,7 +4,7 @@
 #from shops.models import Shop
 from preferences.models import DnsShop
 
-import re, logging
+import re
 
 class SubdomainMiddleware:
 

@@ -81,7 +81,6 @@ def sell_manual_fail(request, id):
     request.flash['severity'] = "success"
     return HttpResponseRedirect(reverse('sell_details', args=[id])) 
 
-
 @shop_admin_required
 def sell_dispatched(request, id):
     sell = get_object_or_404(Sell, pk=id)
@@ -94,6 +93,17 @@ def sell_dispatched(request, id):
     request.flash['severity'] = "success"
     return HttpResponseRedirect(reverse('sell_details', args=[id]))
 
+@shop_admin_required
+def sel_undispatched(request, id):
+    sell = get_object_or_404(Sell, pk=id)
+    shop = request.shop
+    
+    if sell.shop != shop:
+        raise Http404
+    sell.shipping.undispatched()
+    request.flash['message'] = unicode(_("Operation successfully saved."))
+    request.flash['severity'] = "success"
+    return HttpResponseRedirect(reverse('sell_details', args=[id]))
 
 @shop_admin_required
 def sell_fulfilled(request, id):
