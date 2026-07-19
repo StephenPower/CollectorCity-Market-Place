@@ -8,7 +8,7 @@ django-flash==1.7.2
 gchecky==0.2.1
 boto==1.9b
 pysolr==2.0.13
-django-haystack==1.2.6
+django-haystack==3.4.0
 Jinja2>=2.5
 httplib2
 coverage
